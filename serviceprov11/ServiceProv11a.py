@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
-# ServiceProv11.py
+# ServiceProv11a.py
 #
 # Model of service provision
 # Modularized
-# THIS VERSION using writelog.writelog()
+# THIS VERSION tried to use logging, no output file!
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -12,10 +12,12 @@ import matplotlib.patches as patches
 from matplotlib.widgets import CheckButtons
 from collections import deque
 import time
+import sys
 from matplotlib.path import Path
 from random import random, seed
+import datetime
+import logging
 import StringIO
-import writelog
 
 
 """
@@ -140,9 +142,26 @@ codes = [Path.MOVETO,
 
 # Open log file
 if doingLogging:
-    logFilename = 'run.log'
-    writelog.initLogfile(logFilename)
-    writelog.writeLog('log file initialized\n')
+    print '======[ Doing logging ]======'
+    print datetime.datetime.now().strftime('      %Y/%m/%d %H:%M:%S')
+    print '\n'
+    logFilename = '/Users/slehar/Documents/PythonProgs/service-prov/serviceprov11/example.log'
+    logging.basicConfig(filename='logfile.log', filemode='w',
+                        level=logging.DEBUG)
+    logging.info('Starting logging')
+    # logging.info('Log file ServiceProv11.py %s\n\n', datetime.datetime.now().strftime('%Y/%m/%d %H:%M:%S'))
+
+# logging.shutdown()
+'''
+logger = logging.getLogger()
+logging.debug('wat wat')
+logger.handlers[0].flush()
+logging.shutdown()
+'''
+# logging.Handler.flush()
+# logger = logging.getLogger()
+# logger.handlers[0].flush()
+sys.exit()
 
 # function printSched
 def printSched():
@@ -152,7 +171,6 @@ def printSched():
         
         # fp = open(logFilename,'a')
         # fp.write(' %3d: ['%entry[0])
-        outStr.write(' %3d: ['%entry[0])
         for tr in range(1,standardSched+1):
             if entry[tr] == None:
                 outStr.write('  ~  ')
@@ -163,7 +181,7 @@ def printSched():
         outStr.write(']\n')
         # fp.write(']\n')
         # fp.close()
-        writelog.writeLog(outStr.getvalue())
+        logging.info(outStr)
         outStr.close()
 
 #### Generate random arrangement of agents ####
@@ -315,7 +333,7 @@ def update_agent(agent):
 
                 # Register in schedList[]
                 if doingLogging:
-                    writelog.writeLog('Enrolling agent %d\n'% agent['id'])
+                    logging.info('Enrolling agent %d\n', agent['id'])
                 treatList = [None for i in range(standardSched)]
                 treatList[agent['treatNo']] = agent['xVal']
                 treatList.insert(0,agent['id'])
@@ -332,7 +350,7 @@ def update_agent(agent):
 
                 # If agent not being treated do next treatment
                 if agent['treating'] == False:
-                    if doingLogging: writelog.writeLog('  agent %d treatment %d ON\n'%(agent['id'], agent['treatNo']))
+                    # if logging: writeLog('  agent %d treatment %d ON\n'%(agent['id'], agent['treatNo']))
                     agent['treating'] = True
                     agent['bezPatch'].set_lw(2)
                     agent['bezPatch'].set_ec('#00ff00')
@@ -348,8 +366,8 @@ def update_agent(agent):
  
                     # if logging: writeLog('  agent %d treatNo++ %d\n'%(agent['id'], agent['treatNo']))
                     if agent['treatNo'] >= standardSched+1:
-                        writelog.writeLog('  treatNo = %d standardSched = %d\n'% (agent['treatNo'], standardSched))
-                        if doingLogging: writelog.writeLog('Un-enroll agent %d treatment done\n'% agent['id'])
+                        logging.info('  treatNo = %d standardSched = %d\n', agent['treatNo'], standardSched)
+                        if doingLogging: logging.info('Un-enroll agent %d treatment done\n', agent['id'])
                         agent['enrolled'] = False
                         agent['treatNo'] = 0
                         # agent['treating'] = False
@@ -366,7 +384,7 @@ def update_agent(agent):
                             if sched[0] == int(agent['id']):
                                 schedList[indx][agent['treatNo']] = agent['xVal']
                                 break
-                        if doingLogging: writelog.writeLog('  agent %d treatment %d ON\n'%
+                        if doingLogging: logging.info('  agent %d treatment %d ON\n',
                                            (agent['id'], agent['treatNo']))
 
                     # Update schedule
@@ -381,8 +399,8 @@ def update_agent(agent):
                     agent['bezPatch'].set_ec('#afafaf')
                     inputVal = agent['iVal']
 
-                    if doingLogging: writelog.writeLog('  agent %d treatment %d OFF\n'%
-                                        (agent['id'], agent['treatNo']))
+                    if doingLogging: logging.info('  agent %d treatment %d OFF\n',
+                                        agent['id'], agent['treatNo'])
 
                         # schedList = [x for x in schedList if x[0] != agent['id']]
 
