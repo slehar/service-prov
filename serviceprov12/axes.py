@@ -84,8 +84,6 @@ def init_ax3():
 # Checkbox function
 def func(label):
     global checkService, checkPause, checkEndBen, checkDist
-    print 'in func() label =',
-    print label
     if label == 'Service':
         checkService = not checkService
     elif label == 'Pause':
