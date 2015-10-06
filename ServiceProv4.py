@@ -96,7 +96,6 @@ sl = Slider(axSl, 'Mag', 0., 1., valinit=0.5, valfmt=u'%1.2f', fc=(0, 1, 0))
 
 # Update each loop
 def update(num):
-    global linetime, linedat
     global xx, flevel, empty, t, lastX, lastT, flow, valveOpen, refill, delay
     global darray, tarray
     
@@ -117,32 +116,6 @@ def update(num):
     else:
         arrow.set_facecolor((1, 1, 1))
     
-    '''
-    if flow and not empty:
-        I = 0.1 * sl.val
-        flevel -= 0.1
-        if flevel < 0.1:
-            flevel = 0.
-            empty = True
-            arrow.set_facecolor((1, 1, 1))
-    elif flow and empty:
-        I = 0
-        arrow.set_facecolor((1, 1, 1))
-    elif not flow:
-        I = 0.0
-        arrow.set_facecolor((1, 1, 1))
-    fluid.set_height(flevel*2.)
-    flow = False
-    check._clicked = False
-    check.lines[0][0].set_visible(False)
-    check.lines[0][1].set_visible(False)
-    if flow:
-        flevel += refill
-        if flevel > 1.:
-            flevel = 1
-        empty = False
-    fluid.set_height(flevel*2.)
-    '''
 
     # Update dynamic equations
     lastX = xx

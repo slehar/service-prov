@@ -16,7 +16,6 @@ from random import random, seed
 import datetime
 import os
 
-import writelog
 
 """
 Created on Wed Jun 24 11:09:21 2015
@@ -375,7 +374,7 @@ def update_agent(agent):
 
                 # Otherwise if patient being treated turn it off
                 else:
-                    agent['treating'] = False;
+                    agent['treating'] = False
                     agent['bezPatch'].set_lw(1)
                     agent['bezPatch'].set_ec('#afafaf')
                     inputVal = agent['iVal']
@@ -413,7 +412,7 @@ def update_agent(agent):
 #### Update each loop ####
 def update(num):
 
-    global linetime, linedat
+    # global linetime, linedat
     global x,t,lastX,lastT
     global dArray, tArray
     

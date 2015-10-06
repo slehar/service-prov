@@ -82,7 +82,6 @@ sl = Slider(axSl, 'Mag', 0., 1., valinit=0.5, valfmt=u'%1.2f', fc=(0, 1, 0))
 
 # Update each loop
 def update(num):
-    global linetime, linedat
     global x, t, lastX, lastT, flow, delay
     global darray, tarray
     if flow:

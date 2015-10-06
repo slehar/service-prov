@@ -287,7 +287,7 @@ def update_agent(agent):
                     
                 # Otherwise (treatment is on) turn it off
                 else:
-                    agent['treating'] = False;
+                    agent['treating'] = False
                     agent['bezPatch'].set_lw(1)
                     agent['bezPatch'].set_ec('#afafaf')
                     if checkEndBen:
@@ -301,7 +301,7 @@ def update_agent(agent):
                         agent['nSched'] = 0
                         agent['enrolled'] = False
                         nEnrolled -= 1
-                        agent['treating'] = 0.;
+                        agent['treating'] = 0.
                         agent['bezPatch'].set_lw(1)
                         agent['bezPatch'].set_ec('#afafaf')
                         agent['bezPatch'].set_visible(False)
@@ -332,7 +332,6 @@ def update_agent(agent):
 #### Update each loop ####
 def update(num):
     
-    global linetime, linedat
     global x,t,lastX,lastT
     global dArray, tArray
     

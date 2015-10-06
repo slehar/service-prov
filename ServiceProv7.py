@@ -206,7 +206,6 @@ def update_agent(agent):
 #### Update each loop ####
 def update(num):
     
-    global linetime, linedat
     global x,t,lastX,lastT
     global dArray, tArray
     

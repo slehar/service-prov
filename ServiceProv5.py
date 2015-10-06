@@ -115,7 +115,6 @@ sl.on_changed(funcSlider)
 
 # Update each loop
 def update(num):
-    global linetime, linedat
     global xx, flevel, empty, t, lastX, lastT, flow, valveOpen, refill, delay
     global darray, tarray
     global Elight, EB
