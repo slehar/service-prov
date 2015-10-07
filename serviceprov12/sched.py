@@ -11,11 +11,6 @@ import agents
 import writelog
 import axes
 
-# Global variables
-schedList = []
-schedPtr = 0
-
-
 # function printSched
 def printSched(schedList):
     for indx, entry in enumerate(schedList):
