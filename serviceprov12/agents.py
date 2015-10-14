@@ -9,9 +9,10 @@ from matplotlib.path import Path
 from collections import deque
 
 # Local modules
-import axes
+# import axes
 import writelog
-import updateagent
+# import updateagent
+# import updateall
 
 # Global variables
 avgPtsd = 0.
@@ -59,35 +60,4 @@ codes = [Path.MOVETO,
 agents = []
 
 
-#### Update each loop ####
-def update(num):
-
-    global linetime, linedat
-    global x,t,lastX,lastT
-    global dArray, tArray
-    
-    # print '  In update count = %d'%num
-
-    if axes.checkPause:
-        return
-
-    sumPtsd = 0.
-    for agnum in range(nAgents):
-        updateagent.update_agent(agents[agnum])
-        sumPtsd += agents[agnum]['xVal']
-
-    avgPtsd = sumPtsd / float(nAgents)
-    # print '  avgPtsd = %f'%avgPtsd
-
-    x = avgPtsd
-    lastT = t
-    t += dt
-    dArray.appendleft(x)
-    if len(dArray) > plotWidth / dt:
-        dArray.pop()
-    tArray.appendleft(t)
-    if len(tArray) > plotWidth / dt:
-        tArray.pop()
-    axes.line.set_data(tArray,dArray)
-    axes.ax2.axis((t - plotWidth, t, axes.ax2yMin, axes.ax2yMax))
 

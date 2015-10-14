@@ -9,8 +9,9 @@ import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 
 import axes
-import agents
+# import agents
 import initagents
+import updateall
 
 axes.init_ax()
 axes.init_ax2()
@@ -20,7 +21,7 @@ axes.init_ax4()
 initagents.init_agents()
 
 # Run the animation
-ani = animation.FuncAnimation(axes.fig, agents.update, interval=100., repeat=True)
+ani = animation.FuncAnimation(axes.fig, updateall.update, interval=100., repeat=True)
 
 
 
