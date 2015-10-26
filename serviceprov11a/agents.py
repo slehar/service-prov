@@ -98,9 +98,19 @@ def init_agents():
     
         # Define agent's "input value" (natural wellness) and input factor
         iVal = random()
+        if iVal > iThresh:
+            iFact = 1.
+            ec = 'k'
+        else:
+            if random() > .3:
+                iFact = 1.
+                ec = 'k'
+            else:
+                iFact = 0.
+                ec = 'r'
                 
         # Define agent's circle
-        circle = plt.Circle((xLoc, yLoc), .1, fc='r', ec='k')
+        circle = plt.Circle((xLoc, yLoc), .1, fc='r', ec=ec)
         axes.ax.add_patch(circle)
 
         # Set xVal to equilibrium value
@@ -127,6 +137,7 @@ def init_agents():
                        'yLoc':yLoc,
                        'xVal':xVal,
                        'iVal':iVal,
+                       'iFact':iFact,
                        'treating':False,
                        'enrolled':False,
                        'treatNo':0,        # current treatment #
@@ -152,10 +163,14 @@ def init_agents():
 def printSched():
     for indx, entry in enumerate(schedList):
         outStr=StringIO.StringIO()
-        outStr.write(' %3d: ['%entry[0])
+        if entry[1]:
+            ststr = 'X'
+        else:
+            ststr = ' '
+        outStr.write(' %3d: %s ['%(entry[0], ststr))
         
         # outStr.write(' %3d: %s ['%(entry[0], ststr)) # Duplicate line?
-        for tr in range(1,standardSched+1):
+        for tr in range(2,standardSched+2):
             if entry[tr] == None:
                 outStr.write('  ~  ')
             else:
@@ -177,10 +192,14 @@ def updateSched(schedList):
     axes.ax3.grid(True)
     for indx, sched in enumerate(schedList):
         # print repr(sched)
+        if sched[1]:
+            ec = 'r'
+        else:
+            ec = 'w'
         axes.ax3.text(.4, maxEnrolled - 1 - indx + .3, str(sched[0]), size=12,
-                 bbox=dict(fc='w', ec='w'))
+                 bbox=dict(fc='w', ec=ec))
         agentId = schedList[indx][0]
-        for treatment in range(1, agents[agentId]['treatNo']+1):
+        for treatment in range(2, agents[agentId]['treatNo']+2):
             if schedList[indx][treatment]:
                 xVal = schedList[indx][treatment]
                 r = (1. - xVal)
@@ -199,7 +218,7 @@ def update_agent(agent):
     # writelog.write('In update_agent agent = %d\n'%agent['id'])
 
     xVal = agent['xVal']
-    inputVal = agent['iVal']
+    inputVal = agent['iVal'] * agent['iFact']
 
     # If service is on, service the agents
     if axes.checkService:
@@ -231,7 +250,7 @@ def update_agent(agent):
                 nEnrolled += 1
                 # agent['nSched'] = standardSched
                 agent['bezPatch'].set_visible(True)
-                inputVal = agent['iVal']
+                inputVal = agent['iVal'] * agent['iFact']
                 agent['idText'].set_visible(True)
 
                 # Register in schedList[]
@@ -240,6 +259,10 @@ def update_agent(agent):
                     writelog.write('Enrolling agent %d\n'% agent['id'])
                 treatList = [None for i in range(standardSched)]
                 treatList[agent['treatNo']] = agent['xVal']
+                if agent['iFact'] == 1.:
+                    treatList.insert(0, False)
+                else:
+                    treatList.insert(0, True)
                 treatList.insert(0,agent['id'])
                 schedList.append(treatList)
                 
@@ -265,7 +288,7 @@ def update_agent(agent):
                     if axes.checkEndBen:
                         agent['iVal'] += doseValue/10. # endBen increase iVal
                     else:
-                        inputVal = agent['iVal'] + doseValue
+                        inputVal = agent['iVal'] * agent['iFact'] + doseValue
                         
                     # Increment treatment number
                     agent['treatNo'] += 1
@@ -289,10 +312,10 @@ def update_agent(agent):
                     else:
                         for indx, sched in enumerate(schedList):
                             if sched[0] == int(agent['id']):
-                                schedList[indx][agent['treatNo']] = agent['xVal']
+                                schedList[indx][agent['treatNo']+1] = agent['xVal']
                                 break
                         if doingLogging: writelog.write('  agent %d treatment %d ON\n'%
-                                           (agent['id'], agent['treatNo']))
+                                           (agent['id'], agent['treatNo']+1))
 
                     # Update schedule
                     updateSched(schedList)
@@ -304,7 +327,7 @@ def update_agent(agent):
                     agent['treating'] = False;
                     agent['bezPatch'].set_lw(1)
                     agent['bezPatch'].set_ec('#afafaf')
-                    inputVal = agent['iVal']
+                    inputVal = agent['iVal'] * agent['iFact']
 
                     if doingLogging: writelog.write('  agent %d treatment %d OFF\n'%
                                         (agent['id'], agent['treatNo']))
@@ -316,8 +339,11 @@ def update_agent(agent):
     else:
         agent['bezPatch'].set_visible(False)
         square.set_fc('#ffffff')
-        inputVal = agent['iVal']
+        inputVal = agent['iVal'] * agent['iFact']
 
+    #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    if agent['id'] == 0 or agent['id'] == 24:
+        writelog.write('>>> agent[%03d] inputVal = %5.2f\n'%(agent['id'],inputVal))
 
     # Shunting equation
     xVal += -A * xVal + (1 - xVal) * inputVal

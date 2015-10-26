@@ -44,7 +44,7 @@ def init_ax():
     
     plt.close('all')
     fig = plt.figure(figsize=(winXInches, winYInches))
-    fig.canvas.set_window_title('ServiceProv11')
+    fig.canvas.set_window_title('ServiceProv12')
     ax = fig.add_axes([.05, .15, .8, .8])
     ax.set_xlim(axXLim)
     ax.set_ylim(axYLim)

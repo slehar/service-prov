@@ -2,4 +2,5 @@
 *.svg
 *.log
 *.pyc
+.DS_Store
 
