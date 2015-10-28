@@ -102,11 +102,11 @@ def init_agents():
             iFact = 1.
             ec = 'k'
         else:
-            if random() > .3:
+            if random() > .5:
                 iFact = 1.
                 ec = 'k'
             else:
-                iFact = 0.
+                iFact = 0. # <=== Set to zero for debug!
                 ec = 'r'
                 
         # Define agent's circle
@@ -163,14 +163,10 @@ def init_agents():
 def printSched():
     for indx, entry in enumerate(schedList):
         outStr=StringIO.StringIO()
-        if entry[1]:
-            ststr = 'X'
-        else:
-            ststr = ' '
-        outStr.write(' %3d: %s ['%(entry[0], ststr))
+        outStr.write(' %3d: ['%entry[0])
         
         # outStr.write(' %3d: %s ['%(entry[0], ststr)) # Duplicate line?
-        for tr in range(2,standardSched+2):
+        for tr in range(1,standardSched+1):
             if entry[tr] == None:
                 outStr.write('  ~  ')
             else:
@@ -199,12 +195,13 @@ def updateSched(schedList):
         axes.ax3.text(.4, maxEnrolled - 1 - indx + .3, str(sched[0]), size=12,
                  bbox=dict(fc='w', ec=ec))
         agentId = schedList[indx][0]
+        # for treatment in range(2, agents[agentId]['treatNo']+2):
         for treatment in range(2, agents[agentId]['treatNo']+2):
             if schedList[indx][treatment]:
                 xVal = schedList[indx][treatment]
                 r = (1. - xVal)
                 g = xVal
-                tile = plt.Rectangle((1 + treatment, maxEnrolled - 1 - indx), 1, 1,
+                tile = plt.Rectangle((treatment, maxEnrolled - 1 - indx), 1, 1,
                                      fc=(r,g,0))
                 axes.ax3.add_patch(tile)
 
