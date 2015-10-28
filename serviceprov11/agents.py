@@ -99,14 +99,16 @@ def init_agents():
         # Define agent's "input value" (natural wellness) and input factor
         iVal = random()
                 
-        # Define agent's circle
-        circle = plt.Circle((xLoc, yLoc), .1, fc='r', ec='k')
-        axes.ax.add_patch(circle)
-
         # Set xVal to equilibrium value
         xVal = iVal/(A+iVal)
         totInput += iVal
+        r = (1. - xVal)
+        g = xVal
         
+        # Define agent's circle
+        circle = plt.Circle((xLoc, yLoc), .1, fc=(r,g,0), ec='k')
+        axes.ax.add_patch(circle)
+
         # Define agent's bezier links
         verts = ((axes.provXCtr, axes.provYCtr), # Bezier lnk from prov. to here
                  ((axes.provXCtr + xLoc)/2., axes.provYCtr),
@@ -177,7 +179,7 @@ def updateSched(schedList):
     axes.ax3.grid(True)
     for indx, sched in enumerate(schedList):
         # print repr(sched)
-        axes.ax3.text(.4, maxEnrolled - 1 - indx + .3, str(sched[0]), size=12,
+        axes.ax3.text(.4, maxEnrolled - 1 - indx + .3, "% 3d"%sched[0], size=12,
                  bbox=dict(fc='w', ec='w'))
         agentId = schedList[indx][0]
         for treatment in range(1, agents[agentId]['treatNo']+1):

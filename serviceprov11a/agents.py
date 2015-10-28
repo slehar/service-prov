@@ -166,10 +166,14 @@ def init_agents():
 def printSched():
     for indx, entry in enumerate(schedList):
         outStr=StringIO.StringIO()
-        outStr.write(' %3d: ['%entry[0])
+        if entry[1]:
+            stateStr = 'X'
+        else:
+            stateStr = ' '
+        outStr.write(' %3d: %s ['%(entry[0], stateStr))
         
         # outStr.write(' %3d: %s ['%(entry[0], ststr)) # Duplicate line?
-        for tr in range(1,standardSched+1):
+        for tr in range(2,standardSched+2):
             if entry[tr] == None:
                 outStr.write('  ~  ')
             else:
@@ -341,9 +345,6 @@ def update_agent(agent):
         square.set_fc('#ffffff')
         inputVal = agent['iVal'] * agent['iFact']
 
-    #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-    if agent['id'] == 0 or agent['id'] == 24:
-        writelog.write('>>> agent[%03d] inputVal = %5.2f\n'%(agent['id'],inputVal))
 
     # Shunting equation
     xVal += -A * xVal + (1 - xVal) * inputVal

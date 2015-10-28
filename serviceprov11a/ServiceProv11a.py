@@ -30,3 +30,5 @@ figmgr.canvas.manager.window.raise_()
 geom = figmgr.window.geometry()
 xLoc, yLoc, dxWidth, dyHeight = geom.getRect()
 figmgr.window.setGeometry(10, 10, dxWidth, dyHeight)
+
+
