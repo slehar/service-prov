@@ -35,7 +35,7 @@ doingLogging = True
 doseValue = .2
 delay = 0.0
 A = 0.1   # Shunting decay term
-iThresh = .5 # Threshold for iVal eligibility for complex PTSD
+iThresh = .3 # Threshold for iVal eligibility for complex PTSD
 x = 0.001
 t = 0.
 lastX = 0.
@@ -106,7 +106,7 @@ def init_agents():
                 iFact = 1.
                 ec = 'k'
             else:
-                iFact = 0. # <=== Set to zero for debug!
+                iFact = 0.2 # <=== Set to zero for debug!
                 ec = 'r'
                 
 
@@ -115,7 +115,6 @@ def init_agents():
         totInput += iVal
         r = (1. - xVal)
         g = xVal
-        # agent['circ'].set_facecolor((r, g, 0.))
 
         # Define agent's circle
         circle = plt.Circle((xLoc, yLoc), .1, fc=(r,g,0), ec=ec)
@@ -219,7 +218,7 @@ def update_agent(agent):
     # writelog.write('In update_agent agent = %d\n'%agent['id'])
 
     xVal = agent['xVal']
-    inputVal = agent['iVal'] * agent['iFact']
+    inputVal = agent['iVal']
 
     # If service is on, service the agents
     if axes.checkService:
@@ -251,7 +250,7 @@ def update_agent(agent):
                 nEnrolled += 1
                 # agent['nSched'] = standardSched
                 agent['bezPatch'].set_visible(True)
-                inputVal = agent['iVal'] * agent['iFact']
+                inputVal = agent['iVal']
                 agent['idText'].set_visible(True)
 
                 # Register in schedList[]
@@ -287,9 +286,9 @@ def update_agent(agent):
 
                     # Turn on input
                     if axes.checkEndBen:
-                        agent['iVal'] += doseValue/10. # endBen increase iVal
+                        agent['iVal'] += doseValue*agent['iFact']/10. # endBen increase iVal
                     else:
-                        inputVal = agent['iVal'] * agent['iFact'] + doseValue
+                        inputVal = agent['iVal'] + doseValue  * agent['iFact']
                         
                     # Increment treatment number
                     agent['treatNo'] += 1
@@ -328,7 +327,7 @@ def update_agent(agent):
                     agent['treating'] = False;
                     agent['bezPatch'].set_lw(1)
                     agent['bezPatch'].set_ec('#afafaf')
-                    inputVal = agent['iVal'] * agent['iFact']
+                    inputVal = agent['iVal']
 
                     if doingLogging: writelog.write('  agent %d treatment %d OFF\n'%
                                         (agent['id'], agent['treatNo']))
