@@ -35,7 +35,7 @@ doingLogging = True
 doseValue = .2
 delay = 0.0
 A = 0.1   # Shunting decay term
-iThresh = .3 # Threshold for iVal eligibility for complex PTSD
+iThresh = .5 # Threshold for iVal eligibility for complex PTSD
 x = 0.001
 t = 0.
 lastX = 0.
@@ -109,13 +109,17 @@ def init_agents():
                 iFact = 0. # <=== Set to zero for debug!
                 ec = 'r'
                 
-        # Define agent's circle
-        circle = plt.Circle((xLoc, yLoc), .1, fc='r', ec=ec)
-        axes.ax.add_patch(circle)
 
         # Set xVal to equilibrium value
         xVal = iVal/(A+iVal)
         totInput += iVal
+        r = (1. - xVal)
+        g = xVal
+        # agent['circ'].set_facecolor((r, g, 0.))
+
+        # Define agent's circle
+        circle = plt.Circle((xLoc, yLoc), .1, fc=(r,g,0), ec=ec)
+        axes.ax.add_patch(circle)
         
         # Define agent's bezier links
         verts = ((axes.provXCtr, axes.provYCtr), # Bezier lnk from prov. to here
@@ -192,7 +196,7 @@ def updateSched(schedList):
             ec = 'r'
         else:
             ec = 'w'
-        axes.ax3.text(.4, maxEnrolled - 1 - indx + .3, str(sched[0]), size=12,
+        axes.ax3.text(.4, maxEnrolled - 1 - indx + .3, "% 3d"%sched[0], size=12,
                  bbox=dict(fc='w', ec=ec))
         agentId = schedList[indx][0]
         # for treatment in range(2, agents[agentId]['treatNo']+2):
