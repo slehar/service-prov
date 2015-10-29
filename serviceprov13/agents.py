@@ -110,7 +110,7 @@ def init_agents():
                 isComplex = False
                 ec = 'k'
             else:
-                iFact = 0.2
+                iFact = 0.7
                 isComplex = True
                 ec = 'r'
                 

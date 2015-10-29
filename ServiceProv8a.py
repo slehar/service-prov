@@ -201,7 +201,7 @@ for agtId in range(nAgents):
     ax.add_patch(circle)
     
     iVal = random()  # Random input value (natural wellness)
-    xVal = iVal * 10.
+    xVal = iVal/(A + iVal)
     totInput += iVal           
     verts = ((provXCtr, provYCtr), # Bezier link from provider to here
              ((provXCtr + xLoc)/2., provYCtr),
