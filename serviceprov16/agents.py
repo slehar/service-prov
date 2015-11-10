@@ -8,7 +8,7 @@ from random import random, seed
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.path import Path
-import matplotlib.patches as patches
+import matplotlib.patches as mpatches
 from collections import deque
 import StringIO
 import time
@@ -29,7 +29,8 @@ steppedSched = 5
 avgInput = 0.
 square = None
 circle = None
-circRad = .004
+circRad1 = .005
+circRad2 = .007
 schedList = []
 schedPtr = 0
 tileList = []
@@ -66,6 +67,73 @@ codes = [Path.MOVETO,
          Path.CURVE4,
          Path.CURVE4,
          ]
+         
+########[ probRace ]########     
+def probRace(borough):
+    ''' Calculate probability of race based on the borough
+    '''
+    
+    # Manhattan
+    if borough == 1:
+        t1 = .333
+        t2 = .666
+    # Brooklyn
+    elif borough == 2:
+        t1 = .333
+        t2 = .666
+    # Queens
+    elif borough == 3:
+        t1 = .333
+        t2 = .666
+    # Bronx
+    elif borough == 4:
+        t1 = .333
+        t2 = .666
+    # Staten Island
+    elif borough == 5:
+        t1 = .333
+        t2 = .666
+        
+    r = random()
+    if r < t1:
+        race = 'White'
+    elif r < t2:
+        race = 'Black'
+    else:
+        race = 'Other'
+        
+    return race
+    
+########[ probRace ]########     
+def probEthncy(borough):
+    ''' Calculate probability of ethnicity based on the borough
+    '''
+    
+    # Manhattan
+    if borough == 1:
+        t1 = .5
+    # Brooklyn
+    elif borough == 2:
+        t1 = .5
+    # Queens
+    elif borough == 3:
+        t1 = .5
+    # Bronx
+    elif borough == 4:
+        t1 = .5
+    # Staten Island
+    elif borough == 5:
+        t1 = .5
+        
+    r = random()
+    if r < t1:
+        ethncy = 'Non-Hispanic'
+    else:
+        ethncy = 'Hispanic'
+        
+    return ethncy
+    
+    
 
 ########[ init agents ]########
 def init_agents():
@@ -84,19 +152,15 @@ def init_agents():
             yLoc = random()
             # writelog.write("agtId: % 3d  xLoc, yLoc = (%4.2f, %4.2f)\n"%(agtId, xLoc, yLoc))
             
-            # axes.ax.add_patch(plt.Circle((xLoc, yLoc), circRad/4, fc='k'))
-
-            # burrough = int(image.burrImg[image.imgYSize - yLoc * image.imgYSize, (xLoc-image.xOff)*image.imgXSize/image.aspect + image.xOff][0] * 100.)
-            
-            burrough = image.burrIndx[image.imgYSize - yLoc * image.imgYSize,
+            borough = image.burrIndx[image.imgYSize - yLoc * image.imgYSize,
                                       (xLoc-image.xOff)*image.imgXSize/image.aspect + image.xOff]
-            # writelog.write("agtId: % 3d  xLoc, yLoc = (%4.2f, %4.2f) burrough = %3d\n"%(
-            # agtId, xLoc, yLoc, burrough))
+            # writelog.write("agtId: % 3d  xLoc, yLoc = (%4.2f, %4.2f) borough = %3d\n"%(
+            # agtId, xLoc, yLoc, borough))
             
             # inMask  = image.maskImg[image.imgYSize - yLoc * image.imgYSize,
             #                          (xLoc-image.xOff)*image.imgXSize/image.aspect + image.xOff][0]
-            if burrough in range(1,6):  # If in the masked area check for collision
-                writelog.write('  In burrough %3d\n'%burrough)
+            if borough in range(1,6):  # If in the masked area check for collision
+                writelog.write('  In borough %3d\n'%borough)
                 collision = False
                 for agt in range(len(agents)):
                     xLoc1 = agents[agt]['xLoc']
@@ -110,8 +174,8 @@ def init_agents():
                         break   # Stop going through more agents
                 if not collision:
                     foundSpace = True
-                    writelog.write("agtId: % 3d  xLoc, yLoc = (%4.2f, %4.2f) burrough = %3d\n"%(
-                    agtId, xLoc, yLoc, burrough))
+                    writelog.write("agtId: % 3d  xLoc, yLoc = (%4.2f, %4.2f) borough = %3d\n"%(
+                    agtId, xLoc, yLoc, borough))
                     # writelog.write("  foundSpace!\n")
                     # Otherwise keep searching
     
@@ -138,10 +202,28 @@ def init_agents():
         totInput += iVal
         r = (1. - xVal)
         g = xVal
+        
+        # Define agent's race
+        race = probRace(borough)
+        if race == 'White':
+            raceColor = 'w'
+        elif race == 'Black':
+            raceColor = 'k'
+        elif race == 'Other':
+            raceColor = 'gray'
+        
+        # Define agent's ethnicity
+        ethncy = probEthncy(borough)
+        ethVis = ethncy == 'Hispanic'
 
-        # Define agent's circle
-        circle = plt.Circle((xLoc, yLoc), circRad, fc=(r,g,0), ec=ec)
-        axes.ax.add_patch(circle)
+        # Define agent's double circle & wedge
+        
+        circle1 = plt.Circle((xLoc, yLoc), circRad1, fc=(r,g,0), ec=ec)
+        circle2 = plt.Circle((xLoc, yLoc), circRad2, fc=None, ec=raceColor)
+        wedge   = mpatches.Wedge((xLoc, yLoc), circRad2, 180, 0, ec='brown', visible=ethVis)
+        axes.ax.add_patch(circle2)
+        axes.ax.add_patch(wedge)
+        axes.ax.add_patch(circle1)
         
         # Define agent's bezier links
         verts = ((axes.provXCtr, axes.provYCtr), # Bezier lnk from prov. to here
@@ -149,7 +231,7 @@ def init_agents():
                  (xLoc, (axes.provYCtr + yLoc)/2.),
                  (xLoc, yLoc))
         bezPath = Path(verts, codes)
-        bezPatch = patches.PathPatch(bezPath, facecolor='none',
+        bezPatch = mpatches.PathPatch(bezPath, facecolor='none',
                                   lw=1, ec='#afafaf', visible=False)
     
         # Agent ID number below circle
@@ -157,7 +239,9 @@ def init_agents():
     
         # Append to agents list
         agents.append({'id':agtId,
-                       'circ':circle,
+                       'circ1':circle1,
+                       'circ2':circle2,
+                       'wedge':wedge,
                        'bezPatch':bezPatch,
                        'xLoc':xLoc,
                        'yLoc':yLoc,
@@ -181,6 +265,8 @@ def init_agents():
     square = plt.Rectangle((axes.provXOrg, axes.provYOrg),
                            axes.provSize, axes.provSize, fc=(0,1,0), ec='k')
     axes.ax.add_patch(square)
+    
+    # Dist feature sigma radius dashed circle
     circle = plt.Circle((axes.provXOrg, axes.provYOrg), radius=rSigma, ec='r',
                         fc='none', linestyle='dashed', visible=axes.checkDist)
     axes.ax.add_patch(circle)
@@ -384,7 +470,7 @@ def update_agent(agent):
     agent['xVal'] = xVal
     r = (1. - xVal)
     g = xVal
-    agent['circ'].set_facecolor((r, g, 0.))
+    agent['circ1'].set_facecolor((r, g, 0.))
 
     # Time delay
     if delay > 0.:
