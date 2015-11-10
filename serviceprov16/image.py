@@ -34,14 +34,15 @@ def init_map():
         
     burrIndx = np.array(burrImg.convert('P'))
     
+    # Clean up partial-surface pixels
     for y in range(imgYSize):
         for x in range(imgXSize):
-            if burrIndx[y,x] not in (0, 1, 2, 3, 4, 5):
+            if burrIndx[y,x] not in range(6):
                 burrIndx[y,x] = 0
     
     
     aspect = float(imgXSize)/float(imgYSize)
-    (xScale, yScale) = (imgXSize * aspect / imgXSize, 1.)
+    (xScale, yScale) = (aspect, 1.)
     xOff = (1. - xScale)/2.
     axes.ax.imshow(burrImg, extent=[xOff, xOff+xScale, 0, yScale])
     
