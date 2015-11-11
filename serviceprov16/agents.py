@@ -68,72 +68,73 @@ codes = [Path.MOVETO,
          Path.CURVE4,
          ]
          
-########[ probRace ]########     
-def probRace(borough):
-    ''' Calculate probability of race based on the borough
-    '''
-    
+########[ probRaceEthncy ]#######
+def probRaceEthncy(borough):
+#
+# Sets 5 thresholds to determine for each borough based on the demographics the proportion
+# of the population that falls into 6 categories:
+# Non-Hispanic(White, Black, Other), Hispanic(White, Black, Other)
+#
+
     # Manhattan
     if borough == 1:
-        t1 = .333
-        t2 = .666
+        t1 = 47.742487
+        t2 = 60.763558
+        t3 = 74.366567
+        t4 = 83.561831
+        t5 = 86.056359
     # Brooklyn
     elif borough == 2:
-        t1 = .333
-        t2 = .666
+        t1 = 35.676751
+        t2 = 67.905354
+        t3 = 80.196121
+        t4 = 89.087490
+        t5 = 91.069430
     # Queens
     elif borough == 3:
-        t1 = .333
-        t2 = .666
+        t1 = 27.562720
+        t2 = 45.262120
+        t3 = 72.521485
+        t4 = 87.476018
+        t5 = 88.637401
     # Bronx
     elif borough == 4:
-        t1 = .333
-        t2 = .666
+        t1 = 10.933492
+        t2 = 41.213491
+        t3 = 46.482021
+        t4 = 58.057408
+        t5 = 62.525787
     # Staten Island
     elif borough == 5:
-        t1 = .333
-        t2 = .666
+        t1 = 64.176278
+        t2 = 73.712461
+        t3 = 82.825904
+        t4 = 94.408742
+        t5 = 95.256355
         
-    r = random()
+    r = random() * 100.
+    print "r = %f"%r
     if r < t1:
-        race = 'White'
-    elif r < t2:
-        race = 'Black'
-    else:
-        race = 'Other'
-        
-    return race
-    
-########[ probRace ]########     
-def probEthncy(borough):
-    ''' Calculate probability of ethnicity based on the borough
-    '''
-    
-    # Manhattan
-    if borough == 1:
-        t1 = .5
-    # Brooklyn
-    elif borough == 2:
-        t1 = .5
-    # Queens
-    elif borough == 3:
-        t1 = .5
-    # Bronx
-    elif borough == 4:
-        t1 = .5
-    # Staten Island
-    elif borough == 5:
-        t1 = .5
-        
-    r = random()
-    if r < t1:
+        race   = 'White'
         ethncy = 'Non-Hispanic'
+    elif r < t2:
+        race   = 'Black'
+        ethncy = 'Non-Hispanic'
+    elif r < t3:
+        race   = 'Other'
+        ethncy = 'Non-Hispanic'
+    elif r < t4:
+        race   = 'White'
+        ethncy = 'Hispanic'
+    elif r < t5:
+        race   = 'Black'
+        ethncy = 'Hispanic'
     else:
+        race   = 'Other'
         ethncy = 'Hispanic'
         
-    return ethncy
-    
-    
+    return(race, ethncy)
+        
 
 ########[ init agents ]########
 def init_agents():
@@ -203,17 +204,15 @@ def init_agents():
         r = (1. - xVal)
         g = xVal
         
-        # Define agent's race
-        race = probRace(borough)
+        # Define agent's race and ethnicity
+        (race, ethncy) = probRaceEthncy(borough)
         if race == 'White':
             raceColor = 'w'
         elif race == 'Black':
             raceColor = 'k'
         elif race == 'Other':
             raceColor = 'gray'
-        
-        # Define agent's ethnicity
-        ethncy = probEthncy(borough)
+            
         ethVis = ethncy == 'Hispanic'
 
         # Define agent's double circle & wedge
