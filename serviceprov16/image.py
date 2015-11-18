@@ -30,7 +30,7 @@ def init_map():
     # burrImg = plt.imread('BurroughsIndex.png')
     # (imgYSize, imgXSize, imgZSize) = burrImg.shape
     burrImg = Image.open('BurroughsIndx.png')
-    (imgYSize, imgXSize) = (burrImg.height, burrImg.width)
+    (imgXSize, imgYSize) = burrImg.size
         
     burrIndx = np.array(burrImg.convert('P'))
     

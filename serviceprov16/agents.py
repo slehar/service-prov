@@ -113,7 +113,6 @@ def probRaceEthncy(borough):
         t5 = 95.256355
         
     r = random() * 100.
-    print "r = %f"%r
     if r < t1:
         race   = 'White'
         ethncy = 'Non-Hispanic'
@@ -246,8 +245,8 @@ def init_agents():
                        'yLoc':yLoc,
                        'xVal':xVal,
                        'iVal':iVal,
-                       'isComplex':isComplex,
                        'iFact':iFact,
+                       'isComplex':isComplex,
                        'treating':False,
                        'enrolled':False,
                        'treatNo':0,        # current treatment #
