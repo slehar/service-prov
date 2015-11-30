@@ -293,7 +293,7 @@ def printSched():
 #### Update Schedule ####
 def updateSched(schedList):
     # print '\nIn UpdateSched():'
-    axes.ax3.clear()
+    # axes.ax3.clear()
     axes.ax3.set_xticklabels([])
     axes.ax3.set_yticklabels([])
     axes.ax3.set_xticks(range(1, standardSched+2))
@@ -301,24 +301,32 @@ def updateSched(schedList):
     axes.ax3.set_xlim((0, standardSched+2))
     axes.ax3.set_ylim((0, maxEnrolled))
     axes.ax3.grid(True)
+    # vLine1 = plt.Line2D((2,2),(0,6), lw=4, color='g')
+    # axes.ax3.add_line(vLine1)
     for indx, sched in enumerate(schedList):
         # print repr(sched)
         if sched[1]:
             ec = 'r'
+            lw=2
         else:
             ec = 'w'
-        axes.ax3.text(.4, maxEnrolled - 1 - indx + .3, "% 3d"%sched[0], size=12,
-                 bbox=dict(fc='w', ec=ec))
+            lw=2
+        axes.ax3.text(1, maxEnrolled - 1 - indx + .3, "%3d"%sched[0], 
+                      size=12, family='Courier', horizontalalignment='right',
+                      bbox=dict(fc='w', ec=ec, lw=lw))
         agentId = schedList[indx][0]
         # for treatment in range(2, agents[agentId]['treatNo']+2):
-        for treatment in range(2, agents[agentId]['treatNo']+2):
+        for treatment in range(2, standardSched+2):
             if schedList[indx][treatment]:
                 xVal = schedList[indx][treatment]
                 r = (1. - xVal)
                 g = xVal
                 tile = plt.Rectangle((treatment, maxEnrolled - 1 - indx), 1, 1,
                                      fc=(r,g,0))
-                axes.ax3.add_patch(tile)
+            else:
+                tile = plt.Rectangle((treatment, maxEnrolled - 1 - indx), 1, 1,
+                                     fc='w')
+            axes.ax3.add_patch(tile)
 
 
 #### Update single agent ####
