@@ -80,8 +80,6 @@ axText.set_yticklabels([])
 axText.set_xticks([])
 axText.set_yticks([])
 
-
-
 # Global Variables
 x = 0.001
 t = 0.
