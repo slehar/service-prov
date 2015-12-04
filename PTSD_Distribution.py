@@ -11,16 +11,6 @@ import numpy as np
 import math
 from collections import deque
 
-# Global Variables
-x = 0.001
-t = 0.
-lastX = 0.
-lastT = 0.
-dt = 5
-dArray = deque([0.])
-tArray = deque([0.])
-plotWidth = 500
-
 plt.close('all')
 fig = plt.figure(figsize=(12,6))
 fig.canvas.set_window_title('PTSD_Distribution.py')
@@ -92,8 +82,15 @@ axText.set_yticks([])
 
 
 
-
-# Global variables
+# Global Variables
+x = 0.001
+t = 0.
+lastX = 0.
+lastT = 0.
+dt = 10
+dArray = deque([0.])
+tArray = deque([0.])
+plotWidth = 500
 isFemale = 0
 isYoung = 1
 race = 'white'
@@ -102,8 +99,6 @@ income = 'lowrange'
 hadStressors = 0
 nSandyTraumas = 0
 PTSD_sx = 0
-dArray = deque([0.])
-tArray = deque([0.])
 
 
 # Calculate distribution
