@@ -200,7 +200,7 @@ for agtId in range(nAgents):
     # Define agent's bezier links
     iVal = random()  # Random input value (natural wellness)
     # xVal = iVal * 10.
-    xVal = .75
+    xVal = iVal/(A+iVal)
     totInput += iVal
     verts = ((provXCtr, provYCtr), # Bezier link from provider to here
              ((provXCtr + xLoc)/2., provYCtr),
