@@ -3,13 +3,11 @@
 # Model of service provision
 # Added time trace
 
-import numpy as np
-from matplotlib.patches import Circle, Rectangle
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 from matplotlib.widgets import CheckButtons, Slider
 from collections import deque
-import time
+# import time
 
 # Global Variables
 flow = False
@@ -19,8 +17,9 @@ lastX = 0.
 lastT = 0.
 dt = .5
 A = .1
-darray = deque(np.arange(0.,9.,.1))
-tarray = deque(np.arange(0.,9.,.1))
+dArray = deque([0.])
+tArray = deque([0.])
+plotWidth = 500
 
 # Open figure and set axes 1 for drawing Artists
 plt.close('all')
@@ -43,6 +42,10 @@ ax.add_patch(circle)
 arrow = plt.Arrow(3,2,2,0,ec='k',fc=(1,1,1))
 ax.add_patch(arrow)
 
+ax.text(1.8,3.5, 'Grossberg Shunting Neuron', fontsize=14, weight='bold')
+ax.text(1.9, .3, 'I', fontsize=16, weight='bold', style='italic')
+ax.text(6,   .3, 'x', fontsize=16, weight='bold', style='oblique')
+
 # Add Input checkbox as axes Ch
 axCh = fig.add_axes([.6,.4,.1,.1])
 check = CheckButtons(axCh, ['Input'], [False])
@@ -60,18 +63,18 @@ def func(label):
 check.on_clicked(func)
 
 # Add axes 2 for plot trace
-ax2 = fig.add_axes([.1,.1,.8,.2])
-ax2.set_ylim(0, 1)
-ax2.set_xlim(0, 90)
+axTime = fig.add_axes([.1,.1,.8,.2])
+axTime.set_ylim(0, 1)
+axTime.set_xlim(0, plotWidth)
 '''
-ax2.set_xticklabels([])
-ax2.set_yticklabels([])
-ax2.set_xticks([])
-ax2.set_yticks([])
+axTime.set_xticklabels([])
+axTime.set_yticklabels([])
+axTime.set_xticks([])
+axTime.set_yticks([])
 '''
 
 # Set up plot line in axes 2
-line, = ax2.plot(t, x, color='blue', linewidth=1, 
+line, = axTime.plot(t, x, color='blue', linewidth=1, 
                  linestyle='-', alpha=1.0)  
 
 # Add Input slider
@@ -80,7 +83,7 @@ axSl.set_xticklabels([])
 axSl.set_yticklabels([])
 axSl.set_xticks([])
 axSl.set_yticks([])
-sl = Slider(axSl, 'Mag', 0., 1., valinit=0.5, valfmt=u'%1.2f', fc=(0,1,0))
+sl = Slider(axSl, 'Mag', 0., 10., valinit=1., valfmt=u'%1.2f', fc=(0,1,0))
 
 # Update each loop
 def update(num):
@@ -102,16 +105,18 @@ def update(num):
     circle.set_facecolor((r,g,0.))
     lastT = t
     t += dt
-    darray.appendleft(x)
-    darray.pop()
-    tarray.appendleft(t)
-    tarray.pop()
-    ax2.set_xlim(tarray[0],tarray[len(tarray)-1])
+    dArray.appendleft(x)
+    if len(dArray) >= plotWidth/dt:
+        dArray.pop()
+    tArray.appendleft(t)
+    if len(tArray) >= plotWidth/dt:
+        tArray.pop()
+    # axTime.set_xlim(tarray[0],tarray[len(tarray)-1])
     #line.set_data([.1,0],[lastX,x])
-    line.set_data(tarray,darray)
+    line.set_data(tArray,dArray)
     #CurrentXAxis=np.arange(len(values)-100,len(values),1)
-    ax2.axis()
-    time.sleep(.1)
+    axTime.axis((t - plotWidth, t, 0., 1.))
+    # time.sleep(.1)
         
         
 # Run the animation
