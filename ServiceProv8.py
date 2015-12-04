@@ -56,7 +56,7 @@ rSigma = 3.
 # Open figure and set axes 1 for drawing Artists
 plt.close('all')
 fig = plt.figure(figsize=(winXInches, winYInches))
-fig.canvas.set_window_title('ServiceProv7')
+fig.canvas.set_window_title('ServiceProv8')
 ax = fig.add_axes([.05, .15, .8, .8])
 ax.set_xlim(axXLim)
 ax.set_ylim(axYLim)
@@ -159,7 +159,7 @@ for agtId in range(nAgents):
     ax.add_patch(circle)
     
     iVal = np.random.random()  # Random input value (natural wellness)
-    xVal = iVal * 10.
+    xVal = iVal/(A+iVal)
     totInput += iVal           
     verts = ((provXCtr, provYCtr), # Bezier link from provider to here
              ((provXCtr + xLoc)/2., provYCtr),
