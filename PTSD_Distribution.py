@@ -8,8 +8,26 @@ Created on Tue Dec  1 11:03:20 2015
 import matplotlib.pyplot as plt
 from matplotlib.widgets import RadioButtons
 import numpy as np
-import math
+# import math
 from collections import deque
+
+# Global Variables
+x = 0.001
+t = 0.
+lastX = 0.
+lastT = 0.
+dt = 10
+dArray = deque([0.])
+tArray = deque([0.])
+plotWidth = 500
+isFemale = 0
+isYoung = 1
+race = 'white'
+ethn = 'hispanic'
+income = 'lowrange'
+hadStressors = 0
+nSandyTraumas = 0
+PTSD_sx = 0
 
 plt.close('all')
 fig = plt.figure(figsize=(12,6))
@@ -79,24 +97,6 @@ axText.set_xticklabels([])
 axText.set_yticklabels([])
 axText.set_xticks([])
 axText.set_yticks([])
-
-# Global Variables
-x = 0.001
-t = 0.
-lastX = 0.
-lastT = 0.
-dt = 10
-dArray = deque([0.])
-tArray = deque([0.])
-plotWidth = 500
-isFemale = 0
-isYoung = 1
-race = 'white'
-ethn = 'hispanic'
-income = 'lowrange'
-hadStressors = 0
-nSandyTraumas = 0
-PTSD_sx = 0
 
 
 # Calculate distribution
