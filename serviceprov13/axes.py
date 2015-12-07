@@ -46,6 +46,9 @@ def init_ax():
     plt.close('all')
     fig = plt.figure(figsize=(winXInches, winYInches))
     fig.canvas.set_window_title('ServiceProv13')
+    fig.text(.8,  .9, 'Schedule', fontsize=18)
+    fig.text(.78, .78, 'SPR', fontsize=16)
+    fig.text(.88, .78, 'CBT', fontsize=16)
     ax = fig.add_axes([.05, .15, .64, .8])
     ax.set_xlim(axXLim)
     ax.set_ylim(axYLim)
@@ -82,6 +85,10 @@ def init_ax3():
     ax3.set_xlim((0, agents.standardSched+2))
     ax3.set_ylim((0, agents.maxEnrolled))
     ax3.grid(True)
+    vLine1 = plt.Line2D((2,2),(0,agents.maxEnrolled), lw=4, color='g', zorder=3)
+    vLine2 = plt.Line2D((7,7),(0,agents.maxEnrolled), lw=4, color='r', zorder=3)
+    ax3.add_line(vLine1)
+    ax3.add_line(vLine2)
 
 # Checkbox function
 def func(label):
