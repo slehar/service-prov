@@ -8,11 +8,13 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 import matplotlib.patches as patches
-from matplotlib.widgets import CheckButtons, Slider
+from matplotlib.widgets import CheckButtons
 from collections import deque
 import time
 from matplotlib.path import Path
 from random import random
+
+import vertslider
 """
 Created on Wed Jun 24 11:09:21 2015
 
@@ -65,6 +67,14 @@ ax.set_yticklabels([])
 ax.set_xticks([])
 ax.set_yticks([])
 
+# Service provider square and 2 sigma range
+square = plt.Rectangle((provXOrg-provSize/2, provYOrg-provSize/2), 
+                       provSize, provSize, fc=(0,1,0), ec='k')
+ax.add_patch(square)
+distCircle = plt.Circle((provXOrg, provYOrg), radius=rSigma, ec='r', fc='none',
+                    linestyle='dashed', visible=False )
+ax.add_patch(distCircle)
+
 # Add axes 2 for plot trace
 ax2 = fig.add_axes([.05,.02,.8,.1])
 ax2yMin, ax2yMax = (.7, .9)
@@ -76,15 +86,23 @@ ax2.set_ylim(ax2yMin, ax2yMax)
 line, = ax2.plot(t, x, color='blue', linewidth=1, 
                  linestyle='-', alpha=1.0)  
 
-# Add axes 3 for treatment schedule
-ax3 = fig.add_axes([.88, .51, .1, .44])
-ax3.set_xticklabels([])
-ax3.set_yticklabels([])
-ax3.set_xticks(range(1,13))
-ax3.set_yticks(range(1,47))
-ax3.set_xlim((0, 13))
-ax3.set_ylim((0, 47))
-ax3.grid(True)
+
+axVsl = fig.add_axes([.88, .51, .05, .2])
+axVsl.set_xticklabels([])
+axVsl.set_yticklabels([])
+axVsl.set_xticks([])
+axVsl.set_yticks([])
+
+# Distance Function
+def distFunc(distVal):
+    global rSigma
+    
+    rSigma = distVal
+    distCircle.set_radius(rSigma)
+    
+# Distance Slider
+vSl = vertslider.VertSlider(axVsl, 'Distance', 0, 10, valinit=rSigma)
+vSl.on_changed(distFunc)
 
 # Add axes 4 for check boxes
 ax4 = fig.add_axes([.88, .15, .1, .1])
@@ -113,7 +131,7 @@ def func(label):
         checkEndBen = not checkEndBen
     elif label == 'Dist':
         checkDist = not checkDist
-        circle.set_visible(checkDist)
+        distCircle.set_visible(checkDist)
 
 # Attach checkboxes to checkbox function
 check.on_clicked(func)
@@ -161,9 +179,9 @@ for agtId in range(nAgents):
     iVal = np.random.random()  # Random input value (natural wellness)
     xVal = iVal/(A+iVal)
     totInput += iVal           
-    verts = ((provXCtr, provYCtr), # Bezier link from provider to here
-             ((provXCtr + xLoc)/2., provYCtr),
-             (xLoc, (provYCtr + yLoc)/2.),
+    verts = ((provXOrg, provYOrg), # Bezier link from provider to here
+             ((provXOrg + xLoc)/2., provYOrg),
+             (xLoc, (provYOrg + yLoc)/2.),
              (xLoc, yLoc))
     bezPath = Path(verts, codes)
     bezPatch = patches.PathPatch(bezPath, facecolor='none', 
@@ -187,18 +205,6 @@ for agtId in range(nAgents):
 avgInput = totInput/float(nAgents)
 
     
-# for agent in range(len(agents)):
-#     print 'id: %d'%id
-
-# Service provider square and 2 sigma range
-square = plt.Rectangle((provXOrg, provYOrg), 
-                       provSize, provSize, fc=(0,1,0), ec='k')
-ax.add_patch(square)
-circle = plt.Circle((provXOrg, provYOrg), radius=rSigma, ec='r', fc='none',
-                    linestyle='dashed', visible=False )
-ax.add_patch(circle)
-
-
 #### Update single agent ####
 def update_agent(agent):
     
