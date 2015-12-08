@@ -80,6 +80,7 @@ def init_ax3():
     ax3.set_xlim((0, 7))
     ax3.set_ylim((0, agents.maxEnrolled))
     ax3.grid(True)
+    ax3.set_title('Treatment Schedule')
 
 # Checkbox function
 def func(label):

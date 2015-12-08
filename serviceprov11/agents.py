@@ -170,6 +170,7 @@ def printSched():
 def updateSched(schedList):
     # print '\nIn UpdateSched():'
     axes.ax3.clear()
+    axes.ax3.set_title('Treatment Schedule')
     axes.ax3.set_xticklabels([])
     axes.ax3.set_yticklabels([])
     axes.ax3.set_xticks(range(1, 7))
