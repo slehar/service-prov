@@ -66,24 +66,28 @@ check.on_clicked(func)
 axTime = fig.add_axes([.1,.1,.8,.2])
 axTime.set_ylim(0, 1)
 axTime.set_xlim(0, plotWidth)
-'''
-axTime.set_xticklabels([])
-axTime.set_yticklabels([])
-axTime.set_xticks([])
-axTime.set_yticks([])
-'''
 
 # Set up plot line in axes 2
 line, = axTime.plot(t, x, color='blue', linewidth=1, 
                  linestyle='-', alpha=1.0)  
 
 # Add Input slider
-axSl = fig.add_axes([.2,.4,.3,.1])
-axSl.set_xticklabels([])
-axSl.set_yticklabels([])
-axSl.set_xticks([])
-axSl.set_yticks([])
-sl = Slider(axSl, 'Mag', 0., 10., valinit=1., valfmt=u'%1.2f', fc=(0,1,0))
+axSlI = fig.add_axes([.2,.45,.3,.05])
+axSlI.set_xticklabels([])
+axSlI.set_yticklabels([])
+axSlI.set_xticks([])
+axSlI.set_yticks([])
+axSlI.set_title('Input')
+slI = Slider(axSlI, 'I', 0., 10., valinit=1., valfmt=u'%1.2f', fc=(0,1,0))
+
+# Add Decay slider
+axSlA = fig.add_axes([.2,.35,.3,.05])
+axSlA.set_xticklabels([])
+axSlA.set_yticklabels([])
+axSlA.set_xticks([])
+axSlA.set_yticks([])
+axSlA.set_title('Decay')
+slA = Slider(axSlA, 'A', 0., 1., valinit=.1, valfmt=u'%1.2f', fc=(1,0,0))
 
 # Update each loop
 def update(num):
@@ -91,14 +95,14 @@ def update(num):
     global darray, tarray
     if flow:
         #I = sl.val*0.01
-        I = 0.1 * sl.val
+        I = 0.1 * slI.val
     else:
          I = 0.
     lastX = x
-    x += -A*x + (1-x)*I
+    x += -slA.val*x + (1-x)*I
     if x < 0.:
         x = 0.
-    elif x > 1.:
+    elif x >= .999:
         x = 1.
     r = (1.-x)
     g = x
