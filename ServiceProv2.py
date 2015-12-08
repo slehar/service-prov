@@ -25,7 +25,7 @@ plotWidth = 500
 plt.close('all')
 fig = plt.figure(figsize=(10,8))
 fig.canvas.set_window_title('ServiceProv2')
-ax=fig.add_axes([.2,.6,.5,.3])
+ax=fig.add_axes([.2,.65,.5,.3])
 ax.set_xlim([0,8]) 
 ax.set_ylim([0,4])
 ax.set_xticklabels([])
@@ -42,9 +42,26 @@ ax.add_patch(circle)
 arrow = plt.Arrow(3,2,2,0,ec='k',fc=(1,1,1))
 ax.add_patch(arrow)
 
-ax.text(1.8,3.5, 'Grossberg Shunting Neuron', fontsize=14, weight='bold')
+# ax.text(1.8,3.5, 'Grossberg Shunting Neuron', fontsize=14, weight='bold')
+ax.set_title('Grossberg Shunting Neuron')
 ax.text(1.9, .3, 'I', fontsize=16, weight='bold', style='italic')
 ax.text(6,   .3, 'x', fontsize=16, weight='bold', style='oblique')
+
+# Add axes for equation
+axEq = fig.add_axes([.2, .54, .5, .08])
+axEq.set_xticklabels([])
+axEq.set_yticklabels([])
+axEq.set_xticks([])
+axEq.set_yticks([])
+axEq.axes.axesPatch.set_facecolor([.75,.75,.75])
+axEq.spines['top'].set_color([.75,.75,.75])
+axEq.spines['bottom'].set_color([.75,.75,.75])
+axEq.spines['left'].set_color([.75,.75,.75])
+axEq.spines['right'].set_color([.75,.75,.75])
+axEq.text(.1,.3,r'$\frac{dx}{dt}$ = -Ax + (1-x)I', 
+          family='serif', style='italic', size=36)
+
+
 
 # Add Input checkbox as axes Ch
 axCh = fig.add_axes([.6,.4,.1,.1])
@@ -102,7 +119,7 @@ def update(num):
     x += -slA.val*x + (1-x)*I
     if x < 0.:
         x = 0.
-    elif x >= .999:
+    elif x > 1.:
         x = 1.
     r = (1.-x)
     g = x
