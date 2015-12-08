@@ -47,7 +47,7 @@ ax.set_yticklabels([])
 ax.set_xticks([])
 ax.set_yticks([])
 
-ax.text(2.7, .85, 'Multiple Agents', fontsize=12, weight='bold')
+ax.set_title('Multiple Agents', fontsize=18, weight='bold', family='serif')
 
 arrows = []
 codes = [Path.MOVETO,
