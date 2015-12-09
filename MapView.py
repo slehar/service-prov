@@ -6,30 +6,41 @@ Created on Mon Aug 31 13:14:39 2015
 """
 
 import matplotlib.pyplot as plt
+from PIL import Image
+import numpy as np
 
-# Parameters
-winXInches = 8
-winYInches = 9.5
-axXLim = (0, 7)
-axYLim = (0, 8.5)
+# onclick event handler
+def onclick(event):
+    global burrIndx
+    x = int(event.x)
+    y = int(event.y)
+    
+    print 'x=%d, y=%d, pixel=%d'%(x, y, burrIndx[x,y])
+
 
 # Open figure and set axes 1 for drawing Artists
 plt.close('all')
-# fig = plt.figure(figsize=(winXInches, winYInches))
-fig = plt.figure(figsize=(8, 9.5))
+
+
+fig = plt.figure()
 fig.canvas.set_window_title('MapView')
 ax = fig.add_axes([.1, .1, .8, .8])
-# ax.set_xlim(axXLim)
-# ax.set_ylim(axYLim)
-ax.set_xticklabels([])
-ax.set_yticklabels([])
-ax.set_xticks([])
-ax.set_yticks([])
 
+burrImg = Image.open('serviceprov15/BurroughsIndxNoBg.png')
+(imgXSize, imgYSize) = burrImg.size
 
+burrIndx = np.array(burrImg.convert('P'))
 
-mapImg = plt.imread('UHF42EdMap.png')
-plt.imshow(mapImg)
+cid = fig.canvas.mpl_connect('button_press_event', onclick)
+
+'''
+for y in range(1052):
+    for x in range(871):
+        if burrIndx[y,x] > 0:
+            print "(%3d, %3d) = %d"%(y,x,burrIndx[y,x])
+'''
+            
+ax.imshow(burrImg)
 
 # Show plot
 plt.show()
