@@ -18,7 +18,7 @@ axXLim = (0, 1.)
 axYLim = (0, 1.)
 plotWidth = 500
 ax2yMin, ax2yMax = (.7, .9)
-line = None
+line = lineWht = lineBlk = lineOth = None
 provXCtr = .5
 provYCtr = .95
 provSize = .05
@@ -29,6 +29,7 @@ ax  = None
 ax2 = None
 ax3 = None
 ax4 = None
+ax5 = None
 check = None
 
 
@@ -61,7 +62,7 @@ def init_ax():
 #########[ init ax2 Plot Axes ]########
 def init_ax2():
     
-    global plotWidth, ax2yMin, ax2yMax, ax2, line
+    global plotWidth, ax2yMin, ax2yMax, ax2, line, lineWht, lineBlk, lineOth
     
     # Add axes 2 for plot trace
     ax2 = fig.add_axes([.05,.02,.64,.1])
@@ -69,8 +70,15 @@ def init_ax2():
     ax2.set_ylim(ax2yMin, ax2yMax)
     
     # Set up plot line in axes 2
-    line, = ax2.plot(0, 0, color='blue', linewidth=1,
-                     linestyle='-', alpha=1.0)
+    line,    = ax2.plot(0, 0, color='blue',   linewidth=1, linestyle='-', 
+                        alpha=1.0, label='All')
+    lineWht, = ax2.plot(0, 0, color='red',    linewidth=1, linestyle='-', 
+                        alpha=1.0, label='White')
+    lineBlk, = ax2.plot(0, 0, color='cyan',  linewidth=1, linestyle='-', 
+                        alpha=1.0, label='Black')
+    lineOth, = ax2.plot(0, 0, color='orange', linewidth=1, linestyle='-', 
+                        alpha=1.0, label='Other')
+    ax2.legend(loc=6)
 
 #########[ init ax3  Sched Axes ]########
 def init_ax3():
@@ -126,6 +134,17 @@ def init_ax4():
                                
     # Attach checkboxes to checkbox function
     check.on_clicked(func)
+    
+########[ init ax5 Key Legend ]########
+def init_ax5():
+    
+    global ax5
+    
+    ax5 = fig.add_axes([.72, .35, .25, .25])
+    ax5.set_xticklabels([])
+    ax5.set_yticklabels([])
+    ax5.set_xticks([])
+    ax5.set_yticks([])
 
 
 #########[ init axes ]########
@@ -134,6 +153,7 @@ def init_axes():
     init_ax2()
     init_ax3()
     init_ax4()
+    init_ax5()
     
 
 

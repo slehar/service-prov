@@ -4,6 +4,7 @@ Created on Fri Oct  2 15:36:41 2015
 
 @author: slehar
 """
+import sys
 from random import random, seed
 import numpy as np
 import matplotlib.pyplot as plt
@@ -21,6 +22,9 @@ import writelog
 # Global variables
 avgPtsd = 0.
 nAgents = 150
+nAgentsWht = 0
+nAgentsBlk = 0
+nAgentsOth = 0
 nEnrolled = 0
 maxEnrolled = 6
 # standardSched = 6
@@ -45,8 +49,11 @@ t = 0.
 lastX = 0.
 lastT = 0.
 dt = .5
-dArray = deque([0.])
-tArray = deque([0.])
+dArray    = deque([0.])
+tArray    = deque([0.])
+dArrayWht = deque([0.])
+dArrayBlk = deque([0.])
+dArrayOth = deque([0.])
 plotWidth = 500
 
 agents = []
@@ -111,6 +118,9 @@ def probRaceEthncy(borough):
         t3 = 82.825904
         t4 = 94.408742
         t5 = 95.256355
+    else:
+        print "ERROR probRaceEthncy illegal borough %d"%borough
+        sys.exit()
         
     r = random() * 100.
     if r < t1:
@@ -138,7 +148,8 @@ def probRaceEthncy(borough):
 ########[ init agents ]########
 def init_agents():
     
-    global agents, nAgents, square, circle, avgInput
+    global agents, nAgents, square, circle, avgInput, \
+            nAgentsWht, nAgentsBlk, nAgentsOth
     
     totInput = 0.
     agentId = 0
@@ -150,16 +161,18 @@ def init_agents():
         while not foundSpace:
             xLoc = random() * image.aspect + .1*image.aspect
             yLoc = random()
-            # writelog.write("agtId: % 3d  xLoc, yLoc = (%4.2f, %4.2f)\n"%(agtId, xLoc, yLoc))
+            writelog.write("agtId: % 3d  xLoc, yLoc = (%4.2f, %4.2f)\n"%(agtId, xLoc, yLoc))
             
+            inMask  = image.maskImg[image.imgYSize - yLoc * image.imgYSize,
+                                     (xLoc-image.xOff)*image.imgXSize/image.aspect + image.xOff][0]
+                                
             borough = image.burrIndx[image.imgYSize - yLoc * image.imgYSize,
                                       (xLoc-image.xOff)*image.imgXSize/image.aspect + image.xOff]
-            # writelog.write("agtId: % 3d  xLoc, yLoc = (%4.2f, %4.2f) borough = %3d\n"%(
-            # agtId, xLoc, yLoc, borough))
+            borough += 1  #<=== KLUDGE!
+            writelog.write("agtId: % 3d  xLoc, yLoc = (%4.2f, %4.2f) borough = %3d\n"%(
+                            agtId, xLoc, yLoc, borough))
             
-            # inMask  = image.maskImg[image.imgYSize - yLoc * image.imgYSize,
-            #                          (xLoc-image.xOff)*image.imgXSize/image.aspect + image.xOff][0]
-            if borough in range(1,6):  # If in the masked area check for collision
+            if inMask > .5 and borough in range(1,6):  # If in the masked area check for collision
                 writelog.write('  In borough %3d\n'%borough)
                 collision = False
                 for agt in range(len(agents)):
@@ -170,13 +183,13 @@ def init_agents():
                     dist = np.sqrt(dx**2 + dy**2)
                     if dist < minSep:
                         collision = True
-                        # writelog.write("  COLLISION !!!\n")
+                        writelog.write("  COLLISION !!!\n")
                         break   # Stop going through more agents
                 if not collision:
                     foundSpace = True
                     writelog.write("agtId: % 3d  xLoc, yLoc = (%4.2f, %4.2f) borough = %3d\n"%(
                     agtId, xLoc, yLoc, borough))
-                    # writelog.write("  foundSpace!\n")
+                    writelog.write("  foundSpace!\n")
                     # Otherwise keep searching
     
     
@@ -207,10 +220,13 @@ def init_agents():
         (race, ethncy) = probRaceEthncy(borough)
         if race == 'White':
             raceColor = 'w'
+            nAgentsWht += 1
         elif race == 'Black':
             raceColor = 'k'
+            nAgentsBlk += 1
         elif race == 'Other':
             raceColor = 'gray'
+            nAgentsOth += 1
             
         ethVis = ethncy == 'Hispanic'
 
@@ -247,6 +263,8 @@ def init_agents():
                        'iVal':iVal,
                        'iFact':iFact,
                        'isComplex':isComplex,
+                       'race':race,
+                       'ethncy':ethncy,
                        'treating':False,
                        'enrolled':False,
                        'treatNo':0,        # current treatment #
@@ -314,7 +332,7 @@ def updateSched(schedList):
         axes.ax3.text(1, maxEnrolled - 1 - indx + .3, "%3d"%sched[0], 
                       size=12, family='Courier', horizontalalignment='right',
                       bbox=dict(fc='w', ec=ec, lw=lw))
-        agentId = schedList[indx][0]
+        # agentId = schedList[indx][0]
         # for treatment in range(2, agents[agentId]['treatNo']+2):
         for treatment in range(2, standardSched+2):
             if schedList[indx][treatment]:
@@ -487,31 +505,59 @@ def update(num):
 
     global linetime, linedat
     global x,t,lastX,lastT
-    global dArray, tArray
-    
+    global dArray, tArray, dArrayWht, dArrayBlk, dArrayOth
+    # global sumPtsdWht, sumPtsdBlk, sumPtsdOth
     # print '  In update count = %d'%num
 
     if axes.checkPause:
         return
 
-    sumPtsd = 0.
+    sumPtsd = sumPtsdWht = sumPtsdBlk = sumPtsdOth = 0.
     for agnum in range(nAgents):
         update_agent(agents[agnum])
         sumPtsd += agents[agnum]['xVal']
+        if agents[agnum]['race'] == 'White':
+            sumPtsdWht += agents[agnum]['xVal']
+        elif agents[agnum]['race'] == 'Black':
+            sumPtsdBlk += agents[agnum]['xVal']
+        elif agents[agnum]['race'] == 'Other':
+            sumPtsdOth += agents[agnum]['xVal']
 
     avgPtsd = sumPtsd / float(nAgents)
     # print '  avgPtsd = %f'%avgPtsd
+    avgPtsdWht = sumPtsdWht / float(nAgentsWht)
+    avgPtsdBlk = sumPtsdBlk / float(nAgentsBlk)
+    avgPtsdOth = sumPtsdOth / float(nAgentsOth)
 
     x = avgPtsd
+    xWht = avgPtsdWht
+    xBlk = avgPtsdBlk
+    xOth = avgPtsdOth
     lastT = t
     t += dt
     dArray.appendleft(x)
     if len(dArray) > plotWidth / dt:
         dArray.pop()
+        
+    dArrayWht.appendleft(xWht)
+    if len(dArrayWht) > plotWidth / dt:
+        dArrayWht.pop()
+        
+    dArrayBlk.appendleft(xBlk)
+    if len(dArrayBlk) > plotWidth / dt:
+        dArrayBlk.pop()
+        
+    dArrayOth.appendleft(xOth)
+    if len(dArrayOth) > plotWidth / dt:
+        dArrayOth.pop()
+        
     tArray.appendleft(t)
     if len(tArray) > plotWidth / dt:
         tArray.pop()
     axes.line.set_data(tArray,dArray)
+    axes.lineWht.set_data(tArray,dArrayWht)
+    axes.lineBlk.set_data(tArray,dArrayBlk)
+    axes.lineOth.set_data(tArray,dArrayOth)
     axes.ax2.axis((t - plotWidth, t, axes.ax2yMin, axes.ax2yMax))
     # time.sleep(.1)
 
