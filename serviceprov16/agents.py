@@ -34,7 +34,8 @@ avgInput = 0.
 square = None
 circle = None
 circRad1 = .005
-circRad2 = .007
+circRad2 = .006
+circRad3 = .007
 schedList = []
 schedPtr = 0
 tileList = []
@@ -198,16 +199,16 @@ def init_agents():
         if iVal > iThresh:
             iFact = 1.
             isComplex = False
-            ec = 'k'
+            cmplxColor = 'k'
         else:
             if random() > .5:
                 iFact = 1.
                 isComplex = False
-                ec = 'k'
+                cmplxColor = 'k'
             else:
                 iFact = 0.7
                 isComplex = True
-                ec = 'r'
+                cmplxColor = 'r'
                 
 
         # Set xVal to equilibrium value
@@ -230,15 +231,21 @@ def init_agents():
             
         ethVis = ethncy == 'Hispanic'
 
-        # Define agent's double circle & wedge
+        # Define agent's triple circle & wedge
         
-        circle1 = plt.Circle((xLoc, yLoc), circRad1, fc=(r,g,0), ec=ec)
-        circle2 = plt.Circle((xLoc, yLoc), circRad2, fc=None, ec=raceColor)
-        wedge   = mpatches.Wedge((xLoc, yLoc), circRad2, 180, 0, ec='brown', visible=ethVis)
-        axes.ax.add_patch(circle2)
+        circle1 = plt.Circle((xLoc, yLoc), circRad1, fc=(r,g,0),
+                             ec=(r,g,0))
+        circle2 = plt.Circle((xLoc, yLoc), circRad2, fc=cmplxColor,
+                             ec=cmplxColor)
+        circle3 = plt.Circle((xLoc, yLoc), circRad3, fc=raceColor,
+                             ec=raceColor)
+        wedge   = mpatches.Wedge((xLoc, yLoc), circRad3, 180, 0,
+                                 fc='brown', ec='brown', visible=ethVis)
+        axes.ax.add_patch(circle3)
         axes.ax.add_patch(wedge)
+        axes.ax.add_patch(circle2)
         axes.ax.add_patch(circle1)
-        
+         
         # Define agent's bezier links
         verts = ((axes.provXCtr, axes.provYCtr), # Bezier lnk from prov. to here
                  ((axes.provXCtr + xLoc)/2., axes.provYCtr),
@@ -255,6 +262,7 @@ def init_agents():
         agents.append({'id':agtId,
                        'circ1':circle1,
                        'circ2':circle2,
+                       'circ3':circle3,
                        'wedge':wedge,
                        'bezPatch':bezPatch,
                        'xLoc':xLoc,
