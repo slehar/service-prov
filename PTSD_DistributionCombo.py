@@ -10,13 +10,14 @@ from matplotlib.widgets import RadioButtons
 import numpy as np
 # import math
 from collections import deque
+import writelog
 
 # Global Variables
 x = 0.001
 t = 0.
 lastX = 0.
 lastT = 0.
-dt = 50
+dt = 1
 dArray = deque([0.])
 tArray = deque([0.])
 plotWidth = 500
@@ -28,6 +29,10 @@ income = 'lowrange'
 hadStressors = 0
 nSandyTraumas = 0
 PTSD_sx = 0
+
+writelog.init('PTSD_Combo.log')
+writelog.write('sex \t age \t race \t ethn \t\t income \t hadStr  nSandTr exp(P)\n')
+writelog.write('=== \t === \t ==== \t ==== \t\t ====== \t ======  ======= ======\n\n')
 
 plt.close('all')
 fig = plt.figure(figsize=(12,6))
@@ -137,7 +142,8 @@ def calculate_distribution():
         hasIncome2 = 1
     elif income == 'highrange':
         hasIncome3 = 1
-                
+ 
+    '''               
     print '\n====[ calculate distribution ]===='
     print '  isFemale = %d'%isFemale
     print '  isYoung  = %d'%isYoung
@@ -153,6 +159,7 @@ def calculate_distribution():
     print '  hasIncome3 = %d'%hasIncome3
     print '  hadStressors  = %d'%hadStressors
     print '  nSandyTraumas = %d'%nSandyTraumas
+    '''
 
     PTSD_sx = -2.0308 +                    \
               (-0.1583 * isFemale) +       \
@@ -212,7 +219,7 @@ radioSex    = RadioButtons(axSex,    ('Male', 'Female'))
 radioAge    = RadioButtons(axAge,    ('35-65', '65+'))
 radioRace   = RadioButtons(axRace,   ('White', 'Black', 'Other'))
 radioEthn   = RadioButtons(axEthn,   ('Hispanic', 'Non-Hisp'))
-radioIncome = RadioButtons(axIncome, ('< 40K', '40-80K', '80-150k'))
+radioIncome = RadioButtons(axIncome, ('< 40K', '40-80K ', '80-150k'))
 radioStress = RadioButtons(axStress, ('no stress', 'stress'))
 radioTrauma = RadioButtons(axTrauma, ('0', '1', '2'))
 
@@ -221,7 +228,7 @@ def sexfunc(label):
     
     sexdict = {'Male': 0, 'Female': 1}
     isFemale = sexdict[label]
-    calculate_distribution()
+    # calculate_distribution()
 radioSex.on_clicked(sexfunc)
 
 def agefunc(label):
@@ -230,7 +237,7 @@ def agefunc(label):
     agedict = {'35-65': 1, '65+': 0}
     isYoung = agedict[label]
     # print 'isYoung = %r'%isYoung
-    calculate_distribution()
+    # calculate_distribution()
 radioAge.on_clicked(agefunc)
 
 def racefunc(label):
@@ -239,7 +246,7 @@ def racefunc(label):
     racedict = {'White':'white', 'Black':'black', 'Other':'other'}
     race = racedict[label]
     # print 'race = %r'%race
-    calculate_distribution()
+    # calculate_distribution()
 radioRace.on_clicked(racefunc)
 
 def ethnfunc(label):
@@ -248,16 +255,16 @@ def ethnfunc(label):
     ethndict = {'Hispanic':'hispanic', 'Non-Hisp':'non-hisp'}
     ethn = ethndict[label]
     # print 'Ethnicity = %r'%ethn
-    calculate_distribution()
+    # calculate_distribution()
 radioEthn.on_clicked(ethnfunc)
 
 def incomefunc(label):
     global income
     
-    incomedict = {'< 40K':'lowrange', '40-80K':'midrange', '80-150k':'highrange'}
+    incomedict = {'< 40K':'lowrange', '40-80K ':'midrange', '80-150k':'highrange'}
     income = incomedict[label]
     # print 'income = %r'%income
-    calculate_distribution()
+    # calculate_distribution()
 radioIncome.on_clicked(incomefunc)
 
 def stressfunc(label):
@@ -266,7 +273,7 @@ def stressfunc(label):
     stressdict = {'no stress':0, 'stress':1}
     hadStressors = stressdict[label]
     # print 'hadStressors = %r'%hadStressors
-    calculate_distribution()
+    # calculate_distribution()
 radioStress.on_clicked(stressfunc)
 
 def traumafunc(label):
@@ -275,11 +282,40 @@ def traumafunc(label):
     traumadict = {'0':0, '1':1, '2':2}
     nSandyTraumas = traumadict[label]
     # print 'nSandyTraumas = %r'%nSandyTraumas
-    calculate_distribution()
+    # calculate_distribution()
 radioTrauma.on_clicked(traumafunc)
 
-                                  
-calculate_distribution()
+for sexKey in ('Male', 'Female'):
+    for ageKey in ('35-65', '65+'):
+        for raceKey in ('White', 'Black', 'Other'):
+            for ethnKey in ('Hispanic', 'Non-Hisp'):
+                for incomeKey in ('80-150k', '40-80K ', '< 40K'):
+                    for hadStressorsKey in ('no stress', 'stress'):
+                        for nSandyTraumasKey in ('0', '1', '2'):
+                            sexfunc(sexKey)
+                            agefunc(ageKey)
+                            racefunc(raceKey)
+                            ethnfunc(ethnKey)
+                            incomefunc(incomeKey)
+                            stressfunc(hadStressorsKey)
+                            traumafunc(nSandyTraumasKey)
+                            print('sex = %s  '
+                                  'age = %s  '
+                                  'race = %s  '
+                                  'ethn = %s  '
+                                  'income = %s  '
+                                  'hadStressors = %s  '
+                                  'nSandyTraumas = %r\n'%(
+                                  sexKey, ageKey, raceKey, ethnKey, incomeKey,
+                                  hadStressorsKey, nSandyTraumasKey))
+                            calculate_distribution()
+                            writelog.write(
+                            '%s \t %s \t %s \t %s \t %s \t %s \t %r '%(
+                sex, age, race, ethn, income, hadStressors, nSandyTraumas))
+                            writelog.write('\t%5.2f\n'%np.exp(PTSD_sx))
+
+
+# calculate_distribution()
 
 
 plt.show()
