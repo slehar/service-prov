@@ -21,7 +21,8 @@ import writelog
 
 # Global variables
 avgPtsd = 0.
-nAgents = 150
+# nAgents = 150
+nAgents = 100
 nAgentsWht = 0
 nAgentsBlk = 0
 nAgentsOth = 0
@@ -49,7 +50,7 @@ x = 0.001
 t = 0.
 lastX = 0.
 lastT = 0.
-dt = .5
+dt = 1.
 dArray    = deque([0.])
 tArray    = deque([0.])
 dArrayWht = deque([0.])
@@ -121,7 +122,7 @@ def probRaceEthncy(borough):
         t5 = 95.256355
     else:
         print "ERROR probRaceEthncy illegal borough %d"%borough
-        sys.exit()
+        return('White', 'Non-Hispanic')
         
     r = random() * 100.
     if r < t1:
@@ -169,11 +170,12 @@ def init_agents():
                                 
             borough = image.burrIndx[image.imgYSize - yLoc * image.imgYSize,
                                       (xLoc-image.xOff)*image.imgXSize/image.aspect + image.xOff]
-            borough += 1  #<=== KLUDGE!
+            borough -= 1  #<=== KLUDGE! (Don't know why this is necessary)
             writelog.write("agtId: % 3d  xLoc, yLoc = (%4.2f, %4.2f) borough = %3d\n"%(
                             agtId, xLoc, yLoc, borough))
             
-            if inMask > .5 and borough in range(1,6):  # If in the masked area check for collision
+            # if inMask > .5 and borough in range(1,6):  # If in the masked area check for collision
+            if inMask > .9:  # If in the masked area check for collision
                 writelog.write('  In borough %3d\n'%borough)
                 collision = False
                 for agt in range(len(agents)):
@@ -189,7 +191,7 @@ def init_agents():
                 if not collision:
                     foundSpace = True
                     writelog.write("agtId: % 3d  xLoc, yLoc = (%4.2f, %4.2f) borough = %3d\n"%(
-                    agtId, xLoc, yLoc, borough))
+                                    agtId, xLoc, yLoc, borough))
                     writelog.write("  foundSpace!\n")
                     # Otherwise keep searching
     
@@ -257,6 +259,8 @@ def init_agents():
     
         # Agent ID number below circle
         idText = axes.ax.text(xLoc-.004, yLoc-.021, '%d'%agtId, visible=False)
+        # idText = axes.ax.text(xLoc-.004, yLoc-.021, '%d'%borough, visible=True)
+        # idText = axes.ax.text(xLoc-.004, yLoc-.021, '%5.2f'%inMask, visible=True)
     
         # Append to agents list
         agents.append({'id':agtId,

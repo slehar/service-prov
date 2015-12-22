@@ -28,15 +28,18 @@ def init_map():
     
     # Display Boroughs Index Map
     burrImg = Image.open('BurroughsIndxNoBg.png')
-    (imgXSize, imgYSize) = burrImg.size
+    # (imgXSize, imgYSize) = burrImg.size
+    (imgYSize, imgXSize) = (burrImg.height, burrImg.width)
         
     burrIndx = np.array(burrImg.convert('P'))
     
     # Clean up partial-surface pixels
+    '''
     for y in range(imgYSize):
         for x in range(imgXSize):
             if burrIndx[y,x] not in (0, 1, 2, 3, 4, 5):
                 burrIndx[y,x] = 0
+    '''
     
     
     aspect = float(imgXSize)/float(imgYSize)
