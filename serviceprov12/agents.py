@@ -13,9 +13,14 @@ from collections import deque
 import time
 
 # Local modules
-import axes
+# import axes
 import writelog
+<<<<<<< HEAD
 import sched
+=======
+# import updateagent
+# import updateall
+>>>>>>> totalmodular
 
 # Global variables
 avgPtsd = 0.
@@ -287,6 +292,7 @@ def update_agent(agent):
     if delay > 0.:
         time.sleep(delay)
 
+<<<<<<< HEAD
 #### Update each loop ####
 def update(num):
 
@@ -319,4 +325,6 @@ def update(num):
     axes.line.set_data(tArray,dArray)
     axes.ax2.axis((t - plotWidth, t, axes.ax2yMin, axes.ax2yMax))
     # time.sleep(.1)
+=======
+>>>>>>> totalmodular
 

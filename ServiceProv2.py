@@ -3,13 +3,11 @@
 # Model of service provision
 # Added time trace
 
-import numpy as np
-from matplotlib.patches import Circle, Rectangle
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 from matplotlib.widgets import CheckButtons, Slider
 from collections import deque
-import time
+# import time
 
 # Global Variables
 flow = False
@@ -19,14 +17,15 @@ lastX = 0.
 lastT = 0.
 dt = .5
 A = .1
-darray = deque(np.arange(0.,9.,.1))
-tarray = deque(np.arange(0.,9.,.1))
+dArray = deque([0.])
+tArray = deque([0.])
+plotWidth = 500
 
 # Open figure and set axes 1 for drawing Artists
 plt.close('all')
 fig = plt.figure(figsize=(10,8))
 fig.canvas.set_window_title('ServiceProv2')
-ax=fig.add_axes([.2,.6,.5,.3])
+ax=fig.add_axes([.2,.65,.5,.3])
 ax.set_xlim([0,8]) 
 ax.set_ylim([0,4])
 ax.set_xticklabels([])
@@ -42,6 +41,27 @@ circle = plt.Circle((6,2), 1,fc='r',ec='k')
 ax.add_patch(circle)
 arrow = plt.Arrow(3,2,2,0,ec='k',fc=(1,1,1))
 ax.add_patch(arrow)
+
+# ax.text(1.8,3.5, 'Grossberg Shunting Neuron', fontsize=14, weight='bold')
+ax.set_title('Grossberg Shunting Neuron')
+ax.text(1.9, .3, 'I', fontsize=16, weight='bold', style='italic')
+ax.text(6,   .3, 'x', fontsize=16, weight='bold', style='oblique')
+
+# Add axes for equation
+axEq = fig.add_axes([.2, .54, .5, .08])
+axEq.set_xticklabels([])
+axEq.set_yticklabels([])
+axEq.set_xticks([])
+axEq.set_yticks([])
+axEq.axes.axesPatch.set_facecolor([.75,.75,.75])
+axEq.spines['top'].set_color([.75,.75,.75])
+axEq.spines['bottom'].set_color([.75,.75,.75])
+axEq.spines['left'].set_color([.75,.75,.75])
+axEq.spines['right'].set_color([.75,.75,.75])
+axEq.text(.1,.3,r'$\frac{dx}{dt}$ = -Ax + (1-x)I', 
+          family='serif', style='italic', size=36)
+
+
 
 # Add Input checkbox as axes Ch
 axCh = fig.add_axes([.6,.4,.1,.1])
@@ -60,27 +80,31 @@ def func(label):
 check.on_clicked(func)
 
 # Add axes 2 for plot trace
-ax2 = fig.add_axes([.1,.1,.8,.2])
-ax2.set_ylim(0, 1)
-ax2.set_xlim(0, 90)
-'''
-ax2.set_xticklabels([])
-ax2.set_yticklabels([])
-ax2.set_xticks([])
-ax2.set_yticks([])
-'''
+axTime = fig.add_axes([.1,.1,.8,.2])
+axTime.set_ylim(0, 1)
+axTime.set_xlim(0, plotWidth)
 
 # Set up plot line in axes 2
-line, = ax2.plot(t, x, color='blue', linewidth=1, 
+line, = axTime.plot(t, x, color='blue', linewidth=1, 
                  linestyle='-', alpha=1.0)  
 
 # Add Input slider
-axSl = fig.add_axes([.2,.4,.3,.1])
-axSl.set_xticklabels([])
-axSl.set_yticklabels([])
-axSl.set_xticks([])
-axSl.set_yticks([])
-sl = Slider(axSl, 'Mag', 0., 1., valinit=0.5, valfmt=u'%1.2f', fc=(0,1,0))
+axSlI = fig.add_axes([.2,.45,.3,.05])
+axSlI.set_xticklabels([])
+axSlI.set_yticklabels([])
+axSlI.set_xticks([])
+axSlI.set_yticks([])
+axSlI.set_title('Input')
+slI = Slider(axSlI, 'I', 0., 10., valinit=1., valfmt=u'%1.2f', fc=(0,1,0))
+
+# Add Decay slider
+axSlA = fig.add_axes([.2,.35,.3,.05])
+axSlA.set_xticklabels([])
+axSlA.set_yticklabels([])
+axSlA.set_xticks([])
+axSlA.set_yticks([])
+axSlA.set_title('Decay')
+slA = Slider(axSlA, 'A', 0., 1., valinit=.1, valfmt=u'%1.2f', fc=(1,0,0))
 
 # Update each loop
 def update(num):
@@ -88,11 +112,11 @@ def update(num):
     global darray, tarray
     if flow:
         #I = sl.val*0.01
-        I = 0.1 * sl.val
+        I = 0.1 * slI.val
     else:
          I = 0.
     lastX = x
-    x += -A*x + (1-x)*I
+    x += -slA.val*x + (1-x)*I
     if x < 0.:
         x = 0.
     elif x > 1.:
@@ -102,16 +126,18 @@ def update(num):
     circle.set_facecolor((r,g,0.))
     lastT = t
     t += dt
-    darray.appendleft(x)
-    darray.pop()
-    tarray.appendleft(t)
-    tarray.pop()
-    ax2.set_xlim(tarray[0],tarray[len(tarray)-1])
+    dArray.appendleft(x)
+    if len(dArray) >= plotWidth/dt:
+        dArray.pop()
+    tArray.appendleft(t)
+    if len(tArray) >= plotWidth/dt:
+        tArray.pop()
+    # axTime.set_xlim(tarray[0],tarray[len(tarray)-1])
     #line.set_data([.1,0],[lastX,x])
-    line.set_data(tarray,darray)
+    line.set_data(tArray,dArray)
     #CurrentXAxis=np.arange(len(values)-100,len(values),1)
-    ax2.axis()
-    time.sleep(.1)
+    axTime.axis((t - plotWidth, t, 0., 1.))
+    # time.sleep(.1)
         
         
 # Run the animation

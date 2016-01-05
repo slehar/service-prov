@@ -9,13 +9,7 @@ import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 
 import axes
-<<<<<<< HEAD
 import agents
-=======
-# import agents
-import initagents
-import updateall
->>>>>>> totalmodular
 
 axes.init_ax()
 axes.init_ax2()
@@ -25,7 +19,7 @@ axes.init_ax4()
 agents.init_agents()
 
 # Run the animation
-ani = animation.FuncAnimation(axes.fig, updateall.update, interval=100., repeat=True)
+ani = animation.FuncAnimation(axes.fig, agents.update, interval=100., repeat=True)
 
 
 
@@ -36,3 +30,5 @@ figmgr.canvas.manager.window.raise_()
 geom = figmgr.window.geometry()
 xLoc, yLoc, dxWidth, dyHeight = geom.getRect()
 figmgr.window.setGeometry(10, 10, dxWidth, dyHeight)
+
+

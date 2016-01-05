@@ -4,20 +4,18 @@
 # Model of service provision
 # Add therapy supply-side
 
-import numpy as np
-# from matplotlib.patches import Circle, Rectangle
-import matplotlib.pyplot as plt
-import matplotlib.animation as animation
-import matplotlib.patches as patches
-from matplotlib.widgets import CheckButtons, Slider
-from collections import deque
-import time
-from matplotlib.path import Path
 """
 Created on Wed Jun 24 11:09:21 2015
 
 @author: slehar
 """
+import numpy as np
+# from matplotlib.patches import Circle, Rectangle
+import matplotlib.pyplot as plt
+import matplotlib.animation as animation
+import matplotlib.patches as patches
+import time
+from matplotlib.path import Path
 
 # Parameters
 provXCtr = 3.
@@ -41,7 +39,7 @@ standardSched = 10
 plt.close('all')
 fig = plt.figure(figsize=(15,5))
 fig.canvas.set_window_title('ServiceProv6')
-ax = fig.add_axes([.1, .5, .8, .4])
+ax = fig.add_axes([.1, .3, .8, .4])
 ax.set_xlim([0, 6])
 ax.set_ylim([0, 1])
 ax.set_xticklabels([])
@@ -49,15 +47,7 @@ ax.set_yticklabels([])
 ax.set_xticks([])
 ax.set_yticks([])
 
-"""
-fluid = plt.Rectangle((1, 1), 2, 2*flevel, fc=(0, 1, 0))
-ax.add_patch(fluid)
-circle = plt.Circle((6, 2), 1, fc='r', ec='k')
-ax.add_patch(circle)
-arrow = plt.Arrow(3, 2, 2, 0, ec='k', fc=(1, 1, 1))
-ax.add_patch(arrow)
-Elight = ax.text(.7, 1, r"E", fontsize=16, color='r', visible=False)
-"""
+ax.set_title('Multiple Agents', fontsize=18, weight='bold', family='serif')
 
 arrows = []
 codes = [Path.MOVETO,
@@ -90,13 +80,6 @@ for xCoord in xCoords:
     agents.append({'id':id,         'circ':circle, 'bezPatch':bezPatch,
                    'xVal':randXVal, 'iVal':0.,     'enrolled':False,
                    'nSched':0})
-    '''
-    if id == 2:
-        agents[id]['iVal'] = .1
-        agents[id]['bezPatch'].set_visible(True)
-        agents[id]['bezPatch'].set_lw(2)
-        agents[id]['bezPatch'].set_ec('#00ff00')
-    '''
     id += 1
     nAgents += 1
     
@@ -117,7 +100,6 @@ def update_agent(agent):
     global nEnrolled
     
     xVal = agent['xVal']
-    lastXVal  = xVal
     
     # If not in treatment consider enrolling
     if not agent['enrolled']:

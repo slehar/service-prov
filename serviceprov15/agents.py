@@ -15,23 +15,26 @@ import time
 
 # Local modules
 import axes
+import image
 import writelog
 
 # Global variables
 avgPtsd = 0.
-nAgents = 100
+nAgents = 150
 nEnrolled = 0
 maxEnrolled = 6
-standardSched = 5
+# standardSched = 6
+standardSched = 10
+steppedSched = 5
 avgInput = 0.
 square = None
 circle = None
+circRad = .004
 schedList = []
 schedPtr = 0
 tileList = []
 tileListPtr = 0
 doingLogging = True
-# logFilename = 'ServiceProv11.log'
 doseValue = .2
 delay = 0.0
 A = 0.1   # Shunting decay term
@@ -49,11 +52,11 @@ agents = []
 totInput = 0.
 bezLines = []
 
-minSep = .25
-rSigma = 3.
+minSep = .025
+rSigma = .3
 
 # Initialize random seed
-seed(2)
+seed(3)
 writelog.init('run.log')
 
 
@@ -74,41 +77,70 @@ def init_agents():
     
     ## for each agent
     for agtId in range(nAgents):
-        # writelog.write("agtId = %d\n"%agtId)
+        writelog.write("agtId = %d\n"%agtId)
         foundSpace = False
         while not foundSpace:
-            xLoc = random() * 8. + 1.
-            yLoc = random() * 7. + 1.
-            # writelog.write("  xLoc, yLoc = (%4.2f, %4.2f)\n"%(xLoc, yLoc))
-            collision = False
-            for agt in range(len(agents)):
-                xLoc1 = agents[agt]['xLoc']
-                yLoc1 = agents[agt]['yLoc']
-                dx = xLoc1 - xLoc
-                dy = yLoc1 - yLoc
-                dist = np.sqrt(dx**2 + dy**2)
-                if dist < minSep:
-                    collision = True
-                    # writelog.write("  COLLISION !!!\n")
-                    break   # Stop going through more agents
-            if not collision:
-                foundSpace = True
-                # Otherwise keep searching
+            xLoc = random() * image.aspect + .1*image.aspect
+            yLoc = random()
+            # writelog.write("agtId: % 3d  xLoc, yLoc = (%4.2f, %4.2f)\n"%(agtId, xLoc, yLoc))
+            
+            # burrough = int(image.burrImg[image.imgYSize - yLoc * image.imgYSize, (xLoc-image.xOff)*image.imgXSize/image.aspect + image.xOff][0] * 100.)
+            
+            burrough = image.burrIndx[image.imgYSize - yLoc * image.imgYSize,
+                                      (xLoc-image.xOff)*image.imgXSize/image.aspect + image.xOff]
+            # writelog.write("agtId: % 3d  xLoc, yLoc = (%4.2f, %4.2f) burrough = %3d\n"%(
+            # agtId, xLoc, yLoc, burrough))
+            
+            inMask  = image.maskImg[image.imgYSize - yLoc * image.imgYSize,
+                                     (xLoc-image.xOff)*image.imgXSize/image.aspect + image.xOff][0]
+            if inMask > .5:  # If in the masked area check for collision
+                writelog.write('  In masked area\n')
+                collision = False
+                for agt in range(len(agents)):
+                    xLoc1 = agents[agt]['xLoc']
+                    yLoc1 = agents[agt]['yLoc']
+                    dx = xLoc1 - xLoc
+                    dy = yLoc1 - yLoc
+                    dist = np.sqrt(dx**2 + dy**2)
+                    if dist < minSep:
+                        collision = True
+                        # writelog.write("  COLLISION !!!\n")
+                        break   # Stop going through more agents
+                if not collision:
+                    foundSpace = True
+                    writelog.write("agtId: % 3d  xLoc, yLoc = (%4.2f, %4.2f) burrough = %3d\n"%(
+                    agtId, xLoc, yLoc, burrough))
+                    # writelog.write("  foundSpace!\n")
+                    # Otherwise keep searching
     
     
         # Define agent's "input value" (natural wellness) and input factor
         iVal = random()
+        if iVal > iThresh:
+            iFact = 1.
+            isComplex = False
+            ec = 'k'
+        else:
+            if random() > .5:
+                iFact = 1.
+                isComplex = False
+                ec = 'k'
+            else:
+                iFact = 0.7
+                isComplex = True
+                ec = 'r'
                 
+
         # Set xVal to equilibrium value
         xVal = iVal/(A+iVal)
         totInput += iVal
         r = (1. - xVal)
         g = xVal
-        
-        # Define agent's circle
-        circle = plt.Circle((xLoc, yLoc), .1, fc=(r,g,0), ec='k')
-        axes.ax.add_patch(circle)
 
+        # Define agent's circle
+        circle = plt.Circle((xLoc, yLoc), circRad, fc=(r,g,0), ec=ec)
+        axes.ax.add_patch(circle)
+        
         # Define agent's bezier links
         verts = ((axes.provXCtr, axes.provYCtr), # Bezier lnk from prov. to here
                  ((axes.provXCtr + xLoc)/2., axes.provYCtr),
@@ -119,7 +151,7 @@ def init_agents():
                                   lw=1, ec='#afafaf', visible=False)
     
         # Agent ID number below circle
-        idText = axes.ax.text(xLoc-.04, yLoc-.21, '%d'%agtId, visible=False)
+        idText = axes.ax.text(xLoc-.004, yLoc-.021, '%d'%agtId, visible=False)
     
         # Append to agents list
         agents.append({'id':agtId,
@@ -129,6 +161,8 @@ def init_agents():
                        'yLoc':yLoc,
                        'xVal':xVal,
                        'iVal':iVal,
+                       'isComplex':isComplex,
+                       'iFact':iFact,
                        'treating':False,
                        'enrolled':False,
                        'treatNo':0,        # current treatment #
@@ -146,7 +180,7 @@ def init_agents():
                            axes.provSize, axes.provSize, fc=(0,1,0), ec='k')
     axes.ax.add_patch(square)
     circle = plt.Circle((axes.provXOrg, axes.provYOrg), radius=rSigma, ec='r',
-                        fc='none', linestyle='dashed', visible=False )
+                        fc='none', linestyle='dashed', visible=axes.checkDist)
     axes.ax.add_patch(circle)
 
 
@@ -154,10 +188,14 @@ def init_agents():
 def printSched():
     for indx, entry in enumerate(schedList):
         outStr=StringIO.StringIO()
-        outStr.write(' %3d: ['%entry[0])
+        if entry[1]:
+            stateStr = 'X'
+        else:
+            stateStr = ' '
+        outStr.write(' %3d: %s ['%(entry[0], stateStr))
         
         # outStr.write(' %3d: %s ['%(entry[0], ststr)) # Duplicate line?
-        for tr in range(1,standardSched+1):
+        for tr in range(2,standardSched+2):
             if entry[tr] == None:
                 outStr.write('  ~  ')
             else:
@@ -170,25 +208,29 @@ def printSched():
 def updateSched(schedList):
     # print '\nIn UpdateSched():'
     axes.ax3.clear()
-    axes.ax3.set_title('Treatment Schedule')
     axes.ax3.set_xticklabels([])
     axes.ax3.set_yticklabels([])
-    axes.ax3.set_xticks(range(1, 7))
+    axes.ax3.set_xticks(range(1, standardSched+2))
     axes.ax3.set_yticks(range(1, maxEnrolled))
-    axes.ax3.set_xlim((0, 7))
+    axes.ax3.set_xlim((0, standardSched+2))
     axes.ax3.set_ylim((0, maxEnrolled))
     axes.ax3.grid(True)
     for indx, sched in enumerate(schedList):
         # print repr(sched)
+        if sched[1]:
+            ec = 'r'
+        else:
+            ec = 'w'
         axes.ax3.text(.4, maxEnrolled - 1 - indx + .3, "% 3d"%sched[0], size=12,
-                 bbox=dict(fc='w', ec='w'))
+                 bbox=dict(fc='w', ec=ec))
         agentId = schedList[indx][0]
-        for treatment in range(1, agents[agentId]['treatNo']+1):
+        # for treatment in range(2, agents[agentId]['treatNo']+2):
+        for treatment in range(2, agents[agentId]['treatNo']+2):
             if schedList[indx][treatment]:
                 xVal = schedList[indx][treatment]
                 r = (1. - xVal)
                 g = xVal
-                tile = plt.Rectangle((1 + treatment, maxEnrolled - 1 - indx), 1, 1,
+                tile = plt.Rectangle((treatment, maxEnrolled - 1 - indx), 1, 1,
                                      fc=(r,g,0))
                 axes.ax3.add_patch(tile)
 
@@ -214,7 +256,7 @@ def update_agent(agent):
             # writelog.write('  not enrolled avgInput= %5.2f xVal= %5.2f need=%5.2f\n'%
             #                     (avgInput, xVal, need))
 
-            # Calculate probability of enrollment based on need
+            # Calculate probability of enrollment based on need (and distance from provider)
             if axes.checkDist:
                 distProvX, distProvY = (agent['xLoc'] - axes.provXOrg,
                                         agent['yLoc'] - axes.provYOrg)
@@ -243,6 +285,7 @@ def update_agent(agent):
                     writelog.write('Enrolling agent %d\n'% agent['id'])
                 treatList = [None for i in range(standardSched)]
                 treatList[agent['treatNo']] = agent['xVal']
+                treatList.insert(0, agent['isComplex'])
                 treatList.insert(0,agent['id'])
                 schedList.append(treatList)
                 
@@ -266,16 +309,24 @@ def update_agent(agent):
 
                     # Turn on input
                     if axes.checkEndBen:
-                        agent['iVal'] += doseValue/10. # endBen increase iVal
+                        agent['iVal'] += doseValue*agent['iFact']/10. # endBen increase iVal
                     else:
-                        inputVal = agent['iVal'] + doseValue
+                        inputVal = agent['iVal'] + doseValue  * agent['iFact']
                         
                     # Increment treatment number
                     agent['treatNo'] += 1
  
-                    if agent['treatNo'] >= standardSched+1:
-                        writelog.write('  treatNo = %d standardSched = %d\n'%
+                    if axes.checkStepped and agent['isComplex']:
+                        nTreatLeft = standardSched + 1
+                    else:
+                        nTreatLeft = steppedSched+1
+                    if agent['treatNo'] >= nTreatLeft:
+                        if axes.checkStepped and agent['isComplex']:
+                            writelog.write('  treatNo = %d standardSched = %d\n'%
                                          (agent['treatNo'], standardSched))
+                        else:
+                            writelog.write('  treatNo = %d steppedSched = %d\n'%
+                                         (agent['treatNo'], steppedSched))
                         if doingLogging: writelog.write('Un-enroll agent %d treatment done\n'% 
                                                             agent['id'])
                         agent['enrolled'] = False
@@ -292,10 +343,10 @@ def update_agent(agent):
                     else:
                         for indx, sched in enumerate(schedList):
                             if sched[0] == int(agent['id']):
-                                schedList[indx][agent['treatNo']] = agent['xVal']
+                                schedList[indx][agent['treatNo']+1] = agent['xVal']
                                 break
                         if doingLogging: writelog.write('  agent %d treatment %d ON\n'%
-                                           (agent['id'], agent['treatNo']))
+                                           (agent['id'], agent['treatNo']+1))
 
                     # Update schedule
                     updateSched(schedList)
@@ -319,7 +370,7 @@ def update_agent(agent):
     else:
         agent['bezPatch'].set_visible(False)
         square.set_fc('#ffffff')
-        inputVal = agent['iVal']
+        inputVal = agent['iVal'] * agent['iFact']
 
 
     # Shunting equation

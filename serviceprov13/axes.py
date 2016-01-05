@@ -12,7 +12,7 @@ import agents
 
 # Global variables
 fig = None
-winXInches = 16
+winXInches = 20
 winYInches = 16
 axXLim = (0, 10)
 axYLim = (0, 10)
@@ -33,6 +33,7 @@ check = None
 
 # Checkbox states
 checkService = False
+checkStepped = False
 checkPause   = False
 checkEndBen  = False
 checkDist    = False
@@ -44,8 +45,11 @@ def init_ax():
     
     plt.close('all')
     fig = plt.figure(figsize=(winXInches, winYInches))
-    fig.canvas.set_window_title('ServiceProv11')
-    ax = fig.add_axes([.05, .15, .8, .8])
+    fig.canvas.set_window_title('ServiceProv13')
+    fig.text(.8,  .9, 'Schedule', fontsize=18)
+    fig.text(.78, .78, 'SPR', fontsize=16)
+    fig.text(.88, .78, 'CBT', fontsize=16)
+    ax = fig.add_axes([.05, .15, .64, .8])
     ax.set_xlim(axXLim)
     ax.set_ylim(axYLim)
     ax.set_xticklabels([])
@@ -59,7 +63,7 @@ def init_ax2():
     global plotWidth, ax2yMin, ax2yMax, ax2, line
     
     # Add axes 2 for plot trace
-    ax2 = fig.add_axes([.05,.02,.8,.1])
+    ax2 = fig.add_axes([.05,.02,.64,.1])
     ax2.set_xlim(0, plotWidth)
     ax2.set_ylim(ax2yMin, ax2yMax)
     
@@ -72,21 +76,27 @@ def init_ax3():
     
     global ax3
     
-    ax3 = fig.add_axes([.86, .8, .12, .015*agents.maxEnrolled])
+    # ax3 = fig.add_axes([.72, .8, .12, .015*agents.maxEnrolled])
+    ax3 = fig.add_axes([.72, .8, .034 + (.017 * agents.standardSched), .015*agents.maxEnrolled])
     ax3.set_xticklabels([])
     ax3.set_yticklabels([])
-    ax3.set_xticks(range(1, 7))
+    ax3.set_xticks(range(1, agents.standardSched+2))
     ax3.set_yticks(range(1, agents.maxEnrolled))
-    ax3.set_xlim((0, 7))
+    ax3.set_xlim((0, agents.standardSched+2))
     ax3.set_ylim((0, agents.maxEnrolled))
     ax3.grid(True)
-    ax3.set_title('Treatment Schedule')
+    vLine1 = plt.Line2D((2,2),(0,agents.maxEnrolled), lw=4, color='g', zorder=3)
+    vLine2 = plt.Line2D((7,7),(0,agents.maxEnrolled), lw=4, color='r', zorder=3)
+    ax3.add_line(vLine1)
+    ax3.add_line(vLine2)
 
 # Checkbox function
 def func(label):
-    global checkService, checkPause, checkEndBen, checkDist
+    global checkService, checkStepped, checkPause, checkEndBen, checkDist
     if label == 'Service':
         checkService = not checkService
+    elif label == 'Stepped':
+        checkStepped = not checkStepped
     elif label == 'Pause':
         checkPause = not checkPause
     elif label == 'EndBen':
@@ -100,15 +110,15 @@ def init_ax4():
     
     global ax4, checkService, checkPause, checkEndBen, checkDist, check
 
-    ax4 = fig.add_axes([.88, .15, .1, .1])
+    ax4 = fig.add_axes([.72, .15, .08, .12])
     ax4.set_xticklabels([])
     ax4.set_yticklabels([])
     ax4.set_xticks([])
     ax4.set_yticks([])
     
     # Define checkboxes
-    check = CheckButtons(ax4, ('Service',   'Pause',    'EndBen',    'Dist'),
-                              (checkService, checkPause, checkEndBen, checkDist))
+    check = CheckButtons(ax4, ('Service',   'Stepped', 'Pause',    'EndBen',    'Dist'),
+                              (checkService, checkStepped, checkPause, checkEndBen, checkDist))
                                
     # Attach checkboxes to checkbox function
     check.on_clicked(func)

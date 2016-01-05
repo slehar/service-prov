@@ -44,7 +44,7 @@ def init_ax():
     
     plt.close('all')
     fig = plt.figure(figsize=(winXInches, winYInches))
-    fig.canvas.set_window_title('ServiceProv11')
+    fig.canvas.set_window_title('ServiceProv11a')
     ax = fig.add_axes([.05, .15, .8, .8])
     ax.set_xlim(axXLim)
     ax.set_ylim(axYLim)
@@ -80,7 +80,6 @@ def init_ax3():
     ax3.set_xlim((0, 7))
     ax3.set_ylim((0, agents.maxEnrolled))
     ax3.grid(True)
-    ax3.set_title('Treatment Schedule')
 
 # Checkbox function
 def func(label):

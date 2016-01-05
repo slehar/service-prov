@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 from matplotlib.widgets import CheckButtons, Slider
 from collections import deque
-import time
+# import time
 
 # Global Variables
 flow = False
@@ -18,10 +18,11 @@ t = 0.
 lastX = 0.
 lastT = 0.
 dt = .5
-A = .01
+A = .005
 delay = 0.1# sec per cycle
-darray = deque(np.arange(0., 9., .1))
-tarray = deque(np.arange(0., 9., .1))
+dArray = deque([0.])
+tArray = deque([0.])
+plotWidth = 500
 
 # Open figure and set axes 1 for drawing Artists
 plt.close('all')
@@ -44,6 +45,8 @@ ax.add_patch(circle)
 arrow = plt.Arrow(3, 2, 2, 0, ec='k', fc=(1, 1, 1))
 ax.add_patch(arrow)
 
+ax.text(2.5,3.5, 'Pulse Treatment', fontsize=14, weight='bold')
+
 # Add Input checkbox as axes Ch
 axCh = fig.add_axes([.6, .4, .1, .1])
 check = CheckButtons(axCh, ['Input'], [False])
@@ -63,12 +66,12 @@ def func(label):
 check.on_clicked(func)
 
 # Add axes 2 for plot trace
-ax2 = fig.add_axes([.1, .1, .8, .2])
-ax2.set_ylim(0, 1)
-ax2.set_xlim(0, 10)
+axTime = fig.add_axes([.1, .1, .8, .2])
+axTime.set_ylim(0, 1)
+axTime.set_xlim(0, 10)
 
 # Set up plot line in axes 2
-line, = ax2.plot(t, x, color='blue', linewidth=1,
+line, = axTime.plot(t, x, color='blue', linewidth=1,
                  linestyle='-', alpha=1.0)
 
 # Add Input slider
@@ -77,7 +80,7 @@ axSl.set_xticklabels([])
 axSl.set_yticklabels([])
 axSl.set_xticks([])
 axSl.set_yticks([])
-sl = Slider(axSl, 'Mag', 0., 1., valinit=0.5, valfmt=u'%1.2f', fc=(0, 1, 0))
+sl = Slider(axSl, 'Mag', 0., 5., valinit=1., valfmt=u'%1.2f', fc=(0, 1, 0))
 
 
 # Update each loop
@@ -105,16 +108,16 @@ def update(num):
     circle.set_facecolor((r, g, 0.))
     lastT = t
     t += dt
-    darray.appendleft(x)
-    darray.pop()
-    tarray.appendleft(t)
-    tarray.pop()
-    ax2.set_xlim(tarray[0], tarray[len(tarray)-1])
-    # line.set_data([.1,0], [lastX,x])
-    line.set_data(tarray, darray)
+    dArray.appendleft(x)
+    if len(dArray) >= plotWidth/dt:
+        dArray.pop()
+    tArray.appendleft(t)
+    if len(tArray) >= plotWidth/dt:
+        tArray.pop()
+    line.set_data(tArray, dArray)
     # CurrentXAxis=np.arange(len(values)-100,len(values),1)
-    ax2.axis()
-    time.sleep(delay)
+    axTime.axis((t - plotWidth, t, 0., 1.))
+    # time.sleep(delay)
 
 
 # Run the animation
