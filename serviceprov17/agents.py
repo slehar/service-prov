@@ -4,7 +4,6 @@ Created on Fri Oct  2 15:36:41 2015
 
 @author: slehar
 """
-import sys
 from random import random, seed
 import numpy as np
 import matplotlib.pyplot as plt
@@ -28,6 +27,7 @@ nAgentsBlk = 0
 nAgentsOth = 0
 nEnrolled = 0
 maxEnrolled = 6
+useProbCBT = False
 # standardSched = 6
 standardSched = 10
 steppedSched = 5
@@ -77,7 +77,7 @@ codes = [Path.MOVETO,
          Path.CURVE4,
          ]
          
-########[ probRaceEthncy ]#######
+#%%########[ probRaceEthncy ]#######
 def probRaceEthncy(borough):
 #
 # Sets 5 thresholds to determine for each borough based on the demographics the proportion
@@ -146,8 +146,21 @@ def probRaceEthncy(borough):
         
     return(race, ethncy)
         
+#%%# Calculate distribution
+def calculate_distribution(isMale, isOld, isBlack, isWhite, isOther, isHisp, hadPrior):
+    
+    logitCBT = -1.60 +                \
+              (-0.2008   * isMale)  + \
+              (-0.5828   * isBlack) + \
+              (-1.073    * isHisp)  + \
+              (-0.35     * isOther) + \
+              (0.2449    * isOld)   + \
+              (1.8377    * hadPrior)
+              
+    return np.exp(logitCBT)/(1. + np.exp(logitCBT))
 
-########[ init agents ]########
+
+#%%########[ init agents ]########
 def init_agents():
     
     global agents, nAgents, square, circle, avgInput, \
@@ -195,9 +208,75 @@ def init_agents():
                     writelog.write("  foundSpace!\n")
                     # Otherwise keep searching
     
-    
+            
+        # Define agent's race and ethnicity
+        (race, ethncy) = probRaceEthncy(borough)
+        if race == 'White':
+            raceColor = 'w'
+            isWhite = 1.
+            isBlack = 0.
+            isOther = 0.
+            nAgentsWht += 1
+        elif race == 'Black':
+            raceColor = 'k'
+            isWhite = 0.
+            isBlack = 1.
+            isOther = 0.
+            nAgentsBlk += 1
+        elif race == 'Other':
+            raceColor = 'gray'
+            isWhite = 0.
+            isBlack = 0.
+            isOther = 1.
+            nAgentsOth += 1
+            
+        if ethncy == 'Hispanic':
+            ethVis = True
+            isHisp = 1.
+        else:
+            ethVis = False
+            isHisp = 0.
+        
+        # Define agent's gender
+        if random() > .5:
+            gender = 'Male'
+            isMale = 1.
+        else:
+            gender = 'Female'
+            isMale = 0.
+            
+        # Define agent's age
+        if random() > .75:
+            isOld = 1.
+        else:
+            isOld = 0.
+            
+        # Define agent's hadPrior (PTSD)
+        if random() > .9:
+            hadPrior = 1.
+        else:
+            hadPrior = 0.
+        
         # Define agent's "input value" (natural wellness) and input factor
-        iVal = random()
+        if useProbCBT:
+            fstr = '  isMale=%1d isOld=%1d isBlack=%1d isWhite=%1d isOther=%1d '\
+                   'isHisp=%1d hadPrior=%1d\n'
+            writelog.write(fstr%(isMale, isOld, isBlack, isWhite,
+                                          isOther, isHisp, hadPrior))
+            probCBT = calculate_distribution(isMale, isOld, isBlack, isWhite,
+                                          isOther, isHisp, hadPrior)
+            iVal = 1. - probCBT
+            if iVal > 1:
+                iVal = 1.
+            elif iVal < 0.:
+                iVal = 0.
+                
+            writelog.write('  calculate_distribution: probCBT = %f iVal = %f\n'%(probCBT,iVal))
+        else:
+            iVal = random()
+            writelog.write('  calculate_input: iVal = %f\n'%iVal)
+                
+    
         if iVal > iThresh:
             iFact = 1.
             isComplex = False
@@ -211,39 +290,14 @@ def init_agents():
                 iFact = 0.7
                 isComplex = True
                 cmplxColor = 'r'
-                
 
         # Set xVal to equilibrium value
         xVal = iVal/(A+iVal)
         totInput += iVal
         r = (1. - xVal)
         g = xVal
-        
-        # Define agent's race and ethnicity
-        (race, ethncy) = probRaceEthncy(borough)
-        if race == 'White':
-            raceColor = 'w'
-            nAgentsWht += 1
-        elif race == 'Black':
-            raceColor = 'k'
-            nAgentsBlk += 1
-        elif race == 'Other':
-            raceColor = 'gray'
-            nAgentsOth += 1
-            
-        ethVis = ethncy == 'Hispanic'
-        
-        # Define agent's gender
-        if random() > .5:
-            gender = 'Male'
-        else:
-            gender = 'Female'
-        
-        # Calculate agent's probability of enrollment
-        
 
         # Define agent's triple circle & wedge
-        
         circle1 = plt.Circle((xLoc, yLoc), circRad1, fc=(r,g,0),
                              ec=(r,g,0))
         circle2 = plt.Circle((xLoc, yLoc), circRad2, fc=cmplxColor,
@@ -310,6 +364,7 @@ def init_agents():
                        'iFact':iFact,
                        'isComplex':isComplex,
                        'gender':gender,
+                       'gendsymb':gendSymb,
                        'race':race,
                        'ethncy':ethncy,
                        'treating':False,
@@ -335,7 +390,7 @@ def init_agents():
     axes.ax.add_patch(circle)
 
 
-# function printSched
+#%%# function printSched
 def printSched():
     for indx, entry in enumerate(schedList):
         outStr=StringIO.StringIO()
@@ -355,7 +410,7 @@ def printSched():
         writelog.write(outStr.getvalue())
         outStr.close()
 
-#### Update Schedule ####
+#%%#### Update Schedule ####
 def updateSched(schedList):
     # print '\nIn UpdateSched():'
     # axes.ax3.clear()
@@ -394,7 +449,7 @@ def updateSched(schedList):
             axes.ax3.add_patch(tile)
 
 
-#### Update single agent ####
+#%%#### Update single agent ####
 def update_agent(agent):
 
     global nEnrolled, schedList, schedPtr, tileListPtr, avgInput
@@ -547,7 +602,7 @@ def update_agent(agent):
     if delay > 0.:
         time.sleep(delay)
 
-#### Update each loop ####
+#%%#### Update each loop ####
 def update(num):
 
     global linetime, linedat
@@ -561,7 +616,7 @@ def update(num):
 
     sumPtsd = sumPtsdWht = sumPtsdBlk = sumPtsdOth = 0.
     for agnum in range(nAgents):
-        update_agent(agents[agnum])
+        update_agent(agents[agnum]) # <====== update_agent()
         sumPtsd += agents[agnum]['xVal']
         if agents[agnum]['race'] == 'White':
             sumPtsdWht += agents[agnum]['xVal']
