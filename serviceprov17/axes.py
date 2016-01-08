@@ -66,7 +66,10 @@ def init_ax2():
     
     # Add axes 2 for plot trace
     ax2 = fig.add_axes([.05,.02,.64,.1])
-    ax2.set_xlim(0, plotWidth)
+    # ax2.set_xlim(0, plotWidth)
+    ax# es.ax2.axis((t - plotWidth, t, axes.ax2yMin, axes.ax2yMax))
+    ax2.set_xlim(agents.preLaunch - plotWidth, -agents.preLaunch)
+    # ax2.set_xlim(-agents.preLaunch, plotWidth+agents.preLaunch)
     ax2.set_ylim(ax2yMin, ax2yMax)
     
     # Set up plot line in axes 2
