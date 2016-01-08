@@ -682,11 +682,13 @@ def update(num):
     axes.lineOth.set_data(tArray,dArrayOth)
     axes.ax2.axis((t - plotWidth, t, axes.ax2yMin, axes.ax2yMax))
     
-    # Create new agents?
-    if random() > .5:
-        agents.append(init_agent(nAgents))
-        nAgents += 1
+    # Create new agents after t > 0 
+    if t >= 0:
+        probNew = 10. * np.exp(-t)
+        for num in range(int(probNew)):
+            if random() > .25:
+                agents.append(init_agent(nAgents))
+                nAgents += 1
     
     
-    # time.sleep(.1)
 
