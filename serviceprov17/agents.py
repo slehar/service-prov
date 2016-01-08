@@ -61,7 +61,6 @@ plotWidth = 500
 
 agents = []
 totInput = 0.
-bezLines = []
 
 minSep = .025
 rSigma = .3
@@ -161,221 +160,240 @@ def calculate_distribution(isMale, isOld, isBlack, isWhite, isOther, isHisp, had
     return np.exp(logitCBT)/(1. + np.exp(logitCBT))
 
 
-#%%########[ init agents ]########
-def init_agents():
-    
+#%%#### Initialize single agent ####
+def init_agent(agtId):
+
+    global nEnrolled, schedList, schedPtr, tileListPtr, avgInput
     global agents, nAgents, square, circle, avgInput, \
             nAgentsWht, nAgentsBlk, nAgentsOth
-    
-    totInput = 0.
-    agentId = 0
-    
-    ## for each agent
-    for agtId in range(nAgents):
-        writelog.write("agtId = %d\n"%agtId)
-        foundSpace = False
-        while not foundSpace:
-            xLoc = random() * image.aspect + .1*image.aspect
-            yLoc = random()
-            writelog.write("agtId: % 3d  xLoc, yLoc = (%4.2f, %4.2f)\n"%(agtId, xLoc, yLoc))
-            
-            inMask  = image.maskImg[image.imgYSize - yLoc * image.imgYSize,
-                                     (xLoc-image.xOff)*image.imgXSize/image.aspect + image.xOff][0]
-                                
-            borough = image.burrIndx[image.imgYSize - yLoc * image.imgYSize,
-                                      (xLoc-image.xOff)*image.imgXSize/image.aspect + image.xOff]
-            borough -= 1  #<=== KLUDGE! (Don't know why this is necessary)
-            writelog.write("agtId: % 3d  xLoc, yLoc = (%4.2f, %4.2f) borough = %3d\n"%(
-                            agtId, xLoc, yLoc, borough))
-            
-            # if inMask > .5 and borough in range(1,6):  # If in the masked area check for collision
-            if inMask > .9:  # If in the masked area check for collision
-                writelog.write('  In borough %3d\n'%borough)
-                collision = False
-                for agt in range(len(agents)):
-                    xLoc1 = agents[agt]['xLoc']
-                    yLoc1 = agents[agt]['yLoc']
-                    dx = xLoc1 - xLoc
-                    dy = yLoc1 - yLoc
-                    dist = np.sqrt(dx**2 + dy**2)
-                    if dist < minSep:
-                        collision = True
-                        writelog.write("  COLLISION !!!\n")
-                        break   # Stop going through more agents
-                if not collision:
-                    foundSpace = True
-                    writelog.write("agtId: % 3d  xLoc, yLoc = (%4.2f, %4.2f) borough = %3d\n"%(
-                                    agtId, xLoc, yLoc, borough))
-                    writelog.write("  foundSpace!\n")
-                    # Otherwise keep searching
-    
-            
-        # Define agent's race and ethnicity
-        (race, ethncy) = probRaceEthncy(borough)
-        if race == 'White':
-            raceColor = 'w'
-            isWhite = 1.
-            isBlack = 0.
-            isOther = 0.
-            nAgentsWht += 1
-        elif race == 'Black':
-            raceColor = 'k'
-            isWhite = 0.
-            isBlack = 1.
-            isOther = 0.
-            nAgentsBlk += 1
-        elif race == 'Other':
-            raceColor = 'gray'
-            isWhite = 0.
-            isBlack = 0.
-            isOther = 1.
-            nAgentsOth += 1
-            
-        if ethncy == 'Hispanic':
-            ethVis = True
-            isHisp = 1.
-        else:
-            ethVis = False
-            isHisp = 0.
+
+    # print '  In update_agent agent = %d'%agent['id']
+    # writelog.write('In update_agent agent = %d\n'%agent['id'])
+
+
+    foundSpace = False
+    while not foundSpace:
+        xLoc = random() * image.aspect + .1*image.aspect
+        yLoc = random()
+        writelog.write("agtId: % 3d  xLoc, yLoc = (%4.2f, %4.2f)\n"%(agtId, xLoc, yLoc))
         
-        # Define agent's gender
+        inMask  = image.maskImg[image.imgYSize - yLoc * image.imgYSize,
+                                 (xLoc-image.xOff)*image.imgXSize/image.aspect + image.xOff][0]
+                            
+        borough = image.burrIndx[image.imgYSize - yLoc * image.imgYSize,
+                                  (xLoc-image.xOff)*image.imgXSize/image.aspect + image.xOff]
+        borough -= 1  #<=== KLUDGE! (Don't know why this is necessary)
+        writelog.write("agtId: % 3d  xLoc, yLoc = (%4.2f, %4.2f) borough = %3d\n"%(
+                        agtId, xLoc, yLoc, borough))
+        
+        # if inMask > .5 and borough in range(1,6):  # If in the masked area check for collision
+        if inMask > .9:  # If in the masked area check for collision
+            writelog.write('  In borough %3d\n'%borough)
+            collision = False
+            for agt in range(len(agents)):
+                xLoc1 = agents[agt]['xLoc']
+                yLoc1 = agents[agt]['yLoc']
+                dx = xLoc1 - xLoc
+                dy = yLoc1 - yLoc
+                dist = np.sqrt(dx**2 + dy**2)
+                if dist < minSep:
+                    collision = True
+                    writelog.write("  COLLISION !!!\n")
+                    break   # Stop going through more agents
+            if not collision:
+                foundSpace = True
+                writelog.write("agtId: % 3d  xLoc, yLoc = (%4.2f, %4.2f) borough = %3d\n"%(
+                                agtId, xLoc, yLoc, borough))
+                writelog.write("  foundSpace!\n")
+                # Otherwise keep searching
+
+        
+    # Define agent's race and ethnicity
+    (race, ethncy) = probRaceEthncy(borough)
+    if race == 'White':
+        raceColor = 'w'
+        isWhite = 1.
+        isBlack = 0.
+        isOther = 0.
+        nAgentsWht += 1
+    elif race == 'Black':
+        raceColor = 'k'
+        isWhite = 0.
+        isBlack = 1.
+        isOther = 0.
+        nAgentsBlk += 1
+    elif race == 'Other':
+        raceColor = 'gray'
+        isWhite = 0.
+        isBlack = 0.
+        isOther = 1.
+        nAgentsOth += 1
+        
+    if ethncy == 'Hispanic':
+        ethVis = True
+        isHisp = 1.
+    else:
+        ethVis = False
+        isHisp = 0.
+    
+    # Define agent's gender
+    if random() > .5:
+        gender = 'Male'
+        isMale = 1.
+    else:
+        gender = 'Female'
+        isMale = 0.
+        
+    # Define agent's age
+    if random() > .75:
+        isOld = 1.
+    else:
+        isOld = 0.
+        
+    # Define agent's hadPrior (PTSD)
+    if random() > .9:
+        hadPrior = 1.
+    else:
+        hadPrior = 0.
+    
+    # Define agent's "input value" (natural wellness) and input factor
+    # Using probCBT
+    if useProbCBT:
+        fstr = '  isMale=%1d isOld=%1d isBlack=%1d isWhite=%1d isOther=%1d '\
+               'isHisp=%1d hadPrior=%1d\n'
+        writelog.write(fstr%(isMale, isOld, isBlack, isWhite,
+                                      isOther, isHisp, hadPrior))
+        probCBT = calculate_distribution(isMale, isOld, isBlack, isWhite,
+                                      isOther, isHisp, hadPrior)
+        iVal = 1. - probCBT
+        if iVal > 1:
+            iVal = 1.
+        elif iVal < 0.:
+            iVal = 0.
+            
+        writelog.write('  calculate_distribution: probCBT = %f iVal = %f\n'%(probCBT,iVal))
+    # Or using just random
+    else:
+        iVal = random()
+        writelog.write('  calculate_input: iVal = %f\n'%iVal)
+            
+
+    if iVal > iThresh:
+        iFact = 1.
+        isComplex = False
+        cmplxColor = 'k'
+    else:
         if random() > .5:
-            gender = 'Male'
-            isMale = 1.
-        else:
-            gender = 'Female'
-            isMale = 0.
-            
-        # Define agent's age
-        if random() > .75:
-            isOld = 1.
-        else:
-            isOld = 0.
-            
-        # Define agent's hadPrior (PTSD)
-        if random() > .9:
-            hadPrior = 1.
-        else:
-            hadPrior = 0.
-        
-        # Define agent's "input value" (natural wellness) and input factor
-        if useProbCBT:
-            fstr = '  isMale=%1d isOld=%1d isBlack=%1d isWhite=%1d isOther=%1d '\
-                   'isHisp=%1d hadPrior=%1d\n'
-            writelog.write(fstr%(isMale, isOld, isBlack, isWhite,
-                                          isOther, isHisp, hadPrior))
-            probCBT = calculate_distribution(isMale, isOld, isBlack, isWhite,
-                                          isOther, isHisp, hadPrior)
-            iVal = 1. - probCBT
-            if iVal > 1:
-                iVal = 1.
-            elif iVal < 0.:
-                iVal = 0.
-                
-            writelog.write('  calculate_distribution: probCBT = %f iVal = %f\n'%(probCBT,iVal))
-        else:
-            iVal = random()
-            writelog.write('  calculate_input: iVal = %f\n'%iVal)
-                
-    
-        if iVal > iThresh:
             iFact = 1.
             isComplex = False
             cmplxColor = 'k'
         else:
-            if random() > .5:
-                iFact = 1.
-                isComplex = False
-                cmplxColor = 'k'
-            else:
-                iFact = 0.7
-                isComplex = True
-                cmplxColor = 'r'
+            iFact = 0.7
+            isComplex = True
+            cmplxColor = 'r'
 
-        # Set xVal to equilibrium value
-        xVal = iVal/(A+iVal)
-        totInput += iVal
-        r = (1. - xVal)
-        g = xVal
+    # Set xVal to equilibrium value
+    xVal = iVal/(A+iVal)
+    # totInput += iVal
+    r = (1. - xVal)
+    g = xVal
 
-        # Define agent's triple circle & wedge
-        circle1 = plt.Circle((xLoc, yLoc), circRad1, fc=(r,g,0),
-                             ec=(r,g,0))
-        circle2 = plt.Circle((xLoc, yLoc), circRad2, fc=cmplxColor,
-                             ec=cmplxColor)
-        circle3 = plt.Circle((xLoc, yLoc), circRad3, fc=raceColor,
-                             ec=raceColor)
-        wedge   = mpatches.Wedge((xLoc, yLoc), circRad3, 180, 0,
-                                 fc='brown', ec='brown', visible=ethVis)
+    # Define agent's triple circle & wedge
+    circle1 = plt.Circle((xLoc, yLoc), circRad1, fc=(r,g,0),
+                         ec=(r,g,0))
+    circle2 = plt.Circle((xLoc, yLoc), circRad2, fc=cmplxColor,
+                         ec=cmplxColor)
+    circle3 = plt.Circle((xLoc, yLoc), circRad3, fc=raceColor,
+                         ec=raceColor)
+    wedge   = mpatches.Wedge((xLoc, yLoc), circRad3, 180, 0,
+                             fc='brown', ec='brown', visible=ethVis)
+    
+    axes.ax.add_patch(circle3)
+    axes.ax.add_patch(wedge)
+    axes.ax.add_patch(circle2)
+    axes.ax.add_patch(circle1)
+     
+    # Define agent's bezier links
+    verts = ((axes.provXCtr, axes.provYCtr), # Bezier lnk from prov. to here
+             ((axes.provXCtr + xLoc)/2., axes.provYCtr),
+             (xLoc, (axes.provYCtr + yLoc)/2.),
+             (xLoc, yLoc))
+    bezPath = Path(verts, codes)
+    bezPatch = mpatches.PathPatch(bezPath, facecolor='none',
+                              lw=1, ec='#afafaf', visible=False)
+    axes.ax.add_patch(bezPatch)
+                              
+    # Define agent's gender symbol
+    if gender == 'Male':
+        xData = [xLoc + circRad2, 
+                 xLoc + 1.5*circRad2, 
+                 xLoc + 1.5*circRad2-circRad2/2,
+                 xLoc + 1.5*circRad2, 
+                 xLoc + 1.5*circRad2] 
+        yData = [yLoc + circRad2, 
+                 yLoc + 1.5*circRad2, 
+                 yLoc + 1.5*circRad2,
+                 yLoc + 1.5*circRad2, 
+                 yLoc + 1.5*circRad2-circRad2/2] 
+    elif gender == 'Female':
+        xData = [xLoc, 
+                 xLoc, 
+                 xLoc,
+                 xLoc - .5*circRad2, 
+                 xLoc + .5*circRad2] 
+        yData = [yLoc - circRad2, 
+                 yLoc - 2*circRad2, 
+                 yLoc - 1.5*circRad2,
+                 yLoc - 1.5*circRad2, 
+                 yLoc - 1.5*circRad2] 
+    gendSymb = plt.Line2D(xData, yData, color='k')
+    axes.ax.add_line(gendSymb)
+
+    # Agent ID number below circle
+    idText = axes.ax.text(xLoc-.004, yLoc-.021, '%d'%agtId, visible=False)
+
+
+    newAgent =    {'id':agtId,
+                   'circ1':circle1,
+                   'circ2':circle2,
+                   'circ3':circle3,
+                   'wedge':wedge,
+                   'bezPatch':bezPatch,
+                   'xLoc':xLoc,
+                   'yLoc':yLoc,
+                   'xVal':xVal,
+                   'iVal':iVal,
+                   'iFact':iFact,
+                   'isComplex':isComplex,
+                   'race':race,
+                   'ethncy':ethncy,
+                   'treating':False,
+                   'enrolled':False,
+                   'treatNo':0,        # current treatment #
+                   'idText':idText}
+    return newAgent
+
+
+
+
+#%%########[ init agents ]########
+def init_agents():
+    
+    global agents, nAgents, square, circle, avgInput, \
+            nAgentsWht, nAgentsBlk, nAgentsOth, avgInput
+    
+    totInput = 0.
+    
+    ## for each agent
+    for agtId in range(nAgents):
+        # 
+        writelog.write("agtId = %d\n"%agtId)
+        newAgent = init_agent(agtId)
         
-        axes.ax.add_patch(circle3)
-        axes.ax.add_patch(wedge)
-        axes.ax.add_patch(circle2)
-        axes.ax.add_patch(circle1)
-         
-        # Define agent's bezier links
-        verts = ((axes.provXCtr, axes.provYCtr), # Bezier lnk from prov. to here
-                 ((axes.provXCtr + xLoc)/2., axes.provYCtr),
-                 (xLoc, (axes.provYCtr + yLoc)/2.),
-                 (xLoc, yLoc))
-        bezPath = Path(verts, codes)
-        bezPatch = mpatches.PathPatch(bezPath, facecolor='none',
-                                  lw=1, ec='#afafaf', visible=False)
-                                  
-        # Define agent's gender symbol
-        if gender == 'Male':
-            xData = [xLoc + circRad2, 
-                     xLoc + 1.5*circRad2, 
-                     xLoc + 1.5*circRad2-circRad2/2,
-                     xLoc + 1.5*circRad2, 
-                     xLoc + 1.5*circRad2] 
-            yData = [yLoc + circRad2, 
-                     yLoc + 1.5*circRad2, 
-                     yLoc + 1.5*circRad2,
-                     yLoc + 1.5*circRad2, 
-                     yLoc + 1.5*circRad2-circRad2/2] 
-        elif gender == 'Female':
-            xData = [xLoc, 
-                     xLoc, 
-                     xLoc,
-                     xLoc - .5*circRad2, 
-                     xLoc + .5*circRad2] 
-            yData = [yLoc - circRad2, 
-                     yLoc - 2*circRad2, 
-                     yLoc - 1.5*circRad2,
-                     yLoc - 1.5*circRad2, 
-                     yLoc - 1.5*circRad2] 
-        gendSymb = plt.Line2D(xData, yData, color='k')
-        axes.ax.add_line(gendSymb)
-    
-        # Agent ID number below circle
-        idText = axes.ax.text(xLoc-.004, yLoc-.021, '%d'%agtId, visible=False)
-    
         # Append to agents list
-        agents.append({'id':agtId,
-                       'circ1':circle1,
-                       'circ2':circle2,
-                       'circ3':circle3,
-                       'wedge':wedge,
-                       'bezPatch':bezPatch,
-                       'xLoc':xLoc,
-                       'yLoc':yLoc,
-                       'xVal':xVal,
-                       'iVal':iVal,
-                       'iFact':iFact,
-                       'isComplex':isComplex,
-                       'gender':gender,
-                       'gendsymb':gendSymb,
-                       'race':race,
-                       'ethncy':ethncy,
-                       'treating':False,
-                       'enrolled':False,
-                       'treatNo':0,        # current treatment #
-                       'idText':idText})
-        axes.ax.add_patch(bezPatch)
-        bezLines.append(bezPatch)
-        agentId += 1
-    
+        agents.append(newAgent)
+        totInput += newAgent['iVal']
+        
     
     
     avgInput = totInput/float(nAgents)
@@ -448,6 +466,7 @@ def updateSched(schedList):
                 tile = plt.Rectangle((treatment, maxEnrolled - 1 - indx), 1, 1,
                                      fc='w')
             axes.ax3.add_patch(tile)
+
 
 
 #%%#### Update single agent ####
