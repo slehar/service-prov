@@ -474,8 +474,8 @@ def update_agent(agent):
 
     global nEnrolled, schedList, schedPtr, tileListPtr, avgInput
 
-    # print '  In update_agent agent = %d'%agent['id']
-    # writelog.write('In update_agent agent = %d\n'%agent['id'])
+    # print '  In update_agent agent = %r'%agent
+    # writelog.write('In update_agent agent = %r\n'%agent)
 
     xVal = agent['xVal']
     inputVal = agent['iVal']
@@ -627,7 +627,7 @@ def update(num):
 
     global linetime, linedat
     global x,t,lastX,lastT
-    global dArray, tArray, dArrayWht, dArrayBlk, dArrayOth
+    global dArray, tArray, dArrayWht, dArrayBlk, dArrayOth, nAgents
     # global sumPtsdWht, sumPtsdBlk, sumPtsdOth
     # print '  In update count = %d'%num
 
@@ -681,5 +681,12 @@ def update(num):
     axes.lineBlk.set_data(tArray,dArrayBlk)
     axes.lineOth.set_data(tArray,dArrayOth)
     axes.ax2.axis((t - plotWidth, t, axes.ax2yMin, axes.ax2yMax))
+    
+    # Create new agents?
+    if random() > .5:
+        agents.append(init_agent(nAgents))
+        nAgents += 1
+    
+    
     # time.sleep(.1)
 
