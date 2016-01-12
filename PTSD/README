@@ -1,0 +1,29 @@
+Programs in ~slehar/Documents/PythonProgs/serviceprov/PTSD/
+===========================================================
+
+PTSD_anim.py
+  Plots a figure that illustrates the definition of PTSD as chronic, acute,
+  delayed onset, etc. based on interactive sliders
+
+
+PTSD_Distribution.py  2015/12/1 (B35P19)
+  Provides checkboxes for Sex, Age, Race, Ethn, Income, Stress, & Trauma,
+  produces PTSD Symptom Distribution of the likely number of PTSD symptoms
+  exhibited by a person of that demographic.
+
+PTSD_DistributionCombo.py
+PTSD_DistributionCombo1.py
+  Runs every permutation and combination of demographics and writes
+  PTSD_DistributionCombo.log
+
+PTSD_Logistic.py
+  Provides checkboxes for Sex, Age, Race, Ethn, Income, Stress, & Trauma,
+  produces logitCBT and probCBT exhibited by a person of that demographic.
+  
+PTSD_LogisticCombo.py
+  Runs every permutation and combination of demographics and writes
+  PTSD_Logistic.log
+
+vertslider.py
+  Vertical slider used by some of these scripts
+

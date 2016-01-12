@@ -4,56 +4,67 @@ ServiceProv
 Service Provider Agent-Based Model Development
 
 ServiceProv1.py
-
   Basic model, one agent, one provider
 
 ServiceProv2.py
-
   Added time trace
 
 ServiceProv2a.py
-
   Time trace broken
 
 ServiceProv3.py
-
   Pulse treatments
 
 ServiceProv4.py
-
   Supply depletes and refills
 
 ServiceProv5.py
-
   Added enduring benefit
 
 ServiceProv6.py
-
   Added row of agents
   Bezier connecting curves
 
 ServiceProv7.py
-
   Whole field of agents
 
 ServiceProv8.py
-
   Added checkboxes for Service, Pause, EndBen, and Dist
   with distance function & sigma radius
 
 ServiceProv8a.py
-
   Superimposed ServiceProv8 on UHF map of New York neighborhoods
 
 ServiceProv9.py
-
+  Start schedular - this version INOP
 
 ServiceProv10.py
-
+  Scheduler done, defined writeLog()
 
 ServiceProv11.py
-  Converted to import logging and StringIO
-  Modularized:w
+  Modularized writelog, axes, agents
 
+ServiceProv11a.py
+  Stepped care
 
+ServiceProv12.py
+  Modularized totalmodular, later abandoned
+
+ServiceProv13.py
+  Stepped care and different treatment of SPR vs. CBT
+
+ServiceProv14.py
+  Add UHF neighborhood map from SP8a
+
+ServiceProv15.py
+  Switch to Boroughs map of NY
+
+ServiceProv16.py
+  Added demographics
+
+ServiceProv17.py
+  Added gender and gender symbols
+  Added new cases appearing, Hurricane Sandy at t=0 after countdown
+
+ServiceProv18.py
 
