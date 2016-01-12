@@ -448,11 +448,11 @@ def updateSched(schedList):
             ec = 'r'
             lw=2
         else:
-            ec = 'w'
+            ec = None
             lw=2
         axes.ax3.text(1, maxEnrolled - 1 - indx + .3, "%3d"%sched[0], 
-                      size=12, family='Courier', horizontalalignment='right',
-                      bbox=dict(fc='w', ec=ec, lw=lw))
+                      size=12, family='Monospace', horizontalalignment='right',
+                      name='Courier', bbox=dict(fc='w', ec=ec, lw=lw))
         # agentId = schedList[indx][0]
         # for treatment in range(2, agents[agentId]['treatNo']+2):
         for treatment in range(2, standardSched+2):
