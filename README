@@ -67,4 +67,7 @@ ServiceProv17.py
   Added new cases appearing, Hurricane Sandy at t=0 after countdown
 
 ServiceProv18.py
+  Display only PTSD agents as tiny dots
+  Simulation starts at t=0
+
 

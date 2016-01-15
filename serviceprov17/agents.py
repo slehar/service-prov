@@ -39,6 +39,7 @@ circRad2 = .006
 circRad3 = .008
 schedList = []
 schedPtr = 0
+tileArray = []
 tileList = []
 tileListPtr = 0
 doingLogging = True
@@ -429,10 +430,9 @@ def printSched():
         writelog.write(outStr.getvalue())
         outStr.close()
 
-#%%#### Update Schedule ####
-def updateSched(schedList):
-    # print '\nIn UpdateSched():'
-    # axes.ax3.clear()
+#%%#### Initialize Schedule ####
+def initSched(schedList, tileArray):
+    
     axes.ax3.set_xticklabels([])
     axes.ax3.set_yticklabels([])
     axes.ax3.set_xticks(range(1, standardSched+2))
@@ -440,32 +440,44 @@ def updateSched(schedList):
     axes.ax3.set_xlim((0, standardSched+2))
     axes.ax3.set_ylim((0, maxEnrolled))
     axes.ax3.grid(True)
+
+    for row in range(maxEnrolled):
+        newRow = []
+        newRow.append(axes.ax3.text(1, maxEnrolled - 1 - row + .3, "   ", 
+                      size=12, family='Monospace', horizontalalignment='right',
+                      name='Courier', bbox=dict(fc='w', ec=None, lw=2)))
+        newRow.append(False)
+        for col in range(2, standardSched+2):
+            newTile = plt.Rectangle((col, maxEnrolled - 1 - row), 1, 1, fc='w')
+            newRow.append(newTile)
+            axes.ax3.add_patch(newTile)
+        tileArray.append(newRow)
+        
+
+
+#%%#### Update Schedule ####
+def updateSched(schedList, tileArray):
+    # print '\nIn UpdateSched():'
+    # axes.ax3.clear()
+
     # vLine1 = plt.Line2D((2,2),(0,6), lw=4, color='g')
     # axes.ax3.add_line(vLine1)
-    for indx, sched in enumerate(schedList):
+    for indx, entry in enumerate(schedList):
         # print repr(sched)
-        if sched[1]:
+        if entry[1]:
             ec = 'r'
-            lw=2
         else:
             ec = None
-            lw=2
-        axes.ax3.text(1, maxEnrolled - 1 - indx + .3, "%3d"%sched[0], 
-                      size=12, family='Monospace', horizontalalignment='right',
-                      name='Courier', bbox=dict(fc='w', ec=ec, lw=lw))
-        # agentId = schedList[indx][0]
-        # for treatment in range(2, agents[agentId]['treatNo']+2):
+        tileArray[indx][0].set_bbox(dict(fc='w', ec=ec, lw=2))
+        tileArray[indx][0].set_text("%3d"%entry[0])
         for treatment in range(2, standardSched+2):
             if schedList[indx][treatment]:
                 xVal = schedList[indx][treatment]
                 r = (1. - xVal)
                 g = xVal
-                tile = plt.Rectangle((treatment, maxEnrolled - 1 - indx), 1, 1,
-                                     fc=(r,g,0))
+                tileArray[indx][treatment].set_facecolor((r,g,0))
             else:
-                tile = plt.Rectangle((treatment, maxEnrolled - 1 - indx), 1, 1,
-                                     fc='w')
-            axes.ax3.add_patch(tile)
+                tileArray[indx][treatment].set_facecolor('w')
 
 
 
@@ -524,7 +536,7 @@ def update_agent(agent):
                 schedList.append(treatList)
                 
                 # update schedule
-                updateSched(schedList)
+                updateSched(schedList, tileArray)
                 if doingLogging:
                     printSched()
 
@@ -583,7 +595,7 @@ def update_agent(agent):
                                            (agent['id'], agent['treatNo']+1))
 
                     # Update schedule
-                    updateSched(schedList)
+                    updateSched(schedList, tileArray)
                     if doingLogging:
                         printSched()
 
