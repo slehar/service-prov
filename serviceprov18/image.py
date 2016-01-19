@@ -59,6 +59,3 @@ def init_map():
     maskImg = plt.imread('BurroughsMask.png')
     axes.ax.imshow(maskImg, extent=[xOff, xOff+xScale, 0, yScale], alpha=.5)
 
-    # Load Key Legend Image
-    keyImg = plt.imread('DemoKey1.png')
-    axes.ax5.imshow(keyImg)

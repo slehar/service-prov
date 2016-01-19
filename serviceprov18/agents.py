@@ -4,7 +4,7 @@ Created on Fri Oct  2 15:36:41 2015
 
 @author: slehar
 """
-from random import random, seed
+from random import random, seed, randint
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.path import Path
@@ -21,7 +21,7 @@ import writelog
 # Global variables
 avgPtsd = 0.
 # nAgents = 150
-nAgents = 100
+nAgents = 500
 nAgentsWht = 0
 nAgentsBlk = 0
 nAgentsOth = 0
@@ -34,7 +34,7 @@ steppedSched = 5
 avgInput = 0.
 square = None
 circle = None
-circRad1 = .0004
+circRad1 = .001
 circRad2 = .006
 circRad3 = .008
 schedList = []
@@ -44,8 +44,9 @@ doingLogging = True
 doseValue = .2
 delay = 0.0
 A = 0.1   # Shunting decay term
-iThresh = .3 # Threshold for iVal eligibility for complex PTSD
+iThresh = .2 # Threshold for iVal eligibility for complex PTSD
 x = 0.001
+visThresh = 0.4 # Threshold for visibility on screen
 dt = 1.
 preLaunch = 0.
 t = -preLaunch
@@ -56,12 +57,13 @@ tArray    = deque([0.])
 dArrayWht = deque([0.])
 dArrayBlk = deque([0.])
 dArrayOth = deque([0.])
+dArrayNptsd = deque([0.])
 plotWidth = 500
 
 agents = []
 totInput = 0.
 
-minSep = .025
+minSep = .0025
 rSigma = .3
 
 # Initialize random seed
@@ -310,6 +312,10 @@ def init_agent(agtId):
     axes.ax.add_patch(wedge)
     axes.ax.add_patch(circle2)
     '''
+    if xVal > visThresh:
+        circle1.set_visible(False)
+    else:
+        circle1.set_visible(True)
     axes.ax.add_patch(circle1)
      
     # Define agent's bezier links
@@ -352,8 +358,7 @@ def init_agent(agtId):
 
     # Agent ID number below circle
     idText = axes.ax.text(xLoc-.004, yLoc-.021, '%d'%agtId, visible=False)
-
-
+    
     newAgent =    {'id':agtId,
                    'circ1':circle1,
                    'bezPatch':bezPatch,
@@ -624,6 +629,10 @@ def update_agent(agent):
     elif xVal > 1.:
         xVal = 1.
     agent['xVal'] = xVal
+    if xVal > visThresh:
+        agent['circ1'].set_visible(False)
+    else:
+        agent['circ1'].set_visible(True)
     r = (1. - xVal)
     g = xVal
     agent['circ1'].set_facecolor((r, g, 0.))
@@ -637,7 +646,7 @@ def update(num):
 
     global linetime, linedat
     global x,t,lastX,lastT
-    global dArray, tArray, dArrayWht, dArrayBlk, dArrayOth, nAgents
+    global dArray, tArray, dArrayWht, dArrayBlk, dArrayOth, dArrayNptsd, nAgents
     global lastTime
     # global sumPtsdWht, sumPtsdBlk, sumPtsdOth
     # print '  In update count = %d'%num
@@ -646,8 +655,11 @@ def update(num):
         return
  
     sumPtsd = sumPtsdWht = sumPtsdBlk = sumPtsdOth = 0.
+    nPtsd = 0
     for agnum in range(nAgents):
         update_agent(agents[agnum]) # <====== update_agent()
+        if agents[agnum]['xVal'] < visThresh:
+            nPtsd += 1
         sumPtsd += agents[agnum]['xVal']
         if agents[agnum]['race'] == 'White':
             sumPtsdWht += agents[agnum]['xVal']
@@ -655,6 +667,7 @@ def update(num):
             sumPtsdBlk += agents[agnum]['xVal']
         elif agents[agnum]['race'] == 'Other':
             sumPtsdOth += agents[agnum]['xVal']
+    #nPtsd = nPtsd/10
 
     avgPtsd = sumPtsd / float(nAgents)
     # print '  avgPtsd = %f'%avgPtsd
@@ -684,25 +697,29 @@ def update(num):
     if len(dArrayOth) > plotWidth / dt:
         dArrayOth.pop()
         
+    dArrayNptsd.appendleft(nPtsd)
+    if len(dArrayNptsd) > plotWidth / dt:
+        dArrayNptsd.pop()
+        
     tArray.appendleft(t)
     if len(tArray) > plotWidth / dt:
         tArray.pop()
 
-    axes.line.set_data(tArray,dArray)
-    axes.lineWht.set_data(tArray,dArrayWht)
-    axes.lineBlk.set_data(tArray,dArrayBlk)
-    axes.lineOth.set_data(tArray,dArrayOth)
+    axes.line.set_data(tArray, dArray)
+    axes.lineWht.set_data(tArray, dArrayWht)
+    axes.lineBlk.set_data(tArray, dArrayBlk)
+    axes.lineOth.set_data(tArray, dArrayOth)
+    axes.lineNptsd.set_data(tArray, dArrayNptsd)
     axes.ax2.axis((t - plotWidth, t, axes.ax2yMin, axes.ax2yMax))
     
-    # Create new agents after t > 0 
-    '''
+    # Create new PTSD cases after t > 0 
     if t >= 0:
-        probNew = 10. * np.exp(-t)
+        probNew = 10. * np.exp(-(t/10.))
         for num in range(int(probNew)):
-            if random() > .25:
-                agents.append(init_agent(nAgents))
-                nAgents += 1
-    '''
+            randId = randint(0,nAgents)
+            agents[randId]['iVal'] = random()*visThresh
+            agents[randId]['circ1'].set_visible(True)
+            agents[randId]['isComplex'] = (agents[randId]['iVal'] < iThresh)
     
     
 

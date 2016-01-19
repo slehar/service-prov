@@ -17,8 +17,9 @@ winYInches = 16
 axXLim = (0, 1.)
 axYLim = (0, 1.)
 plotWidth = 500
-ax2yMin, ax2yMax = (.7, .9)
-line = lineWht = lineBlk = lineOth = None
+#ax2yMin, ax2yMax = (.7, .9)
+ax2yMin, ax2yMax = (0., 50.)
+line = lineWht = lineBlk = lineOth = lineNptsd = None
 provXCtr = .5
 provYCtr = .95
 provSize = .05
@@ -29,14 +30,13 @@ ax  = None
 ax2 = None
 ax3 = None
 ax4 = None
-ax5 = None
 check = None
 
 
 # Checkbox states
-checkService = False
+checkService = True
 checkStepped = True
-checkPause   = True
+checkPause   = False
 checkEndBen  = False
 checkDist    = False
 
@@ -62,12 +62,13 @@ def init_ax():
 #########[ init ax2 Plot Axes ]########
 def init_ax2():
     
-    global plotWidth, ax2yMin, ax2yMax, ax2, line, lineWht, lineBlk, lineOth
+    global plotWidth, ax2yMin, ax2yMax 
+    global ax2, line, lineWht, lineBlk, lineNptsd, lineOth
     
     # Add axes 2 for plot trace
     ax2 = fig.add_axes([.05,.02,.64,.1])
-    # ax2.set_xlim(0, plotWidth)
-    ax# es.ax2.axis((t - plotWidth, t, axes.ax2yMin, axes.ax2yMax))
+    ax2.set_xlim(0, plotWidth)
+    # axes.ax2.axis((t - plotWidth, t, axes.ax2yMin, axes.ax2yMax))
     ax2.set_xlim(agents.preLaunch - plotWidth, -agents.preLaunch)
     # ax2.set_xlim(-agents.preLaunch, plotWidth+agents.preLaunch)
     ax2.set_ylim(ax2yMin, ax2yMax)
@@ -81,6 +82,8 @@ def init_ax2():
                         alpha=1.0, label='Black')
     lineOth, = ax2.plot(0, 0, color='orange', linewidth=1, linestyle='-', 
                         alpha=1.0, label='Other')
+    lineNptsd, = ax2.plot(0, 0, color='k', linewidth=2, linestyle='-', 
+                        alpha=1.0, label='nPtsd')
     ax2.legend(loc=6)
 
 #########[ init ax3  Sched Axes ]########
@@ -137,17 +140,6 @@ def init_ax4():
                                
     # Attach checkboxes to checkbox function
     check.on_clicked(func)
-    
-########[ init ax5 Key Legend ]########
-def init_ax5():
-    
-    global ax5
-    
-    ax5 = fig.add_axes([.72, .35, .25, .25])
-    ax5.set_xticklabels([])
-    ax5.set_yticklabels([])
-    ax5.set_xticks([])
-    ax5.set_yticks([])
 
 
 #########[ init axes ]########
@@ -156,7 +148,6 @@ def init_axes():
     init_ax2()
     init_ax3()
     init_ax4()
-    init_ax5()
     
 
 
