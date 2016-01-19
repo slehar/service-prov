@@ -366,6 +366,7 @@ def init_agent(agtId):
                    'iVal':iVal,
                    'iFact':iFact,
                    'isComplex':isComplex,
+                   'gender':gender,
                    'race':race,
                    'ethncy':ethncy,
                    'treating':False,

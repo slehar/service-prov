@@ -17,8 +17,6 @@ image.init_map()
 agents.init_agents()
 agents.initSched(agents.schedList, agents.tileArray)
 
-agents.start = agents.clock()
-
 # Run the animation
 ani = animation.FuncAnimation(axes.fig, agents.update, interval=100., repeat=True)
 

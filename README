@@ -40,27 +40,35 @@ ServiceProv9.py
 
 ServiceProv10.py
   Scheduler done, defined writeLog()
+  NEEDS FIX updateSched()
 
 ServiceProv11.py
   Modularized writelog, axes, agents
+  NEEDS FIX updateSched()
 
 ServiceProv11a.py
   Stepped care
+  NEEDS FIX updateSched()
 
 ServiceProv12.py
   Modularized totalmodular, later abandoned
+  NEEDS FIX updateSched()
 
 ServiceProv13.py
   Stepped care and different treatment of SPR vs. CBT
+  NEEDS FIX updateSched()
 
 ServiceProv14.py
   Add UHF neighborhood map from SP8a
+  NEEDS FIX updateSched()
 
 ServiceProv15.py
   Switch to Boroughs map of NY
+  NEEDS FIX updateSched()
 
 ServiceProv16.py
   Added demographics
+  NEEDS FIX updateSched()
 
 ServiceProv17.py
   Added gender and gender symbols

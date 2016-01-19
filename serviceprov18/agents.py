@@ -12,7 +12,6 @@ import matplotlib.patches as mpatches
 from collections import deque
 import StringIO
 import time
-import timeit
 
 # Local modules
 import axes
@@ -35,7 +34,7 @@ steppedSched = 5
 avgInput = 0.
 square = None
 circle = None
-circRad1 = .004
+circRad1 = .0004
 circRad2 = .006
 circRad3 = .008
 schedList = []
@@ -77,10 +76,6 @@ codes = [Path.MOVETO,
          Path.CURVE4,
          ]
 
-# Timeit timer         
-clock = timeit.default_timer
-start = clock()
-lastTime = 0.
          
 #%%########[ probRaceEthncy ]#######
 def probRaceEthncy(borough):
@@ -302,7 +297,8 @@ def init_agent(agtId):
 
     # Define agent's triple circle & wedge
     circle1 = plt.Circle((xLoc, yLoc), circRad1, fc=(r,g,0),
-                         ec=(r,g,0))
+                         ec=cmplxColor)
+    '''
     circle2 = plt.Circle((xLoc, yLoc), circRad2, fc=cmplxColor,
                          ec=cmplxColor)
     circle3 = plt.Circle((xLoc, yLoc), circRad3, fc=raceColor,
@@ -313,6 +309,7 @@ def init_agent(agtId):
     axes.ax.add_patch(circle3)
     axes.ax.add_patch(wedge)
     axes.ax.add_patch(circle2)
+    '''
     axes.ax.add_patch(circle1)
      
     # Define agent's bezier links
@@ -325,6 +322,7 @@ def init_agent(agtId):
                               lw=1, ec='#afafaf', visible=False)
     axes.ax.add_patch(bezPatch)
                               
+    '''
     # Define agent's gender symbol
     if gender == 'Male':
         xData = [xLoc + circRad2, 
@@ -350,6 +348,7 @@ def init_agent(agtId):
                  yLoc - 1.5*circRad2] 
     gendSymb = plt.Line2D(xData, yData, color='k')
     axes.ax.add_line(gendSymb)
+    '''
 
     # Agent ID number below circle
     idText = axes.ax.text(xLoc-.004, yLoc-.021, '%d'%agtId, visible=False)
@@ -357,9 +356,6 @@ def init_agent(agtId):
 
     newAgent =    {'id':agtId,
                    'circ1':circle1,
-                   'circ2':circle2,
-                   'circ3':circle3,
-                   'wedge':wedge,
                    'bezPatch':bezPatch,
                    'xLoc':xLoc,
                    'yLoc':yLoc,
@@ -367,6 +363,7 @@ def init_agent(agtId):
                    'iVal':iVal,
                    'iFact':iFact,
                    'isComplex':isComplex,
+                   'gender':gender,
                    'race':race,
                    'ethncy':ethncy,
                    'treating':False,
@@ -648,10 +645,6 @@ def update(num):
     if axes.checkPause:
         return
  
-    newTime = clock()       
-    writelog.write('Update %5.2f dur %5.2f\n'%(newTime - start, newTime - lastTime))
-    lastTime = newTime
-
     sumPtsd = sumPtsdWht = sumPtsdBlk = sumPtsdOth = 0.
     for agnum in range(nAgents):
         update_agent(agents[agnum]) # <====== update_agent()
