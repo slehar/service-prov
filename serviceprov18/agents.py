@@ -565,19 +565,21 @@ def update_agent(agent):
                     # Increment treatment number
                     agent['treatNo'] += 1
  
-                    if axes.checkStepped and agent['isComplex']:
-                        nTreatLeft = standardSched + 1
+                    if axes.checkStepped and not agent['isComplex']:
+                        nTreatLeft = steppedSched + 1
                     else:
-                        nTreatLeft = steppedSched+1
+                        nTreatLeft = standardSched + 1
                     if agent['treatNo'] >= nTreatLeft:
-                        if axes.checkStepped and agent['isComplex']:
-                            writelog.write('  treatNo = %d standardSched = %d\n'%
-                                         (agent['treatNo'], standardSched))
-                        else:
+                        
+                        if axes.checkStepped and not agent['isComplex']:
                             writelog.write('  treatNo = %d steppedSched = %d\n'%
                                          (agent['treatNo'], steppedSched))
+                        else:
+                            writelog.write('  treatNo = %d standardSched = %d\n'%
+                                         (agent['treatNo'], standardSched))
                         if doingLogging: writelog.write('Un-enroll agent %d treatment done\n'% 
                                                             agent['id'])
+                                                            
                         agent['enrolled'] = False
                         agent['treatNo'] = 0
                         # agent['treating'] = False
