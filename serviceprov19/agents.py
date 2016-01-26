@@ -182,6 +182,11 @@ def init_agent(agtId):
         borough = image.burrIndx[image.imgYSize - yLoc * image.imgYSize,
                                   (xLoc-image.xOff)*image.imgXSize/image.aspect + image.xOff]
         borough -= 1  #<=== KLUDGE! (Don't know why this is necessary)
+        
+        # Maybe to do with this error?
+        # /Users/slehar/anaconda/lib/python2.7/site-packages/PIL/Image.py:936: UserWarning: 
+        # Couldn't allocate palette entry for transparency
+        
         writelog.write("agtId: % 3d  xLoc, yLoc = (%4.2f, %4.2f) borough = %3d\n"%(
                         agtId, xLoc, yLoc, borough))
         
