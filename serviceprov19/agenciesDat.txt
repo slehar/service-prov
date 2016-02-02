@@ -1,0 +1,51 @@
+Catholic Charities Neighborhood Services, Inc.	CCNS	Bronx	(0, 0)	6
+Federation Employment and Guidance Service, Inc. (FEGS NYC)	FEGS	Bronx	(0, 0)	6
+Institute for Community Living, Inc.	ICL	Bronx	(0, 0)	6
+Catholic Charities Neighborhood Services, Inc.	CCNS	Brooklyn	(0, 0)	6
+Counseling in Schools	CS	Brooklyn	(0, 0)	6
+Federation Employment and Guidance Service, Inc. (FEGS NYC)	FEGS	Brooklyn	(0, 0)	6
+Hamilton-Madison House	HMH	Brooklyn	(0, 0)	6
+Henry Street Settlement	HSS	Brooklyn	(0, 0)	6
+Institute for Community Living, Inc.	ICL	Brooklyn	(0, 0)	6
+Jewish Board of Family and Children's Services, Inc.	JBFCS	Brooklyn	(0, 0)	6
+Lutheran Family Health Centers	LFHC	Brooklyn	(0, 0)	6
+Ohel Children's Home and Family Services	OCHFS	Brooklyn	(0, 0)	6
+Partnership with Children	PC	Brooklyn	(0, 0)	6
+Project Hospitality	PH	Brooklyn	(0, 0)	6
+University Settlement	US	Brooklyn	(0, 0)	6
+Visiting Nurse Service of New York	VNSNY	Brooklyn	(0, 0)	6
+Catholic Charities Neighborhood Services, Inc.	CCNS	Manhattan	(0, 0)	6
+Counseling in Schools	CS	Manhattan	(0, 0)	6
+Federation Employment and Guidance Service, Inc. (FEGS NYC)	FEGS	Manhattan	(0, 0)	6
+Hamilton-Madison House	HMH	Manhattan	(0, 0)	6
+Henry Street Settlement	HSS	Manhattan	(0, 0)	6
+Institute for Community Living, Inc.	ICL	Manhattan	(0, 0)	6
+Lutheran Family Health Centers	LFHC	Manhattan	(0, 0)	6
+Ohel Children's Home and Family Services	OCHFS	Manhattan	(0, 0)	6
+Partnership with Children	PC	Manhattan	(0, 0)	6
+Project Hospitality	PH	Manhattan	(0, 0)	6
+University Settlement	US	Manhattan	(0, 0)	6
+Catholic Charities Neighborhood Services, Inc.	CCNS	StatenIsl	(0, 0)	6
+Federation Employment and Guidance Service, Inc. (FEGS NYC)	FEGS	StatenIsl	(0, 0)	6
+Hamilton-Madison House	HMH	StatenIsl	(0, 0)	6
+Institute for Community Living, Inc.	ICL	StatenIsl	(0, 0)	6
+Jewish Board of Family and Children's Services, Inc.	JBFCS	StatenIsl	(0, 0)	6
+Long Beach Reach	LBR	StatenIsl	(0, 0)	6
+Lutheran Family Health Centers	LFHC	StatenIsl	(0, 0)	6
+Ohel Children's Home and Family Services	OCHFS	StatenIsl	(0, 0)	6
+Project Hospitality	PH	StatenIsl	(0, 0)	6
+Staten Island Mental Health Society	SIMHS	StatenIsl	(0, 0)	6
+Catholic Charities Neighborhood Services, Inc.	CCNS	Queens	(0, 0)	6
+Counseling in Schools	CS	Queens	(0, 0)	6
+Federation Employment and Guidance Service, Inc. (FEGS NYC)	FEGS	Queens	(0, 0)	6
+Hamilton-Madison House	HMH	Queens	(0, 0)	6
+Henry Street Settlement	HSS	Queens	(0, 0)	6
+Institute for Community Living, Inc.	ICL	Queens	(0, 0)	6
+Lutheran Family Health Centers	LFHC	Queens	(0, 0)	6
+MHA of Nassau County	MHANC	Queens	(0, 0)	6
+New Horizon Counseling Center	NHCC	Queens	(0, 0)	6
+Ohel Children's Home and Family Services	OCHFS	Queens	(0, 0)	6
+Partnership with Children	PC	Queens	(0, 0)	6
+St. John's Episcopal Hospital	S	Queens	(0, 0)	6
+Transitional Services for NY (TSI)	TSNY	Queens	(0, 0)	6
+Visiting Nurse Service of New York	VNSNY	Queens	(0, 0)	6

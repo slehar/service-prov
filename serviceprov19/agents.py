@@ -15,6 +15,7 @@ import time
 
 # Local modules
 import axes
+import agencies
 import image
 import writelog
 
@@ -37,9 +38,9 @@ circle = None
 circRad1 = .001
 circRad2 = .006
 circRad3 = .008
-schedList = []
-schedPtr = 0
-tileArray = []
+schedList = [[]]
+schedPtr = []
+tileArrayList = [[]]
 doingLogging = True
 doseValue = .2
 delay = 0.0
@@ -61,10 +62,11 @@ dArrayNptsd = deque([0.])
 plotWidth = 500
 
 agents = []
-totInput = 0.
+totInput = [0.]
 
 minSep = .0025
 rSigma = .3
+
 
 # Initialize random seed
 seed(3)
@@ -168,6 +170,7 @@ def init_agent(agtId):
     global nEnrolled, schedList, schedPtr, avgInput
     global agents, nAgents, square, circle, avgInput, \
             nAgentsWht, nAgentsBlk, nAgentsOth
+    global agencyList, nAgencies
 
 
     foundSpace = False
@@ -215,29 +218,29 @@ def init_agent(agtId):
     # Define agent's race and ethnicity
     (race, ethncy) = probRaceEthncy(borough)
     if race == 'White':
-        raceColor = 'w'
+        #raceColor = 'w'
         isWhite = 1.
         isBlack = 0.
         isOther = 0.
         nAgentsWht += 1
     elif race == 'Black':
-        raceColor = 'k'
+        #raceColor = 'k'
         isWhite = 0.
         isBlack = 1.
         isOther = 0.
         nAgentsBlk += 1
     elif race == 'Other':
-        raceColor = 'gray'
+        #raceColor = 'gray'
         isWhite = 0.
         isBlack = 0.
         isOther = 1.
         nAgentsOth += 1
         
     if ethncy == 'Hispanic':
-        ethVis = True
+        #ethVis = True
         isHisp = 1.
     else:
-        ethVis = False
+        #ethVis = False
         isHisp = 0.
     
     # Define agent's gender
@@ -279,7 +282,7 @@ def init_agent(agtId):
     # Or using just random
     else:
         iVal = random()
-        writelog.write('  calculate_input: iVal = %f\n'%iVal)
+        writelog.write('  iVal = random() = %f\n'%iVal)
             
 
     if iVal > iThresh:
@@ -302,27 +305,33 @@ def init_agent(agtId):
     r = (1. - xVal)
     g = xVal
 
-    # Define agent's triple circle & wedge
+    # Define agent's triple circle
     circle1 = plt.Circle((xLoc, yLoc), circRad1, fc=(r,g,0),
                          ec=cmplxColor)
-    '''
-    circle2 = plt.Circle((xLoc, yLoc), circRad2, fc=cmplxColor,
-                         ec=cmplxColor)
-    circle3 = plt.Circle((xLoc, yLoc), circRad3, fc=raceColor,
-                         ec=raceColor)
-    wedge   = mpatches.Wedge((xLoc, yLoc), circRad3, 180, 0,
-                             fc='brown', ec='brown', visible=ethVis)
-    
-    axes.ax.add_patch(circle3)
-    axes.ax.add_patch(wedge)
-    axes.ax.add_patch(circle2)
-    '''
+
     if xVal > visThresh:
         circle1.set_visible(False)
     else:
         circle1.set_visible(True)
     axes.ax.add_patch(circle1)
      
+    # Define agent's bezier links
+    bezList = []
+    '''
+    for agency in range(nAgencies):
+        (agcXLoc, agcYLoc) = (agencyList[agency]['xLoc'], agencyList[agency]['yLoc'])
+        verts[agency] = ((agcXLoc, agcYLoc), # Bezier lnk from prov. to here
+                 ((agcXLoc + xLoc)/2., agcYLoc),
+                 (xLoc, (agcYLoc + yLoc)/2.),
+                 (xLoc, yLoc))
+        bezPath = Path(verts, codes)
+        bezPatch = mpatches.PathPatch(bezPath, facecolor='none',
+                                  lw=1, ec='#afafaf', visible=False)
+        bezList.append(bezPatch)
+        axes.ax.add_patch(bezPatch)
+        
+    '''
+    
     # Define agent's bezier links
     verts = ((axes.provXCtr, axes.provYCtr), # Bezier lnk from prov. to here
              ((axes.provXCtr + xLoc)/2., axes.provYCtr),
@@ -333,40 +342,13 @@ def init_agent(agtId):
                               lw=1, ec='#afafaf', visible=False)
     axes.ax.add_patch(bezPatch)
                               
-    '''
-    # Define agent's gender symbol
-    if gender == 'Male':
-        xData = [xLoc + circRad2, 
-                 xLoc + 1.5*circRad2, 
-                 xLoc + 1.5*circRad2-circRad2/2,
-                 xLoc + 1.5*circRad2, 
-                 xLoc + 1.5*circRad2] 
-        yData = [yLoc + circRad2, 
-                 yLoc + 1.5*circRad2, 
-                 yLoc + 1.5*circRad2,
-                 yLoc + 1.5*circRad2, 
-                 yLoc + 1.5*circRad2-circRad2/2] 
-    elif gender == 'Female':
-        xData = [xLoc, 
-                 xLoc, 
-                 xLoc,
-                 xLoc - .5*circRad2, 
-                 xLoc + .5*circRad2] 
-        yData = [yLoc - circRad2, 
-                 yLoc - 2*circRad2, 
-                 yLoc - 1.5*circRad2,
-                 yLoc - 1.5*circRad2, 
-                 yLoc - 1.5*circRad2] 
-    gendSymb = plt.Line2D(xData, yData, color='k')
-    axes.ax.add_line(gendSymb)
-    '''
-
+                              
     # Agent ID number below circle
     idText = axes.ax.text(xLoc-.004, yLoc-.021, '%d'%agtId, visible=False)
     
     newAgent =    {'id':agtId,
                    'circ1':circle1,
-                   'bezPatch':bezPatch,
+                   'bezList':bezList,
                    'xLoc':xLoc,
                    'yLoc':yLoc,
                    'xVal':xVal,
@@ -378,17 +360,17 @@ def init_agent(agtId):
                    'ethncy':ethncy,
                    'treating':False,
                    'enrolled':False,
+                   'agency':None,
                    'treatNo':0,        # current treatment #
                    'idText':idText}
     return newAgent
-
-
 
 
 #%%########[ init agents ]########
 def init_agents():
     
     global agents, nAgents, square, circle, avgInput, \
+            agencyList, nAgencies, \
             nAgentsWht, nAgentsBlk, nAgentsOth, avgInput
     
     totInput = 0.
@@ -403,11 +385,11 @@ def init_agents():
         agents.append(newAgent)
         totInput += newAgent['iVal']
         
-    
-    
     avgInput = totInput/float(nAgents)
+        
     
     # Service provider square and 2 sigma range
+    '''
     square = plt.Rectangle((axes.provXOrg, axes.provYOrg),
                            axes.provSize, axes.provSize, fc=(0,1,0), ec='k')
     axes.ax.add_patch(square)
@@ -416,6 +398,7 @@ def init_agents():
     circle = plt.Circle((axes.provXOrg, axes.provYOrg), radius=rSigma, ec='r',
                         fc='none', linestyle='dashed', visible=axes.checkDist)
     axes.ax.add_patch(circle)
+    '''
 
 
 #%%# function printSched
