@@ -7,6 +7,7 @@ Created on Fri Oct  2 15:13:56 2015
 
 import matplotlib.pyplot as plt
 from matplotlib.widgets import CheckButtons
+import numpy as np
 
 import agents
 
@@ -56,8 +57,8 @@ def init_ax():
     ax.set_ylim(axYLim)
     # ax.set_xticklabels([])
     # ax.set_yticklabels([])
-    # ax.set_xticks([])
-    # ax.set_yticks([])
+    ax.set_xticks(np.arange(0,1.1,.1))
+    ax.set_yticks(np.arange(0,1.1,.1))
 
 #########[ init ax2 Plot Axes ]########
 def init_ax2():
