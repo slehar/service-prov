@@ -531,13 +531,7 @@ def update_agent(agent):
                 # Register in schedList[]
                 # writelog.write('About to enroll\n')
                 if doingLogging:
-                    writelog.write('Enrolling agent %d\n'% agent['id'])
-                treatList = [None for i in range(standardSched)]
-                treatList[agent['treatNo']] = agent['xVal']
-                treatList.insert(0, agent['isComplex'])
-                treatList.insert(0,agent['id'])
-                schedList.append(treatList)
-                
+                    writelog.write('Enrolling agent %d\n'% agent['id'])               
                 # update schedule
                 updateSched(schedList, tileArray)
                 if doingLogging:

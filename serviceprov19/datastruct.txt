@@ -1,0 +1,129 @@
+
+
+agencies.agenciesList = {
+  'Bronx':[
+schedListschedList':[], 'tileArray':[]}
+    {'abbrev':'CCNS', 'boro':'Bronx', 'loc':(0, 0), 'square':square, 'numEnrolled':numenrolled, 'maxEnrolled':maxenrolled, 'schedList':[], 'tileArray':[]}
+    {'abbrev':'CCNS', 'boro':'Bronx', 'loc':(0, 0), 'square':square, 'numEnrolled':numenrolled, 'maxEnrolled':maxenrolled, 'schedList':[], 'tileArray':[]}
+    {'abbrev':'CCNS', 'boro':'Bronx', 'loc':(0, 0), 'square':square, 'numEnrolled':numenrolled, 'maxEnrolled':maxenrolled, 'schedList':[], 'tileArray':[]}
+    {'abbrev':'CCNS', 'boro':'Bronx', 'loc':(0, 0), 'square':square, 'numEnrolled':numenrolled, 'maxEnrolled':maxenrolled, 'schedList':[], 'tileArray':[]}
+  ],
+  'Brooklyn':[
+    {'abbrev':'CCNS', 'boro':'Bronx', 'loc':(0, 0), 'square':square, 'numEnrolled':numenrolled, 'maxEnrolled':maxenrolled, 'schedList':[], 'tileArray':[]}
+    {'abbrev':'CCNS', 'boro':'Bronx', 'loc':(0, 0), 'square':square, 'numEnrolled':numenrolled, 'maxEnrolled':maxenrolled, 'schedList':[], 'tileArray':[]}
+    {'abbrev':'CCNS', 'boro':'Bronx', 'loc':(0, 0), 'square':square, 'numEnrolled':numenrolled, 'maxEnrolled':maxenrolled, 'schedList':[], 'tileArray':[]}
+    {'abbrev':'CCNS', 'boro':'Bronx', 'loc':(0, 0), 'square':square, 'numEnrolled':numenrolled, 'maxEnrolled':maxenrolled, 'schedList':[], 'tileArray':[]}
+    {'abbrev':'CCNS', 'boro':'Bronx', 'loc':(0, 0), 'square':square, 'numEnrolled':numenrolled, 'maxEnrolled':maxenrolled, 'schedList':[], 'tileArray':[]}
+  ],
+  'Manhattan':[
+    {'abbrev':'CCNS', 'boro':'Bronx', 'loc':(0, 0), 'square':square, 'numEnrolled':numenrolled, 'maxEnrolled':maxenrolled, 'schedList':[], 'tileArray':[]}
+    {'abbrev':'CCNS', 'boro':'Bronx', 'loc':(0, 0), 'square':square, 'numEnrolled':numenrolled, 'maxEnrolled':maxenrolled, 'schedList':[], 'tileArray':[]}
+    {'abbrev':'CCNS', 'boro':'Bronx', 'loc':(0, 0), 'square':square, 'numEnrolled':numenrolled, 'maxEnrolled':maxenrolled, 'schedList':[], 'tileArray':[]}
+    {'abbrev':'CCNS', 'boro':'Bronx', 'loc':(0, 0), 'square':square, 'numEnrolled':numenrolled, 'maxEnrolled':maxenrolled, 'schedList':[], 'tileArray':[]}
+    {'abbrev':'CCNS', 'boro':'Bronx', 'loc':(0, 0), 'square':square, 'numEnrolled':numenrolled, 'maxEnrolled':maxenrolled, 'schedList':[], 'tileArray':[]}
+  ]
+  ...
+}
+
+
+
+agents.agents = [
+  {'id':agtId,
+   'circ1':circle1,
+   'boroName':boroName,
+   'boroIndx':boroIndx,
+   'bezPatch':bezPatch,
+   'xLoc':xLoc,
+   'yLoc':yLoc,
+   'xVal':xVal,
+   'iVal':iVal,
+   'iFact':iFact,
+   'isComplex':isComplex,
+   'gender':gender,
+   'race':race,
+   'ethncy':ethncy,
+   'treating':False,
+   'enrolled':False,
+   'agency':None,
+   'treatNo':0,
+   'idText':idText},
+
+  {'id':agtId,
+   'circ1':circle1,
+   'boroName':boroName,
+   'boroIndx':boroIndx,
+   'bezPatch':bezPatch,
+   'xLoc':xLoc,
+   'yLoc':yLoc,
+   'xVal':xVal,
+   'iVal':iVal,
+   'iFact':iFact,
+   'isComplex':isComplex,
+   'gender':gender,
+   'race':race,
+   'ethncy':ethncy,
+   'treating':False,
+   'enrolled':False,
+   'agency':None,
+   'treatNo':0,
+   'idText':idText},
+
+  {'id':agtId,
+   'circ1':circle1,
+   'boroName':boroName,
+   'boroIndx':boroIndx,
+   'bezPatch':bezPatch,
+   'xLoc':xLoc,
+   'yLoc':yLoc,
+   'xVal':xVal,
+   'iVal':iVal,
+   'iFact':iFact,
+   'isComplex':isComplex,
+   'gender':gender,
+   'race':race,
+   'ethncy':ethncy,
+   'treating':False,
+   'enrolled':False,
+   'agency':None,
+   'treatNo':0,
+   'idText':idText},
+]
+
+agencies.agenciesList['Bronx'][0]['tileArray'] = [
+  [   ]
+  [   ]
+  [   ]
+]
+
+schedList = [
+  ['  0', False, <plt.Rect>,  <plt.Rect>,  <plt.Rect>,  <plt.Rect>,  <plt.Rect>,  <plt.Rect>,  <plt.Rect>,  <plt.Rect>,  <plt.Rect>,  <plt.Rect>,  <plt.Rect>] 
+  ['  1', False, <plt.Rect>,  <plt.Rect>,  <plt.Rect>,  <plt.Rect>,  <plt.Rect>,  <plt.Rect>,  <plt.Rect>,  <plt.Rect>,  <plt.Rect>,  <plt.Rect>,  <plt.Rect>] 
+  ['  2', False, <plt.Rect>,  <plt.Rect>,  <plt.Rect>,  <plt.Rect>,  <plt.Rect>,  <plt.Rect>,  <plt.Rect>,  <plt.Rect>,  <plt.Rect>,  <plt.Rect>,  <plt.Rect>] 
+  ['  3', False, <plt.Rect>,  <plt.Rect>,  <plt.Rect>,  <plt.Rect>,  <plt.Rect>,  <plt.Rect>,  <plt.Rect>,  <plt.Rect>,  <plt.Rect>,  <plt.Rect>,  <plt.Rect>] 
+  ['  4', False, <plt.Rect>,  <plt.Rect>,  <plt.Rect>,  <plt.Rect>,  <plt.Rect>,  <plt.Rect>,  <plt.Rect>,  <plt.Rect>,  <plt.Rect>,  <plt.Rect>,  <plt.Rect>] 
+  ['  5', False, <plt.Rect>,  <plt.Rect>,  <plt.Rect>,  <plt.Rect>,  <plt.Rect>,  <plt.Rect>,  <plt.Rect>,  <plt.Rect>,  <plt.Rect>,  <plt.Rect>,  <plt.Rect>] 
+  ['  6', False, <plt.Rect>,  <plt.Rect>,  <plt.Rect>,  <plt.Rect>,  <plt.Rect>,  <plt.Rect>,  <plt.Rect>,  <plt.Rect>,  <plt.Rect>,  <plt.Rect>,  <plt.Rect>] 
+  ['  7', False, <plt.Rect>,  <plt.Rect>,  <plt.Rect>,  <plt.Rect>,  <plt.Rect>,  <plt.Rect>,  <plt.Rect>,  <plt.Rect>,  <plt.Rect>,  <plt.Rect>,  <plt.Rect>] 
+]
+agencies.agenciesList['Bronx'][1]['schedList'] =
+schedList = [
+  ['  0', False, <plt.Rect>,  <plt.Rect>,  <plt.Rect>,  <plt.Rect>,  <plt.Rect>,  <plt.Rect>,  <plt.Rect>,  <plt.Rect>,  <plt.Rect>,  <plt.Rect>,  <plt.Rect>] 
+  ['  1', False, <plt.Rect>,  <plt.Rect>,  <plt.Rect>,  <plt.Rect>,  <plt.Rect>,  <plt.Rect>,  <plt.Rect>,  <plt.Rect>,  <plt.Rect>,  <plt.Rect>,  <plt.Rect>] 
+  ['  2', False, <plt.Rect>,  <plt.Rect>,  <plt.Rect>,  <plt.Rect>,  <plt.Rect>,  <plt.Rect>,  <plt.Rect>,  <plt.Rect>,  <plt.Rect>,  <plt.Rect>,  <plt.Rect>] 
+  ['  3', False, <plt.Rect>,  <plt.Rect>,  <plt.Rect>,  <plt.Rect>,  <plt.Rect>,  <plt.Rect>,  <plt.Rect>,  <plt.Rect>,  <plt.Rect>,  <plt.Rect>,  <plt.Rect>] 
+  ['  4', False, <plt.Rect>,  <plt.Rect>,  <plt.Rect>,  <plt.Rect>,  <plt.Rect>,  <plt.Rect>,  <plt.Rect>,  <plt.Rect>,  <plt.Rect>,  <plt.Rect>,  <plt.Rect>] 
+  ['  5', False, <plt.Rect>,  <plt.Rect>,  <plt.Rect>,  <plt.Rect>,  <plt.Rect>,  <plt.Rect>,  <plt.Rect>,  <plt.Rect>,  <plt.Rect>,  <plt.Rect>,  <plt.Rect>] 
+  ['  6', False, <plt.Rect>,  <plt.Rect>,  <plt.Rect>,  <plt.Rect>,  <plt.Rect>,  <plt.Rect>,  <plt.Rect>,  <plt.Rect>,  <plt.Rect>,  <plt.Rect>,  <plt.Rect>] 
+  ['  7', False, <plt.Rect>,  <plt.Rect>,  <plt.Rect>,  <plt.Rect>,  <plt.Rect>,  <plt.Rect>,  <plt.Rect>,  <plt.Rect>,  <plt.Rect>,  <plt.Rect>,  <plt.Rect>] 
+]
+agencies.agenciesList['Bronx'][2]['schedList'] =
+schedList = [
+  ['  0', False, <plt.Rect>,  <plt.Rect>,  <plt.Rect>,  <plt.Rect>,  <plt.Rect>,  <plt.Rect>,  <plt.Rect>,  <plt.Rect>,  <plt.Rect>,  <plt.Rect>,  <plt.Rect>] 
+  ['  1', False, <plt.Rect>,  <plt.Rect>,  <plt.Rect>,  <plt.Rect>,  <plt.Rect>,  <plt.Rect>,  <plt.Rect>,  <plt.Rect>,  <plt.Rect>,  <plt.Rect>,  <plt.Rect>] 
+  ['  2', False, <plt.Rect>,  <plt.Rect>,  <plt.Rect>,  <plt.Rect>,  <plt.Rect>,  <plt.Rect>,  <plt.Rect>,  <plt.Rect>,  <plt.Rect>,  <plt.Rect>,  <plt.Rect>] 
+  ['  3', False, <plt.Rect>,  <plt.Rect>,  <plt.Rect>,  <plt.Rect>,  <plt.Rect>,  <plt.Rect>,  <plt.Rect>,  <plt.Rect>,  <plt.Rect>,  <plt.Rect>,  <plt.Rect>] 
+  ['  4', False, <plt.Rect>,  <plt.Rect>,  <plt.Rect>,  <plt.Rect>,  <plt.Rect>,  <plt.Rect>,  <plt.Rect>,  <plt.Rect>,  <plt.Rect>,  <plt.Rect>,  <plt.Rect>] 
+  ['  5', False, <plt.Rect>,  <plt.Rect>,  <plt.Rect>,  <plt.Rect>,  <plt.Rect>,  <plt.Rect>,  <plt.Rect>,  <plt.Rect>,  <plt.Rect>,  <plt.Rect>,  <plt.Rect>] 
+  ['  6', False, <plt.Rect>,  <plt.Rect>,  <plt.Rect>,  <plt.Rect>,  <plt.Rect>,  <plt.Rect>,  <plt.Rect>,  <plt.Rect>,  <plt.Rect>,  <plt.Rect>,  <plt.Rect>] 
+  ['  7', False, <plt.Rect>,  <plt.Rect>,  <plt.Rect>,  <plt.Rect>,  <plt.Rect>,  <plt.Rect>,  <plt.Rect>,  <plt.Rect>,  <plt.Rect>,  <plt.Rect>,  <plt.Rect>] 
+]

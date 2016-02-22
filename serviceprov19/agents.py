@@ -12,6 +12,7 @@ import matplotlib.patches as mpatches
 from collections import deque
 import StringIO
 import time
+import re
 
 # Local modules
 import axes
@@ -38,9 +39,9 @@ circle = None
 circRad1 = .001
 circRad2 = .006
 circRad3 = .008
-schedList = [[]]
-schedPtr = []
-tileArrayList = [[]]
+#schedListList = [[]]
+#schedPtr = []
+#tileArrayList = [[]]
 doingLogging = True
 doseValue = .2
 delay = 0.0
@@ -167,35 +168,38 @@ def calculate_distribution(isMale, isOld, isBlack, isWhite, isOther, isHisp, had
 #%%#### Initialize single agent ####
 def init_agent(agtId):
 
-    global nEnrolled, schedList, schedPtr, avgInput
-    global agents, nAgents, square, circle, avgInput, \
+    global nEnrolled, schedList, schedPtr
+    global agents, nAgents, square, circle, \
             nAgentsWht, nAgentsBlk, nAgentsOth
     global agencyList, nAgencies
+    
+    writelog.write('In init_agent(%3d)'%agtId)
 
 
     foundSpace = False
     while not foundSpace:
         xLoc = random() * image.aspect + .1*image.aspect
         yLoc = random()
-        writelog.write("agtId: % 3d  xLoc, yLoc = (%4.2f, %4.2f)\n"%(agtId, xLoc, yLoc))
+        #writelog.write("agtId: % 3d  xLoc, yLoc = (%4.2f, %4.2f)\n"%(agtId, xLoc, yLoc))
         
         inMask  = image.maskImg[image.imgYSize - yLoc * image.imgYSize,
                                  (xLoc-image.xOff)*image.imgXSize/image.aspect + image.xOff][0]
                             
-        borough = image.burrIndx[image.imgYSize - yLoc * image.imgYSize,
-                                  (xLoc-image.xOff)*image.imgXSize/image.aspect + image.xOff]
-        borough -= 1  #<=== KLUDGE! (Don't know why this is necessary)
+        boroIndx = int(image.burrIndx[image.imgYSize - yLoc * image.imgYSize,
+                                  (xLoc-image.xOff)*image.imgXSize/image.aspect + image.xOff])
+        if boroIndx > 0:
+            boroIndx -= 1
+        #print 'agent %3d loc (%4.2f, %4.2f) boroIndex %3d'%(agtId, xLoc, yLoc, boroIndx)
+        #print 'boro[boroindx] = %s'%agencies.boroughsList[boroIndx-1]
+        boroName = agencies.boroughsList[boroIndx-1]
         
-        # Maybe to do with this error?
-        # /Users/slehar/anaconda/lib/python2.7/site-packages/PIL/Image.py:936: UserWarning: 
-        # Couldn't allocate palette entry for transparency
         
-        writelog.write("agtId: % 3d  xLoc, yLoc = (%4.2f, %4.2f) borough = %3d\n"%(
-                        agtId, xLoc, yLoc, borough))
+        writelog.write("  agtId: % 3d  xLoc, yLoc = (%4.2f, %4.2f) boro %s boroIndx = %3d\n"%(
+                        agtId, xLoc, yLoc, boroName, boroIndx))
         
-        # if inMask > .5 and borough in range(1,6):  # If in the masked area check for collision
+        # if inMask > .5 and boroIndx in range(1,6):  # If in the masked area check for collision
         if inMask > .9:  # If in the masked area check for collision
-            writelog.write('  In borough %3d\n'%borough)
+            writelog.write('  In boroIndx %3d\n'%boroIndx)
             collision = False
             for agt in range(len(agents)):
                 xLoc1 = agents[agt]['xLoc']
@@ -209,14 +213,14 @@ def init_agent(agtId):
                     break   # Stop going through more agents
             if not collision:
                 foundSpace = True
-                writelog.write("agtId: % 3d  xLoc, yLoc = (%4.2f, %4.2f) borough = %3d\n"%(
-                                agtId, xLoc, yLoc, borough))
                 writelog.write("  foundSpace!\n")
+                writelog.write("  agtId: % 3d  xLoc, yLoc = (%4.2f, %4.2f) boro %s boroIndx = %3d\n"%(
+                                agtId, xLoc, yLoc, boroName, boroIndx))
                 # Otherwise keep searching
 
         
     # Define agent's race and ethnicity
-    (race, ethncy) = probRaceEthncy(borough)
+    (race, ethncy) = probRaceEthncy(boroIndx)
     if race == 'White':
         #raceColor = 'w'
         isWhite = 1.
@@ -298,6 +302,7 @@ def init_agent(agtId):
             iFact = 0.7
             isComplex = True
             cmplxColor = 'r'
+            
 
     # Set xVal to equilibrium value
     xVal = iVal/(A+iVal)
@@ -316,39 +321,32 @@ def init_agent(agtId):
     axes.ax.add_patch(circle1)
      
     # Define agent's bezier links
-    bezList = []
+    bezPatch = None
     '''
-    for agency in range(nAgencies):
-        (agcXLoc, agcYLoc) = (agencyList[agency]['xLoc'], agencyList[agency]['yLoc'])
-        verts[agency] = ((agcXLoc, agcYLoc), # Bezier lnk from prov. to here
-                 ((agcXLoc + xLoc)/2., agcYLoc),
-                 (xLoc, (agcYLoc + yLoc)/2.),
+    for agcy in agencies.agenciesList[agencies.boroughsList[boroIndx-1]]:
+        (provXCtr, provYCtr) = agcy['loc']
+        
+         # Define agent's bezier links to that agency
+        verts = ((provXCtr, provYCtr), # Bezier lnk from prov. to here
+                 ((provXCtr + xLoc)/2., provYCtr),
+                 (xLoc, (provYCtr + yLoc)/2.),
                  (xLoc, yLoc))
         bezPath = Path(verts, codes)
         bezPatch = mpatches.PathPatch(bezPath, facecolor='none',
-                                  lw=1, ec='#afafaf', visible=False)
-        bezList.append(bezPatch)
+                                  lw=1, ec='#afafaf', visible=True)
         axes.ax.add_patch(bezPatch)
-        
+        bezList.append(bezPatch)
     '''
-    
-    # Define agent's bezier links
-    verts = ((axes.provXCtr, axes.provYCtr), # Bezier lnk from prov. to here
-             ((axes.provXCtr + xLoc)/2., axes.provYCtr),
-             (xLoc, (axes.provYCtr + yLoc)/2.),
-             (xLoc, yLoc))
-    bezPath = Path(verts, codes)
-    bezPatch = mpatches.PathPatch(bezPath, facecolor='none',
-                              lw=1, ec='#afafaf', visible=False)
-    axes.ax.add_patch(bezPatch)
-                              
+                          
                               
     # Agent ID number below circle
     idText = axes.ax.text(xLoc-.004, yLoc-.021, '%d'%agtId, visible=False)
     
     newAgent =    {'id':agtId,
                    'circ1':circle1,
-                   'bezList':bezList,
+                   'boroName':boroName,
+                   'boroIndx':boroIndx,
+                   'bezPatch':bezPatch,
                    'xLoc':xLoc,
                    'yLoc':yLoc,
                    'xVal':xVal,
@@ -369,9 +367,12 @@ def init_agent(agtId):
 #%%########[ init agents ]########
 def init_agents():
     
-    global agents, nAgents, square, circle, avgInput, \
+    global agents, nAgents, square, circle, \
             agencyList, nAgencies, \
             nAgentsWht, nAgentsBlk, nAgentsOth, avgInput
+            
+    #print '*****[ In init_agents() ]*****'
+    
     
     totInput = 0.
     
@@ -387,22 +388,14 @@ def init_agents():
         
     avgInput = totInput/float(nAgents)
         
-    
-    # Service provider square and 2 sigma range
-    '''
-    square = plt.Rectangle((axes.provXOrg, axes.provYOrg),
-                           axes.provSize, axes.provSize, fc=(0,1,0), ec='k')
-    axes.ax.add_patch(square)
-    
-    # Dist feature sigma radius dashed circle
-    circle = plt.Circle((axes.provXOrg, axes.provYOrg), radius=rSigma, ec='r',
-                        fc='none', linestyle='dashed', visible=axes.checkDist)
-    axes.ax.add_patch(circle)
-    '''
-
 
 #%%# function printSched
-def printSched():
+def printSched(agcy):
+    schedList = agcy['schedList']
+    name   = agcy['name']
+    abbrev = agcy['abbrev']
+    boro   = agcy['boro']
+    writelog.write('========[ '+name+' ('+abbrev+') in '+boro+' ]========\n')
     for indx, entry in enumerate(schedList):
         outStr=StringIO.StringIO()
         if entry[1]:
@@ -411,7 +404,6 @@ def printSched():
             stateStr = ' '
         outStr.write(' %3d: %s ['%(entry[0], stateStr))
         
-        # outStr.write(' %3d: %s ['%(entry[0], ststr)) # Duplicate line?
         for tr in range(2,standardSched+2):
             if entry[tr] == None:
                 outStr.write('  ~  ')
@@ -422,7 +414,7 @@ def printSched():
         outStr.close()
 
 #%%#### Initialize Schedule ####
-def initSched(schedList, tileArray):
+def initTileArray(agency):
     
     axes.ax3.set_xticklabels([])
     axes.ax3.set_yticklabels([])
@@ -431,28 +423,32 @@ def initSched(schedList, tileArray):
     axes.ax3.set_xlim((0, standardSched+2))
     axes.ax3.set_ylim((0, maxEnrolled))
     axes.ax3.grid(True)
+    
+    tileArray = agency['tileArray']
 
-    for row in range(maxEnrolled):
+    for row in range(agency['maxEnrolled']):
         newRow = []
         newRow.append(axes.ax3.text(1, maxEnrolled - 1 - row + .3, "   ", 
                       size=12, family='Monospace', horizontalalignment='right',
                       name='Courier', bbox=dict(fc='w', ec=None, lw=2)))
         newRow.append(False)
         for col in range(2, standardSched+2):
-            newTile = plt.Rectangle((col, maxEnrolled - 1 - row), 1, 1, fc='w')
+            newTile = plt.Rectangle((col, agency['maxEnrolled'] - 1 - row), 1, 1, fc='w')
             newRow.append(newTile)
             axes.ax3.add_patch(newTile)
         tileArray.append(newRow)
+            
         
 
-
 #%%#### Update Schedule ####
-def updateSched(schedList, tileArray):
-    # print '\nIn UpdateSched():'
+def updateTileArray(agcy):
+    # print '\nIn UpdateTileArray():'
     # axes.ax3.clear()
 
     # vLine1 = plt.Line2D((2,2),(0,6), lw=4, color='g')
     # axes.ax3.add_line(vLine1)
+    schedList = agcy['schedList']
+    tileArray = agcy['tileArray']
     for indx, entry in enumerate(schedList):
         # print repr(sched)
         if entry[1]:
@@ -475,62 +471,90 @@ def updateSched(schedList, tileArray):
 #%%#### Update single agent ####
 def update_agent(agent):
 
-    global nEnrolled, schedList, schedPtr, avgInput
+    global nEnrolled, schedList, schedPtr
 
     # print '  In update_agent agent = %r'%agent
-    # writelog.write('In update_agent agent = %r\n'%agent)
+    writelog.write('In update_agent %3d\n'%agent['id'])
+    writelog.write(re.sub(r',', '\n', '%r\n'%agent))
 
     xVal = agent['xVal']
     inputVal = agent['iVal']
 
     # If service is on, service the agents
     if axes.checkService:
-        square.set_fc('#00ff00')
+        #square.set_fc('#00ff00')
 
+        ########[ Enrollment Test ]#########
         # If not scheduled for treatment consider enrolling
         if not agent['enrolled']:
-            need = max((avgInput - xVal),0.)
-            # writelog.write('  not enrolled avgInput= %5.2f xVal= %5.2f need=%5.2f\n'%
-            #                     (avgInput, xVal, need))
+  
 
-            # Calculate probability of enrollment based on need (and distance from provider)
-            if axes.checkDist:
-                distProvX, distProvY = (agent['xLoc'] - axes.provXOrg,
-                                        agent['yLoc'] - axes.provYOrg)
-                distProv = np.sqrt(distProvX**2 + distProvY**2)
-                gauss = (1./rSigma*np.sqrt(2.*np.pi)) * \
-                        np.exp(-(distProv**2.)/(2.*rSigma**2))
-                probEnroll = need * (maxEnrolled - nEnrolled) * gauss
-            else:
-                probEnroll = need * (maxEnrolled - nEnrolled)
+            # Shuffle agency list every time
+            boroName = agent['boroName']
+            writelog.write('  Searching through agencies in '+boroName+'\n')
+            #shuffledList = sample(agencies.agenciesList[boroName], listLen)
+
+############# Loop through agencies in borough here ######################
+
+            #### For each agency in this borough
+            for agcy in agencies.agenciesList[boroName]:
                 
-            # writelog.write('  need = %f probEnroll = %5.2f\n'%(need,probEnroll))
+                abbrev = agcy['abbrev']
+                (agcyXLoc, agcyYLoc) = agcy['loc']
+                (xLoc, yLoc) = (agent['xLoc'], agent['yLoc'])
 
-            # If enroll probability exceeds random threshold then enroll
-            if probEnroll > random():
-                # writelog.write('  probEnroll > random\n')
-                agent['enrolled'] = True
-                nEnrolled += 1
-                # agent['nSched'] = standardSched
-                agent['bezPatch'].set_visible(True)
-                inputVal = agent['iVal']
-                agent['idText'].set_visible(True)
 
-                # Register in schedList[]
-                # writelog.write('About to enroll\n')
-                if doingLogging:
-                    writelog.write('Enrolling agent %d\n'% agent['id'])
-                treatList = [None for i in range(standardSched)]
-                treatList[agent['treatNo']] = agent['xVal']
-                treatList.insert(0, agent['isComplex'])
-                treatList.insert(0,agent['id'])
-                schedList.append(treatList)
-                
-                # update schedule
-                updateSched(schedList, tileArray)
-                if doingLogging:
-                    printSched()
+                # Calculate probability of enrollment based on need 
+                need = max(( avgInput - xVal),0.)
+                probEnroll = need * (agcy['maxEnrolled'] - agcy['numEnrolled'])
+                    
+                writelog.write('  agt %3d need = %4.2f numEnrolled = %4.2f probEnroll["%s"] = %5.2f xVal = %5.2f\n'%(
+                                agent['id'], need, agcy['numEnrolled'], abbrev.ljust(8), probEnroll, xVal))
+    
+                ########[ Need Test ]########
+                # If enroll probability exceeds random threshold then enroll
+                if probEnroll > random():
+                    writelog.write('  probEnroll > random: Enroll!\n')
+                    agent['enrolled'] = True
+                    agent['agency'] = agcy
+                    agcy['numEnrolled'] += 1                    
+                    
+                    # Define agent's bezier links to that agency
+                    verts = ((agcyXLoc, agcyYLoc), # Bezier lnk from prov. to here
+                             ((agcyXLoc + xLoc)/2., agcyYLoc),
+                             (xLoc, (agcyYLoc + yLoc)/2.),
+                             (xLoc, yLoc))
+                    bezPath = Path(verts, codes)
+                    bezPatch = mpatches.PathPatch(bezPath, facecolor='none',
+                                              lw=1, ec='#afafaf', visible=True)
+                    axes.ax.add_patch(bezPatch)
+                    agent['bezPatch'] = bezPatch
+                    inputVal = agent['iVal']
+                    agent['idText'].set_visible(True)
+    
+                    # Register in schedList[]
+                    writelog.write('About to register in schedList\n')
+                    if doingLogging:
+                        writelog.write('  Enrolling agent %d in agency %s\n'%(agent['id'], agcy['abbrev']))
+                    treatList = [None for i in range(standardSched)]
+                    treatList[agent['treatNo']] = agent['xVal']
+                    treatList.insert(0, agent['isComplex'])
+                    treatList.insert(0,agent['id'])
+                    agcy['schedList'].append(treatList)
+                    #agcy['schedList'] = treatList
+                    #schedNo = len(agcy['schedList']) -1
+                    
+                    # update schedule
+                    if agcy is agencies.selected:                    
+                        updateTileArray(agcy)
+                    if doingLogging:
+                        printSched(agcy)
+                        
+                    break
 
+ ############# End Loop through agencies in borough ######################
+
+   
         # Otherwise if already enrolled compute input treatment
         else:
             if random() > .25: # Randomize every other time to break sync
@@ -541,9 +565,10 @@ def update_agent(agent):
                         writelog.write('  agent %d treatment %d ON\n'%(agent['id'], 
                                                                           agent['treatNo']))
                     agent['treating'] = True
+                    (provXCtr, provYCtr) = agent['agency']['loc']
                     agent['bezPatch'].set_lw(2)
                     agent['bezPatch'].set_ec('#00ff00')
-
+                    
                     # Turn on input
                     if axes.checkEndBen:
                         agent['iVal'] += doseValue*agent['iFact']/10. # endBen increase iVal
@@ -557,6 +582,9 @@ def update_agent(agent):
                         nTreatLeft = steppedSched + 1
                     else:
                         nTreatLeft = standardSched + 1
+                        
+                    ########[ COMPLETION TEST ]#######
+                    # If treatment done then un-enroll
                     if agent['treatNo'] >= nTreatLeft:
                         
                         if axes.checkStepped and not agent['isComplex']:
@@ -570,28 +598,25 @@ def update_agent(agent):
                                                             
                         agent['enrolled'] = False
                         agent['treatNo'] = 0
-                        # agent['treating'] = False
-                        nEnrolled -= 1
-                        agent['bezPatch'].set_lw(1)
-                        agent['bezPatch'].set_visible(False)
+                        agent['agency']['numEnrolled'] -= 1
+                        agent['bezPatch'].remove()
                         agent['idText'].set_visible(False)
-                        for entry in schedList:
+                        for entry in agent['agency']['schedList']:
                             if entry[0] == int(agent['id']):
-                                schedList.remove(entry)
+                                agent['agency']['schedList'].remove(entry)
                                 break
+
+                    # Else if already treating turn treatment off, pipeline gray
+                    
                     else:
-                        for indx, sched in enumerate(schedList):
+                        for indx, sched in enumerate(agent['agency']['schedList']):
                             if sched[0] == int(agent['id']):
-                                schedList[indx][agent['treatNo']+1] = agent['xVal']
+                                agent['agency']['schedList'][indx][agent['treatNo']+1] = agent['xVal']
                                 break
                         if doingLogging: writelog.write('  agent %d treatment %d ON\n'%
                                            (agent['id'], agent['treatNo']+1))
-
-                    # Update schedule
-                    updateSched(schedList, tileArray)
-                    if doingLogging:
-                        printSched()
-
+                    
+ 
                 # Otherwise if patient being treated turn it off
                 else:
                     agent['treating'] = False;
@@ -602,13 +627,23 @@ def update_agent(agent):
                     if doingLogging: writelog.write('  agent %d treatment %d OFF\n'%
                                         (agent['id'], agent['treatNo']))
 
-                        # schedList = [x for x in schedList if x[0] != agent['id']]
+            # Update schedule
+            #schedNo = len(agcy['schedList']) -1
+            #print '#### schedNo = %d'%schedNo
+            if agent['agency']: 
+                if agent['agency'] is agencies.selected:
+                    updateTileArray(agent['agency'])
+                if doingLogging:
+                    printSched(agent['agency'])
+    
+               # schedList = [x for x in schedList if x[0] != agent['id']]
+    
 
 
     # Else if service is off, shut off treatment
     else:
-        agent['bezPatch'].set_visible(False)
-        square.set_fc('#ffffff')
+        if agent['bezPatch']:
+            agent['bezPatch'].set_visible(False)
         inputVal = agent['iVal'] * agent['iFact']
 
 
@@ -706,7 +741,7 @@ def update(num):
     if t >= 0:
         probNew = 10. * np.exp(-(t/10.))
         for num in range(int(probNew)):
-            randId = randint(0,nAgents)
+            randId = randint(0,nAgents-1)
             agents[randId]['iVal'] = random()*visThresh
             agents[randId]['circ1'].set_visible(True)
             agents[randId]['isComplex'] = (agents[randId]['iVal'] < iThresh)

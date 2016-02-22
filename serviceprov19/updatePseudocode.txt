@@ -1,0 +1,23 @@
+update_agent(agent):
+  if checkservice:
+    if not enrolled:
+      for agcy in agenciesList:
+        probEnroll = need * vacencies
+        if probEnroll > random():
+          Enroll
+    else if already enrolled:
+      if random() > .25:
+        if agent['treating'] == False:
+          turn treatment ON
+          pipeline green
+          if last treatment:
+            un-enroll agent
+        else (if agent['treating'] == True:)
+          turn treatment OFF 
+          pipeline gray
+          printSched()
+  else if not checkservice:
+    pipeline invisible
+    inputVal = agent['iVal'] * agent['iFact']
+
+ 

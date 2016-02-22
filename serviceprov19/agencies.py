@@ -7,6 +7,7 @@ Created on Mon Feb  1 11:18:40 2016
 
 import matplotlib.pyplot as plt
 import axes
+import agents
 import csv
 import re
 
@@ -17,9 +18,18 @@ nAgencies = 0
 squareSize = .02
 hafSquareSize = .01
 squareSep = .03
+selected = None
 
 # Borough List
 boroughsList = ('Bronx', 'Brooklyn', 'Manhattan', 'StatenIsl', 'Queens')
+
+agenciesList = {}
+                
+boroOrgs = {    'Bronx':(.78, .9),
+             'Brooklyn':(.88,  .82),
+            'Manhattan':(.4, .9,),
+            'StatenIsl':(.11, .48),
+               'Queens':(.3, .75)}
 
 
 
@@ -28,13 +38,11 @@ boroughsList = ('Bronx', 'Brooklyn', 'Manhattan', 'StatenIsl', 'Queens')
 #%%########[ init agencies ]########
 def init_agencies():
     
-    global agenciesList, nAgencies
+    global agenciesList, nAgencies, selected
     
     fp = open('agenciesDat.txt', 'rb')
     csvReader = csv.reader(fp, delimiter='\t')
-    
-    print 'agenciesList = %r'%agenciesList    
-    
+        
     bronxList     = []
     brooklynList  = []
     manhattanList = []
@@ -51,8 +59,14 @@ def init_agencies():
         if matchObj is not None:
             (xstr, ystr) = matchObj.group(1,2)
             loc    = (int(xstr), int(ystr))
+        numenrolled   = 0
         maxenrolled = int(row[4])
-        entry = {'name':name, 'abbrev':abbrev, 'boro':boro, 'loc':loc, 'maxenrolled':maxenrolled}
+        entry = {'name':name,
+                 'abbrev':abbrev,
+                 'boro':boro,
+                 'loc':loc, 
+                 'numenrolled':0,
+                 'maxenrolled':maxenrolled}
         if boro == 'Bronx':
             bronxList.append(entry)
         elif boro == 'Brooklyn':
@@ -63,39 +77,61 @@ def init_agencies():
             statenList.append(entry)
         elif boro == 'Queens':
             queensList.append(entry)
-        print '%s %s %s (%d, %d) %d'%(name.ljust(60), abbrev.ljust(6),
-                                        boro.ljust(10), loc[0], loc[1], maxenrolled)
+#        print '%s %s %s (%d, %d) %d %d'%(name.ljust(60), abbrev.ljust(6),
+#                                        boro.ljust(10), loc[0], loc[1], numenrolled, maxenrolled)
         nAgencies += 1
                                         
-    agenciesList = {'Bronx':bronxList,
-                    'Brooklyn':brooklynList, 
-                    'Manhattan':manhattanList,
-                    'StatenIsl':statenList,
-                    'Queens':queensList}
-                    
-    boroOrgs = {    'Bronx':(.78, .9),
-                 'Brooklyn':(.88,  .82),
-                'Manhattan':(.4, .9,),
-                'StatenIsl':(.11, .48),
-                   'Queens':(.3, .75)}
-    
+        agenciesList = {    'Bronx':bronxList,
+                         'Brooklyn':brooklynList, 
+                        'Manhattan':manhattanList,
+                        'StatenIsl':statenList,
+                           'Queens':queensList}
+
+    # Select agency whose sched is displayed
+    selected = agenciesList['Queens'][0]
+
     for boro in boroughsList:
-        nAgcsInBoro = len(agenciesList[boro])
         dx, dy = 0., 0.
-        print 'Boro %s Org (%3.2f, %3.2f)'%(boro, boroOrgs[boro][0], boroOrgs[boro][1])
-        for agcy in range(nAgcsInBoro):
+        for agcy in agenciesList[boro]:
             (x, y) = (boroOrgs[boro][0]+dx, boroOrgs[boro][1]+dy)
-            print '  Agc %2d loc (%3.2f, %3.2f)'%(agcy, x, y)
-            agenciesList[boro][agcy]['loc'] = (x,y)
+            agcy['loc'] = (x, y)
             square = plt.Rectangle((x-hafSquareSize,y-hafSquareSize),
                                    squareSize, squareSize,
                                    fc=(0,1,0), ec='k')
-            agenciesList[boro][agcy]['square'] = square
+            agcy['square'] = square
             axes.ax.add_patch(square)
+            agcy['numEnrolled'] = numenrolled
+            agcy['maxEnrolled'] = maxenrolled
+            agcy['avgInput']  = 0.
+            agcy['schedList'] = []
+            agcy['tileArray'] = []
+            idText = axes.ax.text(x-0.01, y, agcy['abbrev'])
+            if agcy is selected:
+                agents.initTileArray(agcy)
             dy -= squareSep
-                    
+            
+                                
     fp.close()
     
 
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+    
 
 
