@@ -21,18 +21,16 @@ squareSep = .03
 selected = None
 
 # Borough List
-boroughsList = ('Bronx', 'Brooklyn', 'Manhattan', 'StatenIsl', 'Queens')
+#boroughsList = ('Bronx', 'Brooklyn', 'Manhattan', 'StatenIsl', 'Queens')
+boroughsList = ('Manhattan', 'Brooklyn',  'Queens', 'Bronx', 'StatenIsl',)
 
 agenciesList = {}
                 
-boroOrgs = {    'Bronx':(.78, .9),
+boroOrgs = {'Manhattan':(.4, .9,),
              'Brooklyn':(.88,  .82),
-            'Manhattan':(.4, .9,),
-            'StatenIsl':(.11, .48),
-               'Queens':(.3, .75)}
-
-
-
+               'Queens':(.3, .75),
+                'Bronx':(.78, .9),
+            'StatenIsl':(.11, .48),}
 
 
 #%%########[ init agencies ]########
@@ -89,9 +87,12 @@ def init_agencies():
 
     # Select agency whose sched is displayed
     selected = agenciesList['Queens'][0]
+    titTxt = selected['boro']+': '+selected['abbrev']+' '+selected['name']
+    axes.schedTitle.set_text(titTxt)
 
     for boro in boroughsList:
         dx, dy = 0., 0.
+        axes.ax.text(boroOrgs[boro][0]-.01, boroOrgs[boro][1]+.02, boro)
         for agcy in agenciesList[boro]:
             (x, y) = (boroOrgs[boro][0]+dx, boroOrgs[boro][1]+dy)
             agcy['loc'] = (x, y)
@@ -99,6 +100,7 @@ def init_agencies():
                                    squareSize, squareSize,
                                    fc=(0,1,0), ec='k')
             agcy['square'] = square
+            agcy['square'].set_picker(True)
             axes.ax.add_patch(square)
             agcy['numEnrolled'] = numenrolled
             agcy['maxEnrolled'] = maxenrolled

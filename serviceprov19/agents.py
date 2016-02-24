@@ -23,7 +23,7 @@ import writelog
 # Global variables
 avgPtsd = 0.
 # nAgents = 150
-nAgents = 500
+nAgents = 100
 nAgentsWht = 0
 nAgentsBlk = 0
 nAgentsOth = 0
@@ -604,7 +604,7 @@ def update_agent(agent):
                         for entry in agent['agency']['schedList']:
                             if entry[0] == int(agent['id']):
                                 agent['agency']['schedList'].remove(entry)
-                                break
+                                #break
 
                     # Else if already treating turn treatment off, pipeline gray
                     
@@ -612,7 +612,7 @@ def update_agent(agent):
                         for indx, sched in enumerate(agent['agency']['schedList']):
                             if sched[0] == int(agent['id']):
                                 agent['agency']['schedList'][indx][agent['treatNo']+1] = agent['xVal']
-                                break
+                                #break
                         if doingLogging: writelog.write('  agent %d treatment %d ON\n'%
                                            (agent['id'], agent['treatNo']+1))
                     
@@ -686,6 +686,7 @@ def update(num):
         if agents[agnum]['xVal'] < visThresh:
             nPtsd += 1
         sumPtsd += agents[agnum]['xVal']
+        '''
         if agents[agnum]['race'] == 'White':
             sumPtsdWht += agents[agnum]['xVal']
         elif agents[agnum]['race'] == 'Black':
@@ -693,19 +694,23 @@ def update(num):
         elif agents[agnum]['race'] == 'Other':
             sumPtsdOth += agents[agnum]['xVal']
     #nPtsd = nPtsd/10
-
+        '''
     avgPtsd = sumPtsd / float(nAgents)
     # print '  avgPtsd = %f'%avgPtsd
+    '''
     avgPtsdWht = sumPtsdWht / float(nAgentsWht)
     avgPtsdBlk = sumPtsdBlk / float(nAgentsBlk)
     avgPtsdOth = sumPtsdOth / float(nAgentsOth)
-
+    '''
     x = avgPtsd
+    '''
     xWht = avgPtsdWht
     xBlk = avgPtsdBlk
     xOth = avgPtsdOth
+    '''
     lastT = t
     t += dt
+    '''
     dArray.appendleft(x)
     if len(dArray) > plotWidth / dt:
         dArray.pop()
@@ -721,7 +726,7 @@ def update(num):
     dArrayOth.appendleft(xOth)
     if len(dArrayOth) > plotWidth / dt:
         dArrayOth.pop()
-        
+    '''
     dArrayNptsd.appendleft(nPtsd)
     if len(dArrayNptsd) > plotWidth / dt:
         dArrayNptsd.pop()
@@ -730,10 +735,12 @@ def update(num):
     if len(tArray) > plotWidth / dt:
         tArray.pop()
 
+    '''
     axes.line.set_data(tArray, dArray)
     axes.lineWht.set_data(tArray, dArrayWht)
     axes.lineBlk.set_data(tArray, dArrayBlk)
     axes.lineOth.set_data(tArray, dArrayOth)
+    '''
     axes.lineNptsd.set_data(tArray, dArrayNptsd)
     axes.ax2.axis((t - plotWidth, t, axes.ax2yMin, axes.ax2yMax))
     

@@ -18,6 +18,7 @@ winYInches = 16
 axXLim = (0, 1.)
 axYLim = (0, 1.)
 plotWidth = 500
+schedTitle = 'schedTitle'
 #ax2yMin, ax2yMax = (.7, .9)
 ax2yMin, ax2yMax = (0., 50.)
 line = lineWht = lineBlk = lineOth = lineNptsd = None
@@ -35,21 +36,32 @@ check = None
 
 
 # Checkbox states
-checkService = True
+checkService = False
 checkStepped = False
 checkPause   = False
 checkEndBen  = True
 checkDist    = False
 
+'''
+def onclick(event):
+    print 'In onclick()'
+    print 'button %d x = %d, y = %d, '%(
+        event.button, event.x, event.y)
+    thisBox = event.artist
+    print 'thisBox = %r'%thisBox
+'''
+        
 #########[ init ax Map Axes]########
 def init_ax():
     
-    global winXInches, winYInches, axXLim, axYLim, fig, ax
+    global winXInches, winYInches, axXLim, axYLim, fig, ax, schedTitle
     
     plt.close('all')
     fig = plt.figure(figsize=(winXInches, winYInches))
     fig.canvas.set_window_title('ServiceProv19')
-    fig.text(.8,  .9, 'Schedule', fontsize=18)
+    #cid = fig.canvas.mpl_connect('button_press_event', onclick)
+    
+    schedTitle = fig.text(.7,  .9, 'Schedule', fontsize=14)
     fig.text(.78, .78, 'SPR', fontsize=16)
     fig.text(.88, .78, 'CBT', fontsize=16)
     ax = fig.add_axes([.05, .15, .64, .8])

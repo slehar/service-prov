@@ -2,7 +2,6 @@
 
 agencies.agenciesList = {
   'Bronx':[
-schedListschedList':[], 'tileArray':[]}
     {'abbrev':'CCNS', 'boro':'Bronx', 'loc':(0, 0), 'square':square, 'numEnrolled':numenrolled, 'maxEnrolled':maxenrolled, 'schedList':[], 'tileArray':[]}
     {'abbrev':'CCNS', 'boro':'Bronx', 'loc':(0, 0), 'square':square, 'numEnrolled':numenrolled, 'maxEnrolled':maxenrolled, 'schedList':[], 'tileArray':[]}
     {'abbrev':'CCNS', 'boro':'Bronx', 'loc':(0, 0), 'square':square, 'numEnrolled':numenrolled, 'maxEnrolled':maxenrolled, 'schedList':[], 'tileArray':[]}
