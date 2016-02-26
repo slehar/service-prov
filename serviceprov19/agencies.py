@@ -111,8 +111,10 @@ def init_agencies():
             if agcy is selected:
                 agents.initTileArray(agcy)
             dy -= squareSep
-            
-                                
+                                            
+    selected['square'].set_lw(4)
+    selected['square'].set_ec('r')
+
     fp.close()
     
 

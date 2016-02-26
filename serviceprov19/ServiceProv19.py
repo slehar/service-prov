@@ -19,6 +19,7 @@ image.init_map()
 agencies.init_agencies()
 agents.init_agents()
 
+# Pick agency square to make it the 'selected' agency
 def on_pick(event):
     print 'In on_pick()'
     for boro in agencies.agenciesList:
@@ -26,7 +27,11 @@ def on_pick(event):
         for agcy in agencies.agenciesList[boro]:
             if agcy['square'] is event.artist:
                 found = True
+                agencies.selected['square'].set_lw(1)
+                agencies.selected['square'].set_ec('k')
                 agencies.selected = agcy
+                agcy['square'].set_lw(4)
+                agcy['square'].set_ec('r')
                 if agencies.selected['tileArray'] == []:
                     agents.initTileArray(agencies.selected)
                 agents.updateTileArray(agencies.selected)
