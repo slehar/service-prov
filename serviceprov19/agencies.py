@@ -107,7 +107,7 @@ def init_agencies():
             agcy['avgInput']  = 0.
             agcy['schedList'] = []
             agcy['tileArray'] = []
-            idText = axes.ax.text(x-0.01, y, agcy['abbrev'])
+            idText = axes.ax.text(x+0.02, y, agcy['abbrev'])
             if agcy is selected:
                 agents.initTileArray(agcy)
             dy -= squareSep

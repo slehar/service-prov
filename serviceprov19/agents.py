@@ -415,15 +415,7 @@ def printSched(agcy):
 
 #%%#### Initialize Schedule ####
 def initTileArray(agency):
-    
-    axes.ax3.set_xticklabels([])
-    axes.ax3.set_yticklabels([])
-    axes.ax3.set_xticks(range(1, standardSched+2))
-    axes.ax3.set_yticks(range(1, maxEnrolled))
-    axes.ax3.set_xlim((0, standardSched+2))
-    axes.ax3.set_ylim((0, maxEnrolled))
-    axes.ax3.grid(True)
-    
+        
     tileArray = agency['tileArray']
 
     for row in range(agency['maxEnrolled']):
@@ -442,21 +434,20 @@ def initTileArray(agency):
 
 #%%#### Update Schedule ####
 def updateTileArray(agcy):
-    # print '\nIn UpdateTileArray():'
-    # axes.ax3.clear()
 
-    # vLine1 = plt.Line2D((2,2),(0,6), lw=4, color='g')
-    # axes.ax3.add_line(vLine1)
     schedList = agcy['schedList']
     tileArray = agcy['tileArray']
-    for indx, entry in enumerate(schedList):
-        # print repr(sched)
+    #print '\n\n**** In updateTileArray ****'
+    #print '  Borough: %s: agency = %s %s'%(agcy['boro'], agcy['abbrev'],agcy['name'])
+    for indx, entry in enumerate(schedList): # Fill existing entries
+        #print '  index %1d entry %r'%(indx,entry)
         if entry[1]:
             ec = 'r'
         else:
             ec = None
         tileArray[indx][0].set_bbox(dict(fc='w', ec=ec, lw=2))
         tileArray[indx][0].set_text("%3d"%entry[0])
+        tileArray[indx][0].set_color('black')
         for treatment in range(2, standardSched+2):
             if schedList[indx][treatment]:
                 xVal = schedList[indx][treatment]
@@ -465,6 +456,15 @@ def updateTileArray(agcy):
                 tileArray[indx][treatment].set_facecolor((r,g,0))
             else:
                 tileArray[indx][treatment].set_facecolor('w')
+    indx += 1
+    if indx < agcy['maxEnrolled']: # Fill blank entries
+        for ix in range(indx, agcy['maxEnrolled']):
+            tileArray[ix][0].set_bbox({'fc':'w', 'ec':'w', 'lw':2})
+            tileArray[ix][0].set_text('XXX') # set_text('   ') doesn't work (blank text)
+            tileArray[ix][0].set_color('w')  # so just print XXX in white
+            for treatment in range(2, standardSched+2):
+                tileArray[indx][treatment].set_facecolor('w')
+                
 
 
 

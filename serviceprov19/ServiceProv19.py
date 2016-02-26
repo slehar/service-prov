@@ -12,6 +12,7 @@ import axes
 import agents
 import image
 import agencies
+import writelog
 
 axes.init_axes()
 image.init_map()
@@ -24,17 +25,20 @@ def on_pick(event):
         found = False
         for agcy in agencies.agenciesList[boro]:
             if agcy['square'] is event.artist:
-                #print '**** AGENCY FOUND ****'
-                #print agcy['name']
-                agencies.selected = agcy
                 found = True
-                agents.initTileArray(agencies.selected)
+                agencies.selected = agcy
+                if agencies.selected['tileArray'] == []:
+                    agents.initTileArray(agencies.selected)
+                agents.updateTileArray(agencies.selected)
                 axes.schedTitle.set_text(boro+': '+agcy['abbrev']+' '+agcy['name'])
                 axes.fig.canvas.draw()
                 break
         if found == True:
             break
         
+    if agents.doingLogging:
+        writelog.write('In on_pick(): selected is now %s %s %s\n'%(
+        agencies.selected['boro'], agencies.selected['abbrev'], agencies.selected['name']))
 
 # bind pick events to our on_pick function
 cid = axes.fig.canvas.mpl_connect('pick_event', on_pick)
