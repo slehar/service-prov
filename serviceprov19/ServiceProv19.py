@@ -21,7 +21,6 @@ agents.init_agents()
 
 # Pick agency square to make it the 'selected' agency
 def on_pick(event):
-    print 'In on_pick()'
     for boro in agencies.agenciesList:
         found = False
         for agcy in agencies.agenciesList[boro]:

@@ -23,7 +23,7 @@ import writelog
 # Global variables
 avgPtsd = 0.
 # nAgents = 150
-nAgents = 100
+nAgents = 1000
 nAgentsWht = 0
 nAgentsBlk = 0
 nAgentsOth = 0
@@ -42,9 +42,9 @@ circRad3 = .008
 #schedListList = [[]]
 #schedPtr = []
 #tileArrayList = [[]]
-doingLogging = True
+doingLogging = False
 doseValue = .2
-delay = 0.0
+delay = 0.001
 A = 0.1   # Shunting decay term
 iThresh = .2 # Threshold for iVal eligibility for complex PTSD
 x = 0.001
@@ -71,7 +71,8 @@ rSigma = .3
 
 # Initialize random seed
 seed(3)
-writelog.init('run.log')
+if doingLogging:
+    writelog.init('run.log')
 
 
 # Codes for four-point Bezier spline
@@ -173,7 +174,8 @@ def init_agent(agtId):
             nAgentsWht, nAgentsBlk, nAgentsOth
     global agencyList, nAgencies
     
-    writelog.write('In init_agent(%3d)'%agtId)
+    if doingLogging:
+        writelog.write('In init_agent(%3d)'%agtId)
 
 
     foundSpace = False
@@ -194,12 +196,14 @@ def init_agent(agtId):
         boroName = agencies.boroughsList[boroIndx-1]
         
         
-        writelog.write("  agtId: % 3d  xLoc, yLoc = (%4.2f, %4.2f) boro %s boroIndx = %3d\n"%(
+        if doingLogging:
+            writelog.write("  agtId: % 3d  xLoc, yLoc = (%4.2f, %4.2f) boro %s boroIndx = %3d\n"%(
                         agtId, xLoc, yLoc, boroName, boroIndx))
         
         # if inMask > .5 and boroIndx in range(1,6):  # If in the masked area check for collision
         if inMask > .9:  # If in the masked area check for collision
-            writelog.write('  In boroIndx %3d\n'%boroIndx)
+            if doingLogging:
+                writelog.write('  In boroIndx %3d\n'%boroIndx)
             collision = False
             for agt in range(len(agents)):
                 xLoc1 = agents[agt]['xLoc']
@@ -209,12 +213,14 @@ def init_agent(agtId):
                 dist = np.sqrt(dx**2 + dy**2)
                 if dist < minSep:
                     collision = True
-                    writelog.write("  COLLISION !!!\n")
+                    if doingLogging:
+                        writelog.write("  COLLISION !!!\n")
                     break   # Stop going through more agents
             if not collision:
                 foundSpace = True
-                writelog.write("  foundSpace!\n")
-                writelog.write("  agtId: % 3d  xLoc, yLoc = (%4.2f, %4.2f) boro %s boroIndx = %3d\n"%(
+                if doingLogging:
+                    writelog.write("  foundSpace!\n")
+                    writelog.write("  agtId: % 3d  xLoc, yLoc = (%4.2f, %4.2f) boro %s boroIndx = %3d\n"%(
                                 agtId, xLoc, yLoc, boroName, boroIndx))
                 # Otherwise keep searching
 
@@ -270,10 +276,11 @@ def init_agent(agtId):
     # Define agent's "input value" (natural wellness) and input factor
     # Using probCBT
     if useProbCBT:
-        fstr = '  isMale=%1d isOld=%1d isBlack=%1d isWhite=%1d isOther=%1d '\
-               'isHisp=%1d hadPrior=%1d\n'
-        writelog.write(fstr%(isMale, isOld, isBlack, isWhite,
-                                      isOther, isHisp, hadPrior))
+        if doingLogging:
+            fstr = '  isMale=%1d isOld=%1d isBlack=%1d isWhite=%1d isOther=%1d '\
+                   'isHisp=%1d hadPrior=%1d\n'
+            writelog.write(fstr%(isMale, isOld, isBlack, isWhite,
+                                          isOther, isHisp, hadPrior))
         probCBT = calculate_distribution(isMale, isOld, isBlack, isWhite,
                                       isOther, isHisp, hadPrior)
         iVal = 1. - probCBT
@@ -282,11 +289,13 @@ def init_agent(agtId):
         elif iVal < 0.:
             iVal = 0.
             
-        writelog.write('  calculate_distribution: probCBT = %f iVal = %f\n'%(probCBT,iVal))
+        if doingLogging:
+            writelog.write('  calculate_distribution: probCBT = %f iVal = %f\n'%(probCBT,iVal))
     # Or using just random
     else:
         iVal = random()
-        writelog.write('  iVal = random() = %f\n'%iVal)
+        if doingLogging:
+            writelog.write('  iVal = random() = %f\n'%iVal)
             
 
     if iVal > iThresh:
@@ -379,7 +388,8 @@ def init_agents():
     ## for each agent
     for agtId in range(nAgents):
         # 
-        writelog.write("agtId = %d\n"%agtId)
+        if doingLogging:
+            writelog.write("agtId = %d\n"%agtId)
         newAgent = init_agent(agtId)
         
         # Append to agents list
@@ -474,8 +484,9 @@ def update_agent(agent):
     global nEnrolled, schedList, schedPtr
 
     # print '  In update_agent agent = %r'%agent
-    writelog.write('In update_agent %3d\n'%agent['id'])
-    writelog.write(re.sub(r',', '\n', '%r\n'%agent))
+    if doingLogging:
+        writelog.write('In update_agent %3d\n'%agent['id'])
+        writelog.write(re.sub(r',', '\n', '%r\n'%agent))
 
     xVal = agent['xVal']
     inputVal = agent['iVal']
@@ -491,7 +502,8 @@ def update_agent(agent):
 
             # Shuffle agency list every time
             boroName = agent['boroName']
-            writelog.write('  Searching through agencies in '+boroName+'\n')
+            if doingLogging:
+                writelog.write('  Searching through agencies in '+boroName+'\n')
             #shuffledList = sample(agencies.agenciesList[boroName], listLen)
 
 ############# Loop through agencies in borough here ######################
@@ -508,33 +520,36 @@ def update_agent(agent):
                 need = max(( avgInput - xVal),0.)
                 probEnroll = need * (agcy['maxEnrolled'] - agcy['numEnrolled'])
                     
-                writelog.write('  agt %3d need = %4.2f numEnrolled = %4.2f probEnroll["%s"] = %5.2f xVal = %5.2f\n'%(
+                if doingLogging:
+                    writelog.write('  agt %3d need = %4.2f numEnrolled = %4.2f probEnroll["%s"] = %5.2f xVal = %5.2f\n'%(
                                 agent['id'], need, agcy['numEnrolled'], abbrev.ljust(8), probEnroll, xVal))
     
                 ########[ Need Test ]########
                 # If enroll probability exceeds random threshold then enroll
                 if probEnroll > random():
-                    writelog.write('  probEnroll > random: Enroll!\n')
+                    if doingLogging:
+                        writelog.write('  probEnroll > random: Enroll!\n')
                     agent['enrolled'] = True
                     agent['agency'] = agcy
                     agcy['numEnrolled'] += 1                    
                     
                     # Define agent's bezier links to that agency
-                    verts = ((agcyXLoc, agcyYLoc), # Bezier lnk from prov. to here
-                             ((agcyXLoc + xLoc)/2., agcyYLoc),
-                             (xLoc, (agcyYLoc + yLoc)/2.),
-                             (xLoc, yLoc))
-                    bezPath = Path(verts, codes)
-                    bezPatch = mpatches.PathPatch(bezPath, facecolor='none',
-                                              lw=1, ec='#afafaf', visible=True)
-                    axes.ax.add_patch(bezPatch)
-                    agent['bezPatch'] = bezPatch
+                    if axes.checkGraphics:
+                        verts = ((agcyXLoc, agcyYLoc), # Bezier lnk from prov. to here
+                                 ((agcyXLoc + xLoc)/2., agcyYLoc),
+                                 (xLoc, (agcyYLoc + yLoc)/2.),
+                                 (xLoc, yLoc))
+                        bezPath = Path(verts, codes)
+                        bezPatch = mpatches.PathPatch(bezPath, facecolor='none',
+                                                  lw=1, ec='#afafaf', visible=True)
+                        axes.ax.add_patch(bezPatch)
+                        agent['bezPatch'] = bezPatch
+                        agent['idText'].set_visible(True)
                     inputVal = agent['iVal']
-                    agent['idText'].set_visible(True)
     
                     # Register in schedList[]
-                    writelog.write('About to register in schedList\n')
                     if doingLogging:
+                        writelog.write('About to register in schedList\n')
                         writelog.write('  Enrolling agent %d in agency %s\n'%(agent['id'], agcy['abbrev']))
                     treatList = [None for i in range(standardSched)]
                     treatList[agent['treatNo']] = agent['xVal']
@@ -545,7 +560,7 @@ def update_agent(agent):
                     #schedNo = len(agcy['schedList']) -1
                     
                     # update schedule
-                    if agcy is agencies.selected:                    
+                    if axes.checkGraphics and agcy is agencies.selected:                    
                         updateTileArray(agcy)
                     if doingLogging:
                         printSched(agcy)
@@ -566,8 +581,9 @@ def update_agent(agent):
                                                                           agent['treatNo']))
                     agent['treating'] = True
                     (provXCtr, provYCtr) = agent['agency']['loc']
-                    agent['bezPatch'].set_lw(2)
-                    agent['bezPatch'].set_ec('#00ff00')
+                    if axes.checkGraphics:
+                        agent['bezPatch'].set_lw(2)
+                        agent['bezPatch'].set_ec('#00ff00')
                     
                     # Turn on input
                     if axes.checkEndBen:
@@ -587,20 +603,22 @@ def update_agent(agent):
                     # If treatment done then un-enroll
                     if agent['treatNo'] >= nTreatLeft:
                         
-                        if axes.checkStepped and not agent['isComplex']:
-                            writelog.write('  treatNo = %d steppedSched = %d\n'%
-                                         (agent['treatNo'], steppedSched))
-                        else:
-                            writelog.write('  treatNo = %d standardSched = %d\n'%
-                                         (agent['treatNo'], standardSched))
-                        if doingLogging: writelog.write('Un-enroll agent %d treatment done\n'% 
+                        if doingLogging:
+                            if axes.checkStepped and not agent['isComplex']:
+                                writelog.write('  treatNo = %d steppedSched = %d\n'%
+                                             (agent['treatNo'], steppedSched))
+                            else:
+                                writelog.write('  treatNo = %d standardSched = %d\n'%
+                                             (agent['treatNo'], standardSched))
+                            writelog.write('Un-enroll agent %d treatment done\n'% 
                                                             agent['id'])
                                                             
                         agent['enrolled'] = False
                         agent['treatNo'] = 0
                         agent['agency']['numEnrolled'] -= 1
-                        agent['bezPatch'].remove()
-                        agent['idText'].set_visible(False)
+                        if axes.checkGraphics:
+                            agent['bezPatch'].remove()
+                            agent['idText'].set_visible(False)
                         for entry in agent['agency']['schedList']:
                             if entry[0] == int(agent['id']):
                                 agent['agency']['schedList'].remove(entry)
@@ -620,8 +638,9 @@ def update_agent(agent):
                 # Otherwise if patient being treated turn it off
                 else:
                     agent['treating'] = False;
-                    agent['bezPatch'].set_lw(1)
-                    agent['bezPatch'].set_ec('#afafaf')
+                    if axes.checkGraphics:
+                        agent['bezPatch'].set_lw(1)
+                        agent['bezPatch'].set_ec('#afafaf')
                     inputVal = agent['iVal']
 
                     if doingLogging: writelog.write('  agent %d treatment %d OFF\n'%
@@ -631,7 +650,7 @@ def update_agent(agent):
             #schedNo = len(agcy['schedList']) -1
             #print '#### schedNo = %d'%schedNo
             if agent['agency']: 
-                if agent['agency'] is agencies.selected:
+                if axes.checkGraphics and agent['agency'] is agencies.selected:
                     updateTileArray(agent['agency'])
                 if doingLogging:
                     printSched(agent['agency'])
@@ -643,7 +662,8 @@ def update_agent(agent):
     # Else if service is off, shut off treatment
     else:
         if agent['bezPatch']:
-            agent['bezPatch'].set_visible(False)
+            if axes.checkGraphics:
+                agent['bezPatch'].set_visible(False)
         inputVal = agent['iVal'] * agent['iFact']
 
 
@@ -654,13 +674,15 @@ def update_agent(agent):
     elif xVal > 1.:
         xVal = 1.
     agent['xVal'] = xVal
-    if xVal > visThresh:
-        agent['circ1'].set_visible(False)
-    else:
-        agent['circ1'].set_visible(True)
+    if axes.checkGraphics:
+        if xVal > visThresh:
+            agent['circ1'].set_visible(False)
+        else:
+            agent['circ1'].set_visible(True)
     r = (1. - xVal)
     g = xVal
-    agent['circ1'].set_facecolor((r, g, 0.))
+    if axes.checkGraphics:
+        agent['circ1'].set_facecolor((r, g, 0.))
 
     # Time delay
     if delay > 0.:

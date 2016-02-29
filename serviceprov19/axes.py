@@ -20,7 +20,7 @@ axYLim = (0, 1.)
 plotWidth = 500
 schedTitle = 'schedTitle'
 #ax2yMin, ax2yMax = (.7, .9)
-ax2yMin, ax2yMax = (0., 50.)
+ax2yMin, ax2yMax = (0., 100.)
 line = lineWht = lineBlk = lineOth = lineNptsd = None
 provXCtr = .5
 provYCtr = .95
@@ -36,7 +36,7 @@ check = None
 
 
 # Checkbox states
-checkService  = False
+checkService  = True
 checkStepped  = False
 checkPause    = False
 checkEndBen   = True
@@ -80,6 +80,7 @@ def init_ax2():
     ax2.set_ylim(ax2yMin, ax2yMax)
     
     # Set up plot line in axes 2
+    '''
     line,    = ax2.plot(0, 0, color='blue',   linewidth=1, linestyle='-', 
                         alpha=1.0, label='All')
     lineWht, = ax2.plot(0, 0, color='red',    linewidth=1, linestyle='-', 
@@ -88,6 +89,7 @@ def init_ax2():
                         alpha=1.0, label='Black')
     lineOth, = ax2.plot(0, 0, color='orange', linewidth=1, linestyle='-', 
                         alpha=1.0, label='Other')
+    '''
     lineNptsd, = ax2.plot(0, 0, color='k', linewidth=2, linestyle='-', 
                         alpha=1.0, label='nPtsd')
     ax2.legend(loc=6)
