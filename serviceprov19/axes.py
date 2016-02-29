@@ -36,20 +36,13 @@ check = None
 
 
 # Checkbox states
-checkService = False
-checkStepped = False
-checkPause   = False
-checkEndBen  = True
-checkDist    = False
+checkService  = False
+checkStepped  = False
+checkPause    = False
+checkEndBen   = True
+checkDist     = False
+checkGraphics = True
 
-'''
-def onclick(event):
-    print 'In onclick()'
-    print 'button %d x = %d, y = %d, '%(
-        event.button, event.x, event.y)
-    thisBox = event.artist
-    print 'thisBox = %r'%thisBox
-'''
         
 #########[ init ax Map Axes]########
 def init_ax():
@@ -113,8 +106,6 @@ def init_ax3():
     ax3.set_xlim((0, agents.standardSched+2))
     ax3.set_ylim((0, agents.maxEnrolled))
     ax3.grid(True)
-    # vLine1 = plt.Line2D((2,2),(0,agents.maxEnrolled), lw=4, color='g', zorder=3)
-    # vLine2 = plt.Line2D((7,7),(0,agents.maxEnrolled), lw=4, color='r', zorder=3)
     vLine1 = plt.Line2D((2,2),(0,agents.maxEnrolled), lw=4, color='g', zorder=3)
     vLine2 = plt.Line2D((7,7),(0,agents.maxEnrolled), lw=4, color='r', zorder=3)
     ax3.add_line(vLine1)
@@ -123,7 +114,7 @@ def init_ax3():
 
 # Checkbox function
 def func(label):
-    global checkService, checkStepped, checkPause, checkEndBen, checkDist
+    global checkService, checkStepped, checkPause, checkEndBen, checkDist, checkGraphics
     if label == 'Service':
         checkService = not checkService
     elif label == 'Stepped':
@@ -135,11 +126,15 @@ def func(label):
     elif label == 'Dist':
         checkDist = not checkDist
         agents.circle.set_visible(checkDist)
+    elif label == 'Graphics':
+        checkGraphics = not checkGraphics
 
 #########[ init ax4 Checkbox Axes ]########
 def init_ax4():
     
-    global ax4, checkService, checkPause, checkEndBen, checkDist, check
+    global ax4, check
+    global checkService, checkStepped, checkPause
+    global checkEndBen, checkDist, checkGraphics
 
     ax4 = fig.add_axes([.72, .15, .08, .12])
     ax4.set_xticklabels([])
@@ -148,8 +143,10 @@ def init_ax4():
     ax4.set_yticks([])
     
     # Define checkboxes
-    check = CheckButtons(ax4, ('Service',   'Stepped', 'Pause',    'EndBen',    'Dist'),
-                              (checkService, checkStepped, checkPause, checkEndBen, checkDist))
+    check = CheckButtons(ax4, ('Service',   'Stepped', 'Pause',
+                               'EndBen',    'Dist', 'Graphics'),
+                              (checkService, checkStepped, checkPause,
+                               checkEndBen, checkDist, checkGraphics))
                                
     # Attach checkboxes to checkbox function
     check.on_clicked(func)
