@@ -30,7 +30,6 @@ nAgentsOth = 0
 nEnrolled = 0
 maxEnrolled = 6
 useProbCBT = False
-# standardSched = 6
 standardSched = 10
 steppedSched = 5
 avgInput = 0.
@@ -39,9 +38,6 @@ circle = None
 circRad1 = .001
 circRad2 = .006
 circRad3 = .008
-#schedListList = [[]]
-#schedPtr = []
-#tileArrayList = [[]]
 doingLogging = False
 doseValue = .2
 delay = 0.001
@@ -67,6 +63,8 @@ totInput = [0.]
 
 minSep = .0025
 rSigma = .3
+
+dataFileName = ''
 
 
 # Initialize random seed
@@ -379,6 +377,7 @@ def init_agents():
     global agents, nAgents, square, circle, \
             agencyList, nAgencies, \
             nAgentsWht, nAgentsBlk, nAgentsOth, avgInput
+    global dataFileName
             
     #print '*****[ In init_agents() ]*****'
     
@@ -397,6 +396,11 @@ def init_agents():
         totInput += newAgent['iVal']
         
     avgInput = totInput/float(nAgents)
+    
+    if axes.checkStepped:
+        dataFileName = 'Sp19Stepped.dat'
+    else:
+        dataFileName = 'Sp19.dat'
         
 
 #%%# function printSched
@@ -700,7 +704,7 @@ def update(num):
 
     if axes.checkPause:
         return
- 
+        
     sumPtsd = sumPtsdWht = sumPtsdBlk = sumPtsdOth = 0.
     nPtsd = 0
     for agnum in range(nAgents):
@@ -749,6 +753,10 @@ def update(num):
     if len(dArrayOth) > plotWidth / dt:
         dArrayOth.pop()
     '''
+    fp = open(dataFileName, 'a')
+    fp.write('%d\n'%nPtsd) # Write data to file
+    fp.close()
+    
     dArrayNptsd.appendleft(nPtsd)
     if len(dArrayNptsd) > plotWidth / dt:
         dArrayNptsd.pop()

@@ -2,7 +2,7 @@
 """
 Spyder Editor
 
-This is a temporary script file.
+ServiceProv19.py
 """
 
 import matplotlib.pyplot as plt
@@ -49,7 +49,7 @@ cid = axes.fig.canvas.mpl_connect('pick_event', on_pick)
 
 
 # Run the animation
-ani = animation.FuncAnimation(axes.fig, agents.update, interval=100., repeat=True)
+ani = animation.FuncAnimation(axes.fig, agents.update, frames=35, repeat=False)
 
 # Show plot
 plt.show()
