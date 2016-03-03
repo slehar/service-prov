@@ -13,6 +13,7 @@ from collections import deque
 import StringIO
 import time
 import re
+import os
 
 # Local modules
 import axes
@@ -23,7 +24,7 @@ import writelog
 # Global variables
 avgPtsd = 0.
 # nAgents = 150
-nAgents = 1000
+nAgents = 10000
 nAgentsWht = 0
 nAgentsBlk = 0
 nAgentsOth = 0
@@ -402,6 +403,9 @@ def init_agents():
     else:
         dataFileName = 'Sp19.dat'
         
+    if os.path.exists(dataFileName):
+        os.remove(dataFileName)
+
 
 #%%# function printSched
 def printSched(agcy):
@@ -702,6 +706,7 @@ def update(num):
     # global sumPtsdWht, sumPtsdBlk, sumPtsdOth
     # print '  In update count = %d'%num
 
+
     if axes.checkPause:
         return
         
@@ -723,6 +728,8 @@ def update(num):
         '''
     avgPtsd = sumPtsd / float(nAgents)
     # print '  avgPtsd = %f'%avgPtsd
+    if num == 0:
+        axes.ax2yMax = 1.2*float(nPtsd)        
     '''
     avgPtsdWht = sumPtsdWht / float(nAgentsWht)
     avgPtsdBlk = sumPtsdBlk / float(nAgentsBlk)
@@ -754,7 +761,7 @@ def update(num):
         dArrayOth.pop()
     '''
     fp = open(dataFileName, 'a')
-    fp.write('%d\n'%nPtsd) # Write data to file
+    fp.write('%4.2f '%float(nPtsd)) # Write data to file
     fp.close()
     
     dArrayNptsd.appendleft(nPtsd)
@@ -782,6 +789,7 @@ def update(num):
             agents[randId]['iVal'] = random()*visThresh
             agents[randId]['circ1'].set_visible(True)
             agents[randId]['isComplex'] = (agents[randId]['iVal'] < iThresh)
+            
     
     
 

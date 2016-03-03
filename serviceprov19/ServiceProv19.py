@@ -47,9 +47,8 @@ def on_pick(event):
 # bind pick events to our on_pick function
 cid = axes.fig.canvas.mpl_connect('pick_event', on_pick)
 
-
 # Run the animation
-ani = animation.FuncAnimation(axes.fig, agents.update, frames=35, repeat=False)
+ani = animation.FuncAnimation(axes.fig, agents.update, frames=200, repeat=False)
 
 # Show plot
 plt.show()

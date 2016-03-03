@@ -138,6 +138,7 @@ def update(num):
     #CurrentXAxis=np.arange(len(values)-100,len(values),1)
     axTime.axis((t - plotWidth, t, 0., 1.))
     # time.sleep(.1)
+    
         
         
 # Run the animation

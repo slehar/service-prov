@@ -665,6 +665,7 @@ def update(num):
             sumPtsdOth += agents[agnum]['xVal']
     #nPtsd = nPtsd/10
 
+    print '  nPtsd = %d'%nPtsd
     avgPtsd = sumPtsd / float(nAgents)
     # print '  avgPtsd = %f'%avgPtsd
     avgPtsdWht = sumPtsdWht / float(nAgentsWht)
