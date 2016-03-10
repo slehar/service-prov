@@ -2,6 +2,14 @@
 #
 # Calculates thresholds
 #
+# Starting with %percentages of race/ethnicity by borough, calculate a set of thresholds between 0% 
+# and 100% such that a random variable rand()*100 will have the same probability of falling within a
+# race/ethnicity bin as the populations of the respective boroughs.
+#
+# These numbers are superceded by new numbers that do income, age, sex, and race/ethnicity from 
+# Demos by borough 022416.xlsx (email from Laura 2016/02/24 as seen in companion script calcThresholdsDemo.py
+# in this same directory
+#
 #              %white          %black         %other     %white-hisp    %black-hisp    %other-hisp
 Bronx =     [ 10.93349221,   30.27999862,  5.268529766,  11.57538713,   4.468379156,   37.47421312 ]
 Brooklyn =  [ 35.67675128,   32.22860304,  12.29076626,  8.891369581,   1.981940034,   8.930569816 ]

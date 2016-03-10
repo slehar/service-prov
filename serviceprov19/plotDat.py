@@ -16,10 +16,15 @@ axY = .1
 axXSize = .8
 axYSize = .8
 
-filename1 = 'Sp1910k.dat'
-filename2 = 'Sp19Stepped10k.dat'
-#filename1 = 'Sp19Demo.dat'
-#filename2 = 'Sp19SteppedDemo.dat'
+#filename1 = 'Sp1910k.dat'
+#filename2 = 'Sp19Stepped60k.dat'
+
+#filename1 = 'Sp1910k.dat'
+#filename2 = 'Sp19Stepped10k.dat'
+
+filename1 = 'Sp19Demo.dat'
+filename2 = 'Sp19SteppedDemo.dat'
+
 #filename1 = 'Sp19.dat'
 #filename2 = 'Sp19Stepped.dat'
 
@@ -28,13 +33,15 @@ fig = plt.figure(figsize=(winXSizeInches, winYSizeInches))
 fig.canvas.set_window_title('plotDat')
 ax = fig.add_axes([axX, axY, axXSize, axYSize])
 
+plt.text(100., 600.,  filename1, color='r', fontsize=24)
+plt.text(100., 500.,  filename2, color='b', fontsize=24)
 
 fdat1 = []
 fp1 = open(filename1, 'rb')
 csvDat = csv.reader(fp1, delimiter=' ')
 fdat1 = []
 for dat1 in csvDat:
-    print 'dat %s'%dat1
+    #print 'dat %s'%dat1
     for item in dat1:
         if item != '':
             fdat1.append(float(item))

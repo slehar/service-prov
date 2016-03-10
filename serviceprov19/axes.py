@@ -38,7 +38,7 @@ check = None
 
 # Checkbox states
 checkService  = True
-checkStepped  = True
+checkStepped  = False
 checkPause    = False
 checkEndBen   = True
 checkDist     = False

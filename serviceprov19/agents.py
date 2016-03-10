@@ -24,13 +24,14 @@ import writelog
 # Global variables
 avgPtsd = 0.
 # nAgents = 150
-nAgents = 10000
+nAgents = 500
 nAgentsWht = 0
 nAgentsBlk = 0
 nAgentsOth = 0
 nEnrolled = 0
 maxEnrolled = 6
-useProbCBT = False
+useProbCBTnSymptoms  = False
+useProbCBTprobEnroll = False
 standardSched = 10
 steppedSched = 5
 avgInput = 0.
@@ -81,9 +82,165 @@ codes = [Path.MOVETO,
          Path.CURVE4,
          ]
 
+#%%########[ probRaceEthncy ]#######
+def probDemographics(boroIndx):
+#
+# For each demographic category [Income, Age, Sex, Race-Ethnicity]
+# establish thresholds such that a random % variable rand()*100. is
+# likely to fall into the appropriate category matching demographics
+# for the given borough.5
+
+    print 'In probDemographics(%1d)'%boroIndx
+
+    ######## Income ########
+    # Manhattan
+    if boroIndx == 1:
+        t1 = 45.517530
+        t2 = 62.854290
+    # Brooklyn
+    elif boroIndx == 2:
+        t1 = 60.922812
+        t2 = 80.100220
+    # Queens
+    elif boroIndx == 3:
+        t1 = 52.467246
+        t2 = 75.805702
+    # Bronx
+    elif boroIndx == 4:
+        t1 = 71.575449
+        t2 = 88.467528
+    # Staten Island
+    elif boroIndx == 5:
+        t1 = 41.547579
+        t2 = 65.630671
+        
+    r = random() * 100.
+    if r < t1:
+        income   = 'Low'
+    elif r < t2:
+        income   = 'Medium'
+    else:
+        income   = 'High'
+    
+    ######## Age ########
+    # Manhattan
+    if boroIndx == 1:
+        t1 = 38.451799
+        t2 = 84.108916
+    # Brooklyn
+    elif boroIndx == 2:
+        t1 = 36.061935
+        t2 = 84.828344
+    # Queens
+    elif boroIndx == 3:
+        t1 = 32.626660
+        t2 = 83.697444
+    # Bronx
+    elif boroIndx == 4:
+        t1 = 35.831148
+        t2 = 85.545559
+    # Staten Island
+    elif boroIndx == 5:
+        t1 = 28.890142
+        t2 = 83.252253
+        
+    r = random() * 100.
+    if r < t1:
+        age = 'Young'
+    elif r < t2:
+        age = 'Middle'
+    else:
+        age = 'Old'
+    
+    ######## Sex ########
+    # Manhattan
+    if boroIndx == 1:
+        t = 52.951241
+    # Brooklyn
+    elif boroIndx == 2:
+        t = 52.794042
+    # Queens
+    elif boroIndx == 3:
+        t = 51.574133
+    # Bronx
+    elif boroIndx == 4:
+        t = 53.062255
+    # Staten Island
+    elif boroIndx == 5:
+        t = 51.539368
+    
+    r = random() * 100.
+    if r < t:
+        sex = 'Female'
+    else:
+        sex = 'Male'
+    
+    ######## Race / Ethnicity ########
+
+    # Manhattan
+    if boroIndx == 1:
+        t1 = 47.742487
+        t2 = 60.763558
+        t3 = 74.366567
+        t4 = 83.561831
+        t5 = 86.056359
+    # Brooklyn
+    elif boroIndx == 2:
+        t1 = 35.676751
+        t2 = 67.905354
+        t3 = 80.196121
+        t4 = 89.087490
+        t5 = 91.069430
+    # Queens
+    elif boroIndx == 3:
+        t1 = 27.562720
+        t2 = 45.262120
+        t3 = 72.521485
+        t4 = 87.476018
+        t5 = 88.637401
+    # Bronx
+    elif boroIndx == 4:
+        t1 = 10.933492
+        t2 = 41.213491
+        t3 = 46.482021
+        t4 = 58.057408
+        t5 = 62.525787
+    # Staten Island
+    elif boroIndx == 5:
+        t1 = 64.176278
+        t2 = 73.712461
+        t3 = 82.825904
+        t4 = 94.408742
+        t5 = 95.256355
+    else:
+        print "ERROR probRaceEthncy illegal borough %d"%boroIndx
+        return('Medium', 'Middle', 'Female', 'White', 'Non-Hispanic')
+        
+    r = random() * 100.
+    if r < t1:
+        race   = 'White'
+        ethncy = 'Non-Hispanic'
+    elif r < t2:
+        race   = 'Black'
+        ethncy = 'Non-Hispanic'
+    elif r < t3:
+        race   = 'Other'
+        ethncy = 'Non-Hispanic'
+    elif r < t4:
+        race   = 'White'
+        ethncy = 'Hispanic'
+    elif r < t5:
+        race   = 'Black'
+        ethncy = 'Hispanic'
+    else:
+        race   = 'Other'
+        ethncy = 'Hispanic'
+
+    return(income, age, sex, race, ethncy)
+
          
 #%%########[ probRaceEthncy ]#######
-def probRaceEthncy(borough):
+def probRaceEthncy(boroIndx):
 #
 # Sets 5 thresholds to determine for each borough based on the demographics the proportion
 # of the population that falls into 6 categories:
@@ -91,42 +248,42 @@ def probRaceEthncy(borough):
 #
 
     # Manhattan
-    if borough == 1:
+    if boroIndx == 1:
         t1 = 47.742487
         t2 = 60.763558
         t3 = 74.366567
         t4 = 83.561831
         t5 = 86.056359
     # Brooklyn
-    elif borough == 2:
+    elif boroIndx == 2:
         t1 = 35.676751
         t2 = 67.905354
         t3 = 80.196121
         t4 = 89.087490
         t5 = 91.069430
     # Queens
-    elif borough == 3:
+    elif boroIndx == 3:
         t1 = 27.562720
         t2 = 45.262120
         t3 = 72.521485
         t4 = 87.476018
         t5 = 88.637401
     # Bronx
-    elif borough == 4:
+    elif boroIndx == 4:
         t1 = 10.933492
         t2 = 41.213491
         t3 = 46.482021
         t4 = 58.057408
         t5 = 62.525787
     # Staten Island
-    elif borough == 5:
+    elif boroIndx == 5:
         t1 = 64.176278
         t2 = 73.712461
         t3 = 82.825904
         t4 = 94.408742
         t5 = 95.256355
     else:
-        print "ERROR probRaceEthncy illegal borough %d"%borough
+        print "ERROR probRaceEthncy illegal borough %d"%boroIndx
         return('White', 'Non-Hispanic')
         
     r = random() * 100.
@@ -225,7 +382,9 @@ def init_agent(agtId):
 
         
     # Define agent's race and ethnicity
-    (race, ethncy) = probRaceEthncy(boroIndx)
+    (income, age, sex, race, ethncy) = probDemographics(boroIndx)
+    print 'boroIndx = %d, income = %s, age = %s, sex = %s, race = %s, ethncy = %s'%(boroIndx, income, age, sex, race, ethncy)
+    #(race, ethncy) = probRaceEthncy(boroIndx)
     if race == 'White':
         #raceColor = 'w'
         isWhite = 1.
@@ -253,15 +412,15 @@ def init_agent(agtId):
         isHisp = 0.
     
     # Define agent's gender
-    if random() > .5:
-        gender = 'Male'
-        isMale = 1.
-    else:
+    if sex == 'Female':
         gender = 'Female'
         isMale = 0.
+    else:
+        gender = 'Male'
+        isMale = 1.
         
     # Define agent's age
-    if random() > .75:
+    if age == 'Old':
         isOld = 1.
     else:
         isOld = 0.
@@ -274,7 +433,7 @@ def init_agent(agtId):
     
     # Define agent's "input value" (natural wellness) and input factor
     # Using probCBT
-    if useProbCBT:
+    if useProbCBTnSymptoms:
         if doingLogging:
             fstr = '  isMale=%1d isOld=%1d isBlack=%1d isWhite=%1d isOther=%1d '\
                    'isHisp=%1d hadPrior=%1d\n'
@@ -527,7 +686,8 @@ def update_agent(agent):
                 # Calculate probability of enrollment based on need 
                 need = max(( avgInput - xVal),0.)
                 probEnroll = need * (agcy['maxEnrolled'] - agcy['numEnrolled'])
-                    
+                if useProbCBTprobEnroll:
+                    print 'WARNING: useProbCBTprobEnroll TRUE but not implemented.'
                 if doingLogging:
                     writelog.write('  agt %3d need = %4.2f numEnrolled = %4.2f probEnroll["%s"] = %5.2f xVal = %5.2f\n'%(
                                 agent['id'], need, agcy['numEnrolled'], abbrev.ljust(8), probEnroll, xVal))
