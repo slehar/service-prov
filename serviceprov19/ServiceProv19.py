@@ -13,7 +13,10 @@ import agents
 import image
 import agencies
 import writelog
+import time
 
+print '====[ Initialize ]===='
+print time.ctime()
 axes.init_axes()
 image.init_map()
 agencies.init_agencies()
@@ -48,7 +51,37 @@ def on_pick(event):
 cid = axes.fig.canvas.mpl_connect('pick_event', on_pick)
 
 # Run the animation
-ani = animation.FuncAnimation(axes.fig, agents.update, frames=500, repeat=False)
+# ani = animation.FuncAnimation(axes.fig, agents.update, frames=35, repeat=False)
+
+nCycles = 35
+print '====[ Starting Animation nCycles = %d ]===='%nCycles
+print time.ctime()
+start = time.time()
+nZeros = 0
+for cycle in range(nCycles):
+    print '  Cycle: %03d nPtsd: %d'%(cycle, agents.nPtsd)
+    if agents.nPtsd == 0:
+        nZeros += 1
+        print  '  nZeros += %1d'%nZeros
+        if nZeros >= 3:
+            print '  NPTSD = zero Break!'
+            break
+    else:
+        nZeros = 0
+        print  '  nZeros 0= %1d'%nZeros
+    for count, agent in enumerate(agents.agents):
+        print '    update(%3d) nPtsd = %d'%(count, agents.nPtsd)
+        agents.update(count)
+    #plt.show(block=False)
+        
+print '====[ Animation Done! ]===='
+end = time.time()
+elapsed = end - start
+(min_, sec) = divmod(elapsed, 60)
+(hr, min_)  = divmod(min_, 60)
+print 'elapsed time = %02d:%02d:%02d'%(hr, min_, sec)
+
+
 
 # Show plot
 plt.show()

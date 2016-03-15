@@ -23,8 +23,9 @@ import writelog
 
 # Global variables
 avgPtsd = 0.
+nPtsd = 0
 # nAgents = 150
-nAgents = 500
+nAgents = 50
 nAgentsWht = 0
 nAgentsBlk = 0
 nAgentsOth = 0
@@ -40,7 +41,7 @@ circle = None
 circRad1 = .001
 circRad2 = .006
 circRad3 = .008
-doingLogging = False
+doingLogging = True
 doseValue = .2
 delay = 0.001
 A = 0.1   # Shunting decay term
@@ -89,8 +90,6 @@ def probDemographics(boroIndx):
 # establish thresholds such that a random % variable rand()*100. is
 # likely to fall into the appropriate category matching demographics
 # for the given borough.5
-
-    print 'In probDemographics(%1d)'%boroIndx
 
     ######## Income ########
     # Manhattan
@@ -383,7 +382,7 @@ def init_agent(agtId):
         
     # Define agent's race and ethnicity
     (income, age, sex, race, ethncy) = probDemographics(boroIndx)
-    print 'boroIndx = %d, income = %s, age = %s, sex = %s, race = %s, ethncy = %s'%(boroIndx, income, age, sex, race, ethncy)
+    #print 'boroIndx = %d, income = %s, age = %s, sex = %s, race = %s, ethncy = %s'%(boroIndx, income, age, sex, race, ethncy)
     #(race, ethncy) = probRaceEthncy(boroIndx)
     if race == 'White':
         #raceColor = 'w'
@@ -863,6 +862,7 @@ def update(num):
     global x,t,lastX,lastT
     global dArray, tArray, dArrayWht, dArrayBlk, dArrayOth, dArrayNptsd, nAgents
     global lastTime
+    global nPtsd
     # global sumPtsdWht, sumPtsdBlk, sumPtsdOth
     # print '  In update count = %d'%num
 
@@ -876,8 +876,11 @@ def update(num):
         update_agent(agents[agnum]) # <====== update_agent()
         if agents[agnum]['xVal'] < visThresh:
             nPtsd += 1
-        sumPtsd += agents[agnum]['xVal']
         '''
+        if random() > .2:
+            nPtsd += 1
+        '''
+        sumPtsd += agents[agnum]['xVal']
         if agents[agnum]['race'] == 'White':
             sumPtsdWht += agents[agnum]['xVal']
         elif agents[agnum]['race'] == 'Black':
@@ -885,7 +888,6 @@ def update(num):
         elif agents[agnum]['race'] == 'Other':
             sumPtsdOth += agents[agnum]['xVal']
     #nPtsd = nPtsd/10
-        '''
     avgPtsd = sumPtsd / float(nAgents)
     # print '  avgPtsd = %f'%avgPtsd
     if num == 0:
@@ -923,6 +925,7 @@ def update(num):
     fp = open(dataFileName, 'a')
     fp.write('%4.2f '%float(nPtsd)) # Write data to file
     fp.close()
+    
     
     dArrayNptsd.appendleft(nPtsd)
     if len(dArrayNptsd) > plotWidth / dt:
