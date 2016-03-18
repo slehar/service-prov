@@ -25,7 +25,7 @@ import writelog
 avgPtsd = 0.
 nPtsd = 0
 # nAgents = 150
-nAgents = 50
+nAgents = 60000
 nAgentsWht = 0
 nAgentsBlk = 0
 nAgentsOth = 0
@@ -41,7 +41,7 @@ circle = None
 circRad1 = .001
 circRad2 = .006
 circRad3 = .008
-doingLogging = True
+doingLogging = False
 doseValue = .2
 delay = 0.001
 A = 0.1   # Shunting decay term

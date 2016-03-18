@@ -54,27 +54,37 @@ cid = axes.fig.canvas.mpl_connect('pick_event', on_pick)
 # ani = animation.FuncAnimation(axes.fig, agents.update, frames=35, repeat=False)
 
 nCycles = 35
-print '====[ Starting Animation nCycles = %d ]===='%nCycles
+print '====[ Starting Animation nCycles = %d nAgents = %d stepped = %r outfile = %s ]===='%(
+                    nCycles, agents.nAgents, axes.checkStepped, agents.dataFileName) 
 print time.ctime()
 start = time.time()
-nZeros = 0
-for cycle in range(nCycles):
-    print '  Cycle: %03d nPtsd: %d'%(cycle, agents.nPtsd)
-    if agents.nPtsd == 0:
-        nZeros += 1
-        print  '  nZeros += %1d'%nZeros
-        if nZeros >= 3:
-            print '  NPTSD = zero Break!'
-            break
-    else:
-        nZeros = 0
-        print  '  nZeros 0= %1d'%nZeros
+cycle = 0
+while True:
+    print '  Cycle: %03d nPtsd: %d %s'%(cycle, agents.nPtsd, time.ctime())
+    nZeros = 0
+    zerosFound = False
     for count, agent in enumerate(agents.agents):
         print '    update(%3d) nPtsd = %d'%(count, agents.nPtsd)
         agents.update(count)
+        if agents.nPtsd == 0:
+            nZeros += 1
+            #print  '    nZeros += %1d'%nZeros
+            if nZeros >= 3:
+                print '  NPTSD = zero Break!'
+                zerosFound = True
+                break
+        else:
+            nZeros = 0
+            #print  '    nZeros 0= %1d'%nZeros
+        
     #plt.show(block=False)
+    if zerosFound:
+        break
+    else:
+        cycle += 1
         
 print '====[ Animation Done! ]===='
+print time.ctime()
 end = time.time()
 elapsed = end - start
 (min_, sec) = divmod(elapsed, 60)
