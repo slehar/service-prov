@@ -20,7 +20,21 @@ print time.ctime()
 axes.init_axes()
 image.init_map()
 agencies.init_agencies()
+
+print '====[ Start: init_agents() ]===='
+print time.ctime()
+startInit = time.time()
 agents.init_agents()
+print '====[ init_agents() Done! ]===='
+startCtime = time.ctime()
+print startCtime
+endInit = time.time()
+elapsedInit = endInit - startInit
+(minInit, secInit) = divmod(elapsedInit, 60)
+(hrInit, minInit)  = divmod(minInit, 60)
+print 'elapsed time Initialization = %02d:%02d:%02d'%(hrInit, minInit, secInit)
+
+
 
 # Pick agency square to make it the 'selected' agency
 def on_pick(event):
@@ -53,11 +67,10 @@ cid = axes.fig.canvas.mpl_connect('pick_event', on_pick)
 # Run the animation
 # ani = animation.FuncAnimation(axes.fig, agents.update, frames=35, repeat=False)
 
-nCycles = 35
-print '====[ Starting Animation nCycles = %d nAgents = %d stepped = %r outfile = %s ]===='%(
-                    nCycles, agents.nAgents, axes.checkStepped, agents.dataFileName) 
+print '====[ Starting Animation nAgents = %d stepped = %r outfile = %s ]===='%(
+                    agents.nAgents, axes.checkStepped, agents.dataFileName) 
 print time.ctime()
-start = time.time()
+startAnim = time.time()
 cycle = 0
 while True:
     print '  Cycle: %03d nPtsd: %d %s'%(cycle, agents.nPtsd, time.ctime())
@@ -84,12 +97,14 @@ while True:
         cycle += 1
         
 print '====[ Animation Done! ]===='
-print time.ctime()
-end = time.time()
-elapsed = end - start
-(min_, sec) = divmod(elapsed, 60)
-(hr, min_)  = divmod(min_, 60)
-print 'elapsed time = %02d:%02d:%02d'%(hr, min_, sec)
+print 'Start time: %s'%startCtime
+print 'End   time: %s'%time.ctime()
+endAnim = time.time()
+elapsedAnim = endAnim - startAnim
+(minAnim, secAnim) = divmod(elapsedAnim, 60)
+(hrAnim, minAnim)  = divmod(minAnim, 60)
+print 'elapsed time Initialization = %02d:%02d:%02d'%(hrInit, minInit, secInit)
+print 'elapsed time Animation      = %02d:%02d:%02d'%(hrAnim, minAnim, secAnim)
 
 
 

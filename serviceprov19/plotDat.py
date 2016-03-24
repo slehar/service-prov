@@ -25,11 +25,20 @@ axYSize = .8
 #filename1 = 'Sp19500.dat'
 #filename2 = 'Sp19500Stepped.dat'
 
+#filename1 = 'Sp19500A.dat'
+#filename2 = 'Sp19500AStepped.dat'
+
+filename1 = 'Sp191kA.dat'
+filename2 = 'Sp191kAStepped.dat'
+
 #filename1 = 'Sp191k.dat'
 #filename2 = 'Sp191kStepped.dat'
 
-filename1 = 'Sp1910k.dat'
-filename2 = 'Sp1910kStepped.dat'
+#filename1 = 'Sp1910k.dat'
+#filename2 = 'Sp1910kStepped.dat'
+
+#filename1 = 'Sp1920k.dat'
+#filename2 = 'Sp1920kStepped.dat'
 
 #filename1 = 'Sp19Demo.dat'
 #filename2 = 'Sp19SteppedDemo.dat'

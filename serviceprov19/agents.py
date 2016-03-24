@@ -25,7 +25,7 @@ import writelog
 avgPtsd = 0.
 nPtsd = 0
 # nAgents = 150
-nAgents = 60000
+nAgents = 1000
 nAgentsWht = 0
 nAgentsBlk = 0
 nAgentsOth = 0
@@ -320,6 +320,20 @@ def calculate_distribution(isMale, isOld, isBlack, isWhite, isOther, isHisp, had
               
     return np.exp(logitCBT)/(1. + np.exp(logitCBT))
 
+#%%# Calculate distribution
+# Calculate the probability that agent will accept CBT if offered CBT
+def calculate_probAcceptCBT(isMale, isOld, isBlack, isWhite, isOther, isHisp, hadPrior):
+    
+    logitCBT = -1.60 +                \
+              (-0.2008   * isMale)  + \
+              (-0.5828   * isBlack) + \
+              (-1.073    * isHisp)  + \
+              (-0.35     * isOther) + \
+              (0.2449    * isOld)   + \
+              (1.8377    * hadPrior)
+              
+    return np.exp(logitCBT)/(1. + np.exp(logitCBT))
+
 
 #%%#### Initialize single agent ####
 def init_agent(agtId):
@@ -331,7 +345,6 @@ def init_agent(agtId):
     
     if doingLogging:
         writelog.write('In init_agent(%3d)'%agtId)
-
 
     foundSpace = False
     while not foundSpace:
@@ -431,28 +444,9 @@ def init_agent(agtId):
         hadPrior = 0.
     
     # Define agent's "input value" (natural wellness) and input factor
-    # Using probCBT
-    if useProbCBTnSymptoms:
-        if doingLogging:
-            fstr = '  isMale=%1d isOld=%1d isBlack=%1d isWhite=%1d isOther=%1d '\
-                   'isHisp=%1d hadPrior=%1d\n'
-            writelog.write(fstr%(isMale, isOld, isBlack, isWhite,
-                                          isOther, isHisp, hadPrior))
-        probCBT = calculate_distribution(isMale, isOld, isBlack, isWhite,
-                                      isOther, isHisp, hadPrior)
-        iVal = 1. - probCBT
-        if iVal > 1:
-            iVal = 1.
-        elif iVal < 0.:
-            iVal = 0.
-            
-        if doingLogging:
-            writelog.write('  calculate_distribution: probCBT = %f iVal = %f\n'%(probCBT,iVal))
-    # Or using just random
-    else:
-        iVal = random()
-        if doingLogging:
-            writelog.write('  iVal = random() = %f\n'%iVal)
+    iVal = random()
+    if doingLogging:
+        writelog.write('  iVal = random() = %f\n'%iVal)
             
 
     if iVal > iThresh:
@@ -468,6 +462,12 @@ def init_agent(agtId):
             iFact = 0.7
             isComplex = True
             cmplxColor = 'r'
+
+    # Define agent's probability of accepting CBT if offered CBT
+    acceptCBT = calculate_probAcceptCBT(isMale, isOld, isBlack, isWhite, 
+                                        isOther, isHisp, hadPrior)
+
+
             
 
     # Set xVal to equilibrium value
@@ -522,6 +522,7 @@ def init_agent(agtId):
                    'gender':gender,
                    'race':race,
                    'ethncy':ethncy,
+                   'acceptCBT':acceptCBT,
                    'treating':False,
                    'enrolled':False,
                    'agency':None,
@@ -538,17 +539,25 @@ def init_agents():
             nAgentsWht, nAgentsBlk, nAgentsOth, avgInput
     global dataFileName
             
-    #print '*****[ In init_agents() ]*****'
+    print '*****[ In init_agents() ]*****'
     
     
     totInput = 0.
-    
     ## for each agent
     for agtId in range(nAgents):
         # 
         if doingLogging:
             writelog.write("agtId = %d\n"%agtId)
+        # start = time.time()
+        print '  init_agent(%d) '%agtId
         newAgent = init_agent(agtId)
+#        end = time.time()
+#        elapsed = end - start
+#        (min_, sec) = divmod(elapsed, 60)
+#        (hr, min_)  = divmod(min_, 60)
+#        print '  elapsed time = %02d:%02d:%02d'%(hr, min_, sec)
+        
+        
         
         # Append to agents list
         agents.append(newAgent)
@@ -739,7 +748,20 @@ def update_agent(agent):
    
         # Otherwise if already enrolled compute input treatment
         else:
-            if random() > .25: # Randomize every other time to break sync
+            
+            # If agent not accepting of CBT then un-enroll
+            if agent['acceptCBT'] < random():
+                agent['treating'] = False;
+                if axes.checkGraphics:
+                    agent['bezPatch'].set_lw(1)
+                    agent['bezPatch'].set_ec('#afafaf')
+                inputVal = agent['iVal']
+
+                if doingLogging: writelog.write('  agent %d acceptCBT < random() treatment %d OFF\n'%
+                                    (agent['id'], agent['treatNo']))
+                                    
+            # Otherwise if accepting
+            elif random() > .25: # Randomize every other time to break sync
 
                 # If agent not being treated do next treatment
                 if agent['treating'] == False:
