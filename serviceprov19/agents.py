@@ -25,7 +25,7 @@ import writelog
 avgPtsd = 0.
 nPtsd = 0
 # nAgents = 150
-nAgents = 1000
+nAgents = 500
 nAgentsWht = 0
 nAgentsBlk = 0
 nAgentsOth = 0
@@ -33,6 +33,7 @@ nEnrolled = 0
 maxEnrolled = 6
 useProbCBTnSymptoms  = False
 useProbCBTprobEnroll = False
+useCalcNSymptoms = True
 standardSched = 10
 steppedSched = 5
 avgInput = 0.
@@ -116,10 +117,17 @@ def probDemographics(boroIndx):
     r = random() * 100.
     if r < t1:
         income   = 'Low'
+        incomeLow = 1.
+        incomeMed = 0.
     elif r < t2:
         income   = 'Medium'
+        incomeLow = 0.
+        incomeMed = 1.
     else:
         income   = 'High'
+        incomeLow = 0.
+        incomeMed = 0.
+        incomeHigh = 1.
     
     ######## Age ########
     # Manhattan
@@ -320,6 +328,28 @@ def calculate_distribution(isMale, isOld, isBlack, isWhite, isOther, isHisp, had
               
     return np.exp(logitCBT)/(1. + np.exp(logitCBT))
 
+#%%# Calculate nSymptoms
+def calculate_nSymptoms(isFemale, isYoung, isOld, isWhiteHisp, 
+                        isBlackNonHisp, isBlackHisp, isOtherNonHisp, 
+                        isOtherHisp, isIncomeLow, isIncomeMed,
+                        hadStressors, hadTraumas):
+    
+    logitCBT = -1.536132  +                    \
+              (-.2957174  * isFemale)        + \
+              ( 1.102366  * isYoung)         + \
+              ( 0.6681121 * isOld)           + \
+              (-0.0381056 * isWhiteHisp)     + \
+              ( 0.4762033 * isBlackNonHisp)  + \
+              ( 0.2499723 * isBlackHisp)     + \
+              ( 0.095978  * isOtherNonHisp)  + \
+              ( 0.8636088 * isOtherHisp)     + \
+              ( 0.7940866 * isIncomeLow)     + \
+              ( 0.5072571 * isIncomeMed)     + \
+              ( 1.050227  * hadStressors)    + \
+              ( 0.5165622 * hadTraumas)
+                            
+    return np.exp(logitCBT)/(1. + np.exp(logitCBT))
+
 #%%# Calculate distribution
 # Calculate the probability that agent will accept CBT if offered CBT
 def calculate_probAcceptCBT(isMale, isOld, isBlack, isWhite, isOther, isHisp, hadPrior):
@@ -426,28 +456,88 @@ def init_agent(agtId):
     # Define agent's gender
     if sex == 'Female':
         gender = 'Female'
+        isFemale = 1.
         isMale = 0.
     else:
         gender = 'Male'
         isMale = 1.
+        isFemale = 0.
         
     # Define agent's age
     if age == 'Old':
         isOld = 1.
+        isYoung = 0.
     else:
         isOld = 0.
+        isYoung = 1.
         
     # Define agent's hadPrior (PTSD)
     if random() > .9:
         hadPrior = 1.
     else:
         hadPrior = 0.
+
+    # Define agent's hadStressors (from Hurricane Sandy)
+    if random() > .9:
+        hadStressors = 1.
+    else:
+        hadStressors = 0.
+
+    # Define agent's hadTrauma (from Hurricane Sandy)
+    if random() > .9:
+        hadTrauma = 1.
+    else:
+        hadTrauma = 0.
+
+    # Additional coefficients for calculate_nSymptoms()
+    isWhiteHisp    = 0.
+    isBlackNonHisp = 0.
+    isBlackHisp    = 0.
+    isOtherNonHisp = 0.
+    isOtherHisp    = 0.
+    if race == 'White' and ethncy == 'Hispanic':
+        isWhiteHisp = 1.
+    elif race == 'Black':
+        if ethncy == 'NonHisp':
+            isBlackNonHisp = 1.
+        elif ethncy == 'Hisp':
+            isBlackHisp = 1.
+    elif race == 'Other':
+        if ethncy == 'NonHisp':
+            isOtherNonHisp = 1.
+        elif ethncy == 'Hisp':
+            isOtherHisp = 1.
+    if income == 'Low':
+        isIncomeLow = 1.
+        isIncomeMed = 0.
+    elif income == 'Medium':
+        isIncomeLow = 0.
+        isIncomeMed = 1.
+    elif income == 'High':
+        isIncomeLow = 0.
+        isIncomeMed = 0.
+        
+    # Define agent's number of PTSD symptoms
+    nSymptoms = calculate_nSymptoms(isFemale, isYoung, isOld, isWhiteHisp, 
+                        isBlackNonHisp, isBlackHisp, isOtherNonHisp, 
+                        isOtherHisp, isIncomeLow, isIncomeMed,
+                        hadStressors, hadTrauma)
+                        
+    randVal = random()
     
+    print '    randVal: %5.2f nSymptoms: %5.2f'%(randVal, nSymptoms)
+
     # Define agent's "input value" (natural wellness) and input factor
-    iVal = random()
-    if doingLogging:
-        writelog.write('  iVal = random() = %f\n'%iVal)
+    if useCalcNSymptoms:
+        iVal = nSymptoms
+        if doingLogging:
+            writelog.write('  iVal = nSymptoms = %f\n'%iVal)
+    else:
+        iVal = randVal
+        if doingLogging:
+            writelog.write('  iVal = random() = %f\n'%iVal)
             
+    print '  iVal: %5.2f nSymptoms: %5.2f'%(iVal, nSymptoms)
 
     if iVal > iThresh:
         iFact = 1.
@@ -462,6 +552,7 @@ def init_agent(agtId):
             iFact = 0.7
             isComplex = True
             cmplxColor = 'r'
+            
 
     # Define agent's probability of accepting CBT if offered CBT
     acceptCBT = calculate_probAcceptCBT(isMale, isOld, isBlack, isWhite, 
@@ -523,6 +614,7 @@ def init_agent(agtId):
                    'race':race,
                    'ethncy':ethncy,
                    'acceptCBT':acceptCBT,
+                   'nSymptoms':nSymptoms,
                    'treating':False,
                    'enrolled':False,
                    'agency':None,

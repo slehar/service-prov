@@ -6,7 +6,7 @@ ServiceProv19.py
 """
 
 import matplotlib.pyplot as plt
-import matplotlib.animation as animation
+#import matplotlib.animation as animation
 
 import axes
 import agents
