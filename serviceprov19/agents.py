@@ -34,6 +34,16 @@ maxEnrolled = 6
 useProbCBTnSymptoms  = False
 useProbCBTprobEnroll = False
 useCalcNSymptoms = True
+if useCalcNSymptoms:
+    iThresh   = .2  # Set threshold for iVal eligibility for complex PTSD
+    visThresh = .4  # Set threshold for visibility on screen
+    needFactor = 1.
+    boost = 0.
+else:
+    iThresh   = .2
+    visThresh = .4
+    needFactor = 1.
+    boost = 0.
 standardSched = 10
 steppedSched = 5
 avgInput = 0.
@@ -46,9 +56,7 @@ doingLogging = False
 doseValue = .2
 delay = 0.001
 A = 0.1   # Shunting decay term
-iThresh = .2 # Threshold for iVal eligibility for complex PTSD
 x = 0.001
-visThresh = 0.4 # Threshold for visibility on screen
 dt = 1.
 preLaunch = 0.
 t = -preLaunch
@@ -523,13 +531,14 @@ def init_agent(agtId):
                         isOtherHisp, isIncomeLow, isIncomeMed,
                         hadStressors, hadTrauma)
                         
+    # Calculate random value
     randVal = random()
     
-    print '    randVal: %5.2f nSymptoms: %5.2f'%(randVal, nSymptoms)
+    #print '    randVal: %5.2f nSymptoms: %5.2f'%(randVal, nSymptoms)
 
     # Define agent's "input value" (natural wellness) and input factor
     if useCalcNSymptoms:
-        iVal = nSymptoms
+        iVal = (1. - nSymptoms) ** boost #<===KLUDGE! 
         if doingLogging:
             writelog.write('  iVal = nSymptoms = %f\n'%iVal)
     else:
@@ -537,7 +546,7 @@ def init_agent(agtId):
         if doingLogging:
             writelog.write('  iVal = random() = %f\n'%iVal)
             
-    print '  iVal: %5.2f nSymptoms: %5.2f'%(iVal, nSymptoms)
+    print '  agent(%3d) iVal: %5.2f nSymptoms: %5.2f'%(agtId, randVal, nSymptoms)
 
     if iVal > iThresh:
         iFact = 1.
@@ -641,7 +650,7 @@ def init_agents():
         if doingLogging:
             writelog.write("agtId = %d\n"%agtId)
         # start = time.time()
-        print '  init_agent(%d) '%agtId
+        #print '  init_agent(%d) '%agtId
         newAgent = init_agent(agtId)
 #        end = time.time()
 #        elapsed = end - start
@@ -784,7 +793,7 @@ def update_agent(agent):
 
 
                 # Calculate probability of enrollment based on need 
-                need = max(( avgInput - xVal),0.)
+                need = max(( avgInput - xVal),0.) * needFactor
                 probEnroll = need * (agcy['maxEnrolled'] - agcy['numEnrolled'])
                 if useProbCBTprobEnroll:
                     print 'WARNING: useProbCBTprobEnroll TRUE but not implemented.'
@@ -1055,6 +1064,9 @@ def update(num):
     axes.lineBlk.set_data(tArray, dArrayBlk)
     axes.lineOth.set_data(tArray, dArrayOth)
     '''
+
+    if nPtsd > axes.ax2yMax:
+        axes.ax2yMax = 1.2*float(nPtsd)        
     axes.lineNptsd.set_data(tArray, dArrayNptsd)
     axes.ax2.axis((t - plotWidth, t, axes.ax2yMin, axes.ax2yMax))
     

@@ -24,10 +24,10 @@ agencies.init_agencies()
 print '====[ Start: init_agents() ]===='
 print time.ctime()
 startInit = time.time()
-agents.init_agents()
-print '====[ init_agents() Done! ]===='
 startCtime = time.ctime()
 print startCtime
+agents.init_agents()
+print '====[ init_agents() Done! ]===='
 endInit = time.time()
 elapsedInit = endInit - startInit
 (minInit, secInit) = divmod(elapsedInit, 60)
@@ -81,9 +81,9 @@ while True:
         agents.update(count)
         if agents.nPtsd == 0:
             nZeros += 1
-            #print  '    nZeros += %1d'%nZeros
+            print  '    nZeros += %1d'%nZeros
             if nZeros >= 3:
-                print '  NPTSD = zero Break!'
+                print '    NPTSD = zero Break!'
                 zerosFound = True
                 break
         else:

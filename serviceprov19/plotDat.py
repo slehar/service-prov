@@ -7,6 +7,7 @@ Created on Tue Mar  1 12:55:48 2016
 """
 
 import matplotlib.pyplot as plt
+import numpy as np
 import csv
 
 winXSizeInches = 12.
@@ -16,14 +17,21 @@ axY = .1
 axXSize = .8
 axYSize = .8
 
-#filename1 = 'Sp1910k.dat'
-#filename2 = 'Sp19Stepped60k.dat'
+#### Original series ####
+
+#filename1 = 'Sp19500.dat'
+#filename2 = 'Sp19500Stepped.dat'
+
+#filename1 = 'Sp191k.dat'
+#filename2 = 'Sp191kStepped.dat'
 
 #filename1 = 'Sp1910k.dat'
 #filename2 = 'Sp1910kStepped.dat'
 
-#filename1 = 'Sp19500.dat'
-#filename2 = 'Sp19500Stepped.dat'
+filename1 = 'Sp1920k.dat'
+filename2 = 'Sp1920kStepped.dat'
+
+#### A series ####
 
 #filename1 = 'Sp19500A.dat'
 #filename2 = 'Sp19500AStepped.dat'
@@ -34,20 +42,20 @@ axYSize = .8
 #filename1 = 'Sp1910kA.dat'
 #filename2 = 'Sp1910kAStepped.dat'
 
-filename1 = 'Sp1920kA.dat'
-filename2 = 'Sp1920kAStepped.dat'
+#filename1 = 'Sp1920kA.dat'
+#filename2 = 'Sp1920kAStepped.dat'
 
-#filename1 = 'Sp191k.dat'
-#filename2 = 'Sp191kStepped.dat'
+#### B series ####
 
-#filename1 = 'Sp1910k.dat'
-#filename2 = 'Sp1910kStepped.dat'
+#filename1 = 'Sp19500B.dat'
+#filename2 = 'Sp19500BStepped.dat'
 
-#filename1 = 'Sp1920k.dat'
-#filename2 = 'Sp1920kStepped.dat'
+#### Demo Series ####
 
 #filename1 = 'Sp19Demo.dat'
 #filename2 = 'Sp19SteppedDemo.dat'
+
+#### Default Files ####
 
 #filename1 = 'Sp19.dat'
 #filename2 = 'Sp19Stepped.dat'
@@ -57,8 +65,6 @@ fig = plt.figure(figsize=(winXSizeInches, winYSizeInches))
 fig.canvas.set_window_title('plotDat')
 ax = fig.add_axes([axX, axY, axXSize, axYSize])
 
-plt.text(100., 600.,  filename1, color='r', fontsize=24)
-plt.text(100., 500.,  filename2, color='b', fontsize=24)
 
 fdat1 = []
 fp1 = open(filename1, 'rb')
@@ -78,6 +84,16 @@ for dat2 in csvDat:
         if item != '':
             fdat2.append(float(item))
 fp2.close()
+
+maxmaxX = max(len(fdat1), len(fdat2))
+maxmaxY = max(np.max(fdat1), np.max(fdat2))
+textX = maxmaxX * .6
+textY1 = maxmaxY * 0.55
+textY2 = maxmaxY * 0.35
+ax.text(textX, textY1, filename1, color='r', fontsize=24)
+ax.text(textX, textY2, filename2, color='b', fontsize=24)
+
+
 
 plt.plot(fdat1, color='r', label='NotStepped')
 plt.hold
