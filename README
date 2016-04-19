@@ -1,81 +1,113 @@
 ServiceProv
 ===========
 
-Service Provider Agent-Based Model Development
+Service Provider Agent-Based Model Development. Versions with an *asterisk are exemplary, 
+those without are generally transitional, not good examples.
 
 ServiceProv1.py
+
   Basic model, one agent, one provider
 
-ServiceProv2.py
+*ServiceProv2.py
+
   Added time trace
 
 ServiceProv2a.py
+
   Time trace broken
 
-ServiceProv3.py
+*ServiceProv3.py
+
   Pulse treatments
 
-ServiceProv4.py
+*ServiceProv4.py
+
   Supply depletes and refills
 
-ServiceProv5.py
+*ServiceProv5.py
+
   Added enduring benefit
 
-ServiceProv6.py
+*ServiceProv6.py
+
   Added row of agents
   Bezier connecting curves
 
 ServiceProv7.py
-  Whole field of agents
 
-ServiceProv8.py
+  Whole field of agents, time trace fixed and 
+  updated retroactively back to ServiceProv2.py
+
+*ServiceProv8.py
+
   Added checkboxes for Service, Pause, EndBen, and Dist
   with distance function & sigma radius
 
 ServiceProv8a.py
+
   Superimposed ServiceProv8 on UHF map of New York neighborhoods
 
 ServiceProv9.py
-  Start schedular - this version INOP
 
-ServiceProv10.py
-  Scheduler done, defined writeLog()
-  NEEDS FIX updateSched()
+  Started scheduler: this version non-functional
 
-ServiceProv11.py
+
+*ServiceProv10.py
+
+  Scheduler DONE, defined writeLog()
+
+
+*ServiceProv11.py
+  
   Modularized writelog, axes, agents
-  NEEDS FIX updateSched()
 
 ServiceProv11a.py
+
   Stepped care
-  NEEDS FIX updateSched()
 
-ServiceProv12.py
-  Modularized totalmodular, later abandoned
-  NEEDS FIX updateSched()
+ServiceProv12a.py
 
-ServiceProv13.py
-  Stepped care and different treatment of SPR vs. CBT
-  NEEDS FIX updateSched()
+  Total modularization, abandoned dead-end
+
+*ServiceProv13.py
+
+  Stepped care & differential treatment
 
 ServiceProv14.py
-  Add UHF neighborhood map from SP8a
-  NEEDS FIX updateSched()
+
+  Added UHF neighborhoods map from Sp8a
 
 ServiceProv15.py
-  Switch to Boroughs map of NY
-  NEEDS FIX updateSched()
 
-ServiceProv16.py
-  Added demographics
-  NEEDS FIX updateSched()
+  Switched to Boroughs map instead
+
+*ServiceProv16.py
+
+  Added demographics, race & ethnicity
 
 ServiceProv17.py
-  Added gender and gender symbols
-  Added new cases appearing, Hurricane Sandy at t=0 after countdown
+
+  Added gender symbols and probCBT
 
 ServiceProv18.py
-  Display only PTSD agents as tiny dots
-  Simulation starts at t=0
+
+  For more agents small agent circles, only sick visible
+  e^(-t) decaying exponential new PTSD cases from hurricane
+
+*ServiceProv19.py
+
+  Graphics off for faster running, writeLog off, no longer animation
+  looping instead until nPtsd == 0 (for 3 cycles)
+  Added agencies for each borough with arcs to connect to patients
+  Can click on agency to make its internals visible.
+
+
+
+
+
+
+
+
+
 
 
